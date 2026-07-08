@@ -582,7 +582,7 @@ export default function RouteMap({
       </div>
 
       {canOpenFullscreen && fs && (
-        <div className="fixed inset-0 z-50 mx-auto flex w-full max-w-[430px] justify-center overflow-hidden bg-paper">
+        <div className="fixed inset-0 z-50 flex justify-center overflow-hidden bg-paper">
           <div className="relative h-full w-full">
             <div ref={fullRef} className="rd-map h-full w-full bg-line" />
 

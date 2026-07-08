@@ -170,8 +170,10 @@ export default function ProfileActions() {
         onInstall={installApp}
       />
       {notice && (
-        <div className="fixed left-1/2 top-[calc(env(safe-area-inset-top)+4rem)] z-50 -translate-x-1/2 rounded-full bg-ink px-4 py-2 text-[12px] font-semibold text-paper shadow-lg">
-          {notice}
+        <div className="fixed inset-x-0 top-[calc(env(safe-area-inset-top)+4rem)] z-50 flex justify-center">
+          <div className="rounded-full bg-ink px-4 py-2 text-[12px] font-semibold text-paper shadow-lg">
+            {notice}
+          </div>
         </div>
       )}
     </>

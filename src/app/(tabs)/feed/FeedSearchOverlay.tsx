@@ -57,7 +57,7 @@ export default function FeedSearchOverlay({
     : routes;
 
   return (
-    <div className="fixed inset-0 z-50 mx-auto flex w-full max-w-[430px] flex-col bg-paper">
+    <div className="fixed inset-0 z-50 flex flex-col bg-paper">
       {/* top bar */}
       <div className="flex items-center gap-1 border-b border-line px-2 pt-[max(8px,env(safe-area-inset-top))]">
         <button

@@ -522,7 +522,7 @@ export default function FeedExplorer({
       {/* 지도 — the conveyor's right pane, sliding in from off-screen right. */}
       {renderMap && (
         <div
-          className={`fixed inset-x-0 top-0 z-40 mx-auto w-full max-w-[430px] transition-transform ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          className={`fixed inset-x-0 top-0 z-40 w-full transition-transform ease-[cubic-bezier(0.22,1,0.36,1)] ${
             mapShown ? "translate-x-0" : "translate-x-full"
           }`}
           style={{

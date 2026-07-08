@@ -152,11 +152,16 @@ const draftPhotoFromFile = (file: File): DraftPhoto => ({
  * makes the height definite AND flush to the true bottom on every device.
  */
 function PlannerFrame({ header, children }: { header: React.ReactNode; children: React.ReactNode }) {
+  // Route every planner screen through MobileFrame's shell so on desktop it is
+  // pinned inside the phone column (beside the brand rail) exactly like the tabs
+  // and detail views — never floated to the viewport center. #app-shell is a
+  // fixed-height (h-lvh) flex column, so the header takes its natural height and
+  // the map body fills the rest via flex-1.
   return (
-    <div className="fixed inset-x-0 bottom-0 top-0 z-40 mx-auto flex w-full max-w-[430px] flex-col overflow-hidden bg-paper shadow-[0_0_60px_rgba(0,0,0,0.08)]">
+    <MobileFrame shell>
       {header}
       {children}
-    </div>
+    </MobileFrame>
   );
 }
 
@@ -1212,7 +1217,7 @@ export default function RouteForm({
   // ── EDIT: single-page layout ──────────────────────────────────────────
   if (isEdit) {
     return (
-      <MobileFrame>
+      <MobileFrame shell>
         <AppHeader
           back={`/routes/${routeId}`}
           closeButton
@@ -1310,7 +1315,7 @@ export default function RouteForm({
   const canNext = step === 2 ? region.trim() && spotsValid : step === 4 ? !!title.trim() : true;
 
   return (
-    <MobileFrame>
+    <MobileFrame shell>
       <AppHeader back="/" closeButton title="새 루트 기록" />
       <Stepper steps={STEP_LABELS} current={step} />
 

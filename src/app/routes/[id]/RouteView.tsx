@@ -242,7 +242,7 @@ export default function RouteView({ route, isOwner, mapSlot, lineageSlot, copyCo
   const floatingHeader = (
     <>
       <RouteDetailChromeTone />
-      <div className="fixed left-1/2 top-0 z-30 h-[calc(env(safe-area-inset-top)+3.5rem)] w-full max-w-[430px] -translate-x-1/2">
+      <div className="fixed inset-x-0 top-0 z-30 h-[calc(env(safe-area-inset-top)+3.5rem)] w-full">
         <AppHeader back="/" transparent glass right={controls(true)} />
       </div>
     </>
@@ -270,7 +270,7 @@ export default function RouteView({ route, isOwner, mapSlot, lineageSlot, copyCo
       <>
         {floatingHeader}
         {isOwner && (
-          <div className="pointer-events-none fixed left-1/2 top-0 z-40 flex h-[calc(env(safe-area-inset-top)+3.5rem)] w-full max-w-[430px] -translate-x-1/2 items-center justify-center pt-[env(safe-area-inset-top)]">
+          <div className="pointer-events-none fixed inset-x-0 top-0 z-40 flex h-[calc(env(safe-area-inset-top)+3.5rem)] w-full items-center justify-center pt-[env(safe-area-inset-top)]">
             <div className="pointer-events-auto">
               <ConvertPlanButton routeId={route.id} />
             </div>

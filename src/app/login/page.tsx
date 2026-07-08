@@ -37,7 +37,7 @@ function LoginInner() {
   };
 
   return (
-    <MobileFrame>
+    <MobileFrame shell>
       <main className="flex flex-1 flex-col justify-center px-7">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-black text-sunset">코스</h1>

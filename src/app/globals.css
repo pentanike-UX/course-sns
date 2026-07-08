@@ -254,7 +254,10 @@
 
 /* Map containers own a stacking context so Naver's high z-index logo/controls
    stay inside the map (below sheets/overlays) instead of bleeding on top of
-   them. */
+   them. Phone-contained overlays use `fixed inset-0` / `fixed inset-x-0` as
+   descendants of #app-shell — never viewport-center with left-1/2 + mx-auto
+   max-w-[430px], which misses the frame when the brand rail pushes the phone
+   right on desktop (#app-shell's lg:transform is the fixed containing block). */
 .rd-map {
   isolation: isolate;
 }

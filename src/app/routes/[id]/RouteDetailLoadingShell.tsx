@@ -21,7 +21,7 @@ export default function RouteDetailLoadingShell() {
   return (
     <>
       <RouteDetailChromeTone />
-      <div className="fixed left-1/2 top-0 z-30 h-[calc(env(safe-area-inset-top)+3.5rem)] w-full max-w-[430px] -translate-x-1/2">
+      <div className="fixed inset-x-0 top-0 z-30 h-[calc(env(safe-area-inset-top)+3.5rem)] w-full">
         <AppHeader
           back="/"
           transparent

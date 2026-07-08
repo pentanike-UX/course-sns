@@ -9,7 +9,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
  *
  * The bar is `fixed` (not `sticky`): MobileFrame is a `min-h-dvh` column whose
  * `overflow-y-auto` main scrolls *with the page*, so sticky wouldn't pin to the
- * viewport — same reason RouteView's floating header uses fixed + frame centring.
+ * viewport — same reason RouteView's floating header uses fixed inside #app-shell.
  */
 export default function LargeTitleHeader({
   title,
@@ -43,8 +43,8 @@ export default function LargeTitleHeader({
 
   return (
     <>
-      {/* fixed compact bar pinned to the viewport, centred on the phone frame */}
-      <div className="pointer-events-none fixed left-1/2 top-0 z-20 h-[calc(env(safe-area-inset-top)+3.5rem)] w-full max-w-[430px] -translate-x-1/2">
+      {/* fixed compact bar pinned inside #app-shell (re-bases on desktop) */}
+      <div className="pointer-events-none fixed inset-x-0 top-0 z-20 h-[calc(env(safe-area-inset-top)+3.5rem)] w-full">
         <div className="relative flex h-full items-center gap-2 px-3 pt-[env(safe-area-inset-top)]">
           <div
             className={`absolute inset-0 bg-paper/90 backdrop-blur transition-opacity duration-200 ${

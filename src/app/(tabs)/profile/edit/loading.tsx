@@ -1,10 +1,9 @@
-import MobileFrame from "@/components/MobileFrame";
 import AppHeader from "@/components/AppHeader";
 import { Skeleton } from "@/components/Skeleton";
 
 export default function ProfileEditLoading() {
   return (
-    <MobileFrame>
+    <>
       <AppHeader back="/profile" title="프로필 편집" right={<Skeleton className="h-8 w-16 rounded-full bg-sunset-wash" />} />
 
       <main className="flex-1 overflow-y-auto px-4 pb-10">
@@ -22,6 +21,6 @@ export default function ProfileEditLoading() {
           ))}
         </div>
       </main>
-    </MobileFrame>
+    </>
   );
 }

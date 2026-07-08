@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import MobileFrame from "@/components/MobileFrame";
 import AppHeader from "@/components/AppHeader";
 import { createClient } from "@/lib/supabase/client";
 import { compressImage } from "@/lib/image";
@@ -70,7 +69,7 @@ export default function ProfileEditForm({ initial }: Props) {
   };
 
   return (
-    <MobileFrame>
+    <>
       <AppHeader
         back="/profile"
         title="프로필 편집"
@@ -135,7 +134,7 @@ export default function ProfileEditForm({ initial }: Props) {
           </p>
         )}
       </form>
-    </MobileFrame>
+    </>
   );
 }
 

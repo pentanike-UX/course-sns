@@ -12,7 +12,7 @@ export default function RouteFormLoadingShell({
   const isEdit = mode === "edit";
 
   return (
-    <MobileFrame>
+    <MobileFrame shell>
       <AppHeader
         back={back}
         closeButton

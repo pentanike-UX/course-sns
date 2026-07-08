@@ -294,7 +294,7 @@ export default function BottomNav() {
   }, []);
 
   return (
-    <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-30 mx-auto flex max-w-[430px] items-center gap-3 px-4 pb-[max(env(safe-area-inset-bottom),16px)]">
+    <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex w-full items-center gap-3 px-4 pb-[max(env(safe-area-inset-bottom),16px)]">
       {/* edge-refraction filter (Chromium backdrop-filter url()) */}
       {glass && (
         <svg aria-hidden width="0" height="0" className="absolute">
