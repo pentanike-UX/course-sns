@@ -1,0 +1,476 @@
+@import "tailwindcss";
+
+/* Drive `dark:` utilities off the .dark class (set by the profile toggle /
+   pre-paint script), NOT the OS prefers-color-scheme. Without this, Tailwind v4
+   defaults dark: to the media query, so dark: utilities would follow the system
+   appearance (which auto-switches by time of day) while the CSS-variable theme
+   follows the class — splitting the two. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ──────────────────────────────────────────────────────────────
+   routdiary design tokens — "Fresh / Light / Trust / Friendly"
+   Green brand system (adapted from 하루 컬러 시스템 v2026-05).
+
+   Note: routdiary's original semantic names (--paper, --ink, --sunset,
+   --line …) are kept so every existing component re-skins automatically;
+   their VALUES now point at the green system below. The doc's foundation
+   tokens (--brand-primary, --primary-green-*, shadcn bridge) are added for
+   new components.
+   ────────────────────────────────────────────────────────────── */
+:root {
+  /* === Primary green scale (System B) === */
+  --primary-green-900: #0f3d2e;
+  --primary-green-800: #14532d;
+  --primary-green-700: #15803d;
+  --primary-green-600: #16a34a;
+  --primary-green-500: #22c55e;
+  --primary-green-400: #4ade80;
+  --primary-green-300: #86efac;
+  --primary-green-200: #bbf7d0;
+  --primary-green-100: #dcfce7;
+  --primary-green-50: #f0fdf4;
+
+  /* === Brand (System A foundation) === */
+  --brand-primary: #22c55e;
+  --brand-primary-hover: #16a34a;
+  --brand-primary-pressed: #15803d;
+  --brand-primary-soft: rgba(34, 197, 94, 0.12);
+  --brand-primary-soft-2: rgba(34, 197, 94, 0.18);
+
+  /* === Secondary accents === */
+  --accent-mint: #86efac;
+  --accent-sky: #38bdf8;
+  --accent-sunshine: #facc15;
+  --accent-coral: #fb7185;
+  --accent-lavender: #a78bfa;
+
+  /* === Surfaces === */
+  --stage: #e6ebe8; /* desktop backdrop behind the mobile frame */
+  --paper: #ffffff; /* app background (light mode: pure white) */
+  --card: #ffffff; /* card surface */
+  --bg-sunken: #eef2f0; /* sunken box / chip background */
+
+  /* === Ink (text) === */
+  --ink: #16211c; /* primary text (green-charcoal) */
+  --ink-soft: #5b6b63; /* secondary text */
+  --ink-faint: #9aa8a0; /* tertiary / placeholder */
+  --line: #e3eae6; /* hairline borders */
+  --plan-ink: #323d50; /* navy used by the designed route/leg line work */
+
+  /* === routdiary brand alias (was terracotta sunset → now brand green) ===
+     Kept under the old names so existing utilities (bg-sunset, text-sunset-ink,
+     bg-sunset-wash) re-skin without touching components. */
+  --sunset: #16a34a; /* primary action / accent */
+  --sunset-ink: #15803d; /* text on soft wash */
+  --sunset-wash: #dcfce7; /* tinted background */
+  --sky: #3b87e8; /* links / map / transit */
+  --leaf: #15803d; /* success / nature */
+
+  /* === Status === */
+  --success: #16a34a;
+  --success-soft: #dcfce7;
+  --warning: #d97706;
+  --warning-soft: #fef3c7;
+  --error: #ef4444;
+  --error-soft: #fee2e2;
+  --info: #0ea5e9;
+  --info-soft: #e0f2fe;
+
+  /* === shadcn semantic bridge (light) — option A: primary = brand green === */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card-bg: var(--card);
+  --card-foreground: var(--ink);
+  --popover: var(--card);
+  --popover-foreground: var(--ink);
+  --primary: var(--brand-primary);
+  --primary-foreground: #ffffff;
+  --secondary: var(--brand-primary-soft);
+  --secondary-foreground: var(--primary-green-700);
+  --muted: var(--bg-sunken);
+  --muted-foreground: var(--ink-soft);
+  --accent: var(--brand-primary-soft-2);
+  --accent-foreground: var(--primary-green-700);
+  --destructive: var(--error);
+  --destructive-foreground: #ffffff;
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--brand-primary);
+
+  /* === Radius === */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-3xl: 18px;
+  --radius-4xl: 20px;
+  --radius: 0.75rem;
+  --radius-card: 18px;
+
+  /* === Shadow === */
+  --shadow-sm: 0 1px 2px rgba(15, 61, 46, 0.05), 0 4px 12px rgba(15, 61, 46, 0.04);
+  --shadow-md: 0 8px 24px rgba(15, 61, 46, 0.08);
+  --shadow-brand: 0 8px 20px rgba(22, 163, 74, 0.18);
+  --shadow-card: 0 1px 2px rgba(17, 24, 28, 0.04), 0 2px 8px -2px rgba(17, 24, 28, 0.05),
+    0 10px 26px -8px rgba(17, 24, 28, 0.1);
+}
+
+/* ── Dark mode (toggled by `.dark` on <html>) ──
+   Same green brand, mapped onto a deep green-charcoal surface set. */
+.dark {
+  /* surfaces */
+  --stage: #070f0c;
+  --paper: #0e1512;
+  --card: #18211d;
+  --bg-sunken: #1f2a25;
+
+  /* ink */
+  --ink: #f1f5f3;
+  --ink-soft: #a8b3ad;
+  --ink-faint: #6b766f;
+  --line: #2c3a33;
+  /* lighten the navy line work so it reads on the dark timeline */
+  --plan-ink: #aeb9c4;
+
+  /* brand (brighter green reads better on dark) */
+  --brand-primary: #22c55e;
+  --brand-primary-hover: #4ade80;
+  --brand-primary-pressed: #86efac;
+  --brand-primary-soft: rgba(34, 197, 94, 0.16);
+  --brand-primary-soft-2: rgba(34, 197, 94, 0.22);
+
+  /* routdiary aliases */
+  --sunset: #22c55e;
+  --sunset-ink: #4ade80;
+  --sunset-wash: rgba(34, 197, 94, 0.16);
+  --sky: #60a5fa;
+  --leaf: #4ade80;
+
+  /* status */
+  --success: #22c55e;
+  --success-soft: rgba(34, 197, 94, 0.16);
+  --warning: #fbbf24;
+  --warning-soft: rgba(217, 119, 6, 0.2);
+  --error: #f87171;
+  --error-soft: rgba(248, 113, 113, 0.16);
+  --info: #38bdf8;
+  --info-soft: rgba(14, 165, 233, 0.16);
+
+  /* shadcn semantic bridge (dark) */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card-foreground: var(--ink);
+  --popover: var(--card);
+  --popover-foreground: var(--ink);
+  --primary: var(--brand-primary);
+  --primary-foreground: #06140d;
+  --secondary: var(--brand-primary-soft);
+  --secondary-foreground: var(--primary-green-300);
+  --muted: var(--bg-sunken);
+  --muted-foreground: var(--ink-soft);
+  --accent: var(--brand-primary-soft-2);
+  --accent-foreground: var(--primary-green-300);
+  --destructive: #f87171;
+  --destructive-foreground: #1a0606;
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--brand-primary);
+
+  /* shadow */
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 14px 36px rgba(0, 0, 0, 0.45);
+  --shadow-brand: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+@theme inline {
+  /* routdiary semantic tokens */
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-line: var(--line);
+  --color-sunset: var(--sunset);
+  --color-sunset-ink: var(--sunset-ink);
+  --color-sunset-wash: var(--sunset-wash);
+  --color-sky: var(--sky);
+  --color-leaf: var(--leaf);
+
+  /* green brand scale + accents */
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-soft: var(--brand-primary-soft);
+  --color-primary-green-700: var(--primary-green-700);
+  --color-primary-green-600: var(--primary-green-600);
+  --color-primary-green-500: var(--primary-green-500);
+  --color-primary-green-100: var(--primary-green-100);
+  --color-accent-mint: var(--accent-mint);
+  --color-accent-sky: var(--accent-sky);
+  --color-accent-sunshine: var(--accent-sunshine);
+  --color-accent-coral: var(--accent-coral);
+  --color-accent-lavender: var(--accent-lavender);
+
+  /* shadcn semantic bridge */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* status */
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-error: var(--error);
+  --color-error-soft: var(--error-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --font-sans: var(--font-noto-kr), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Modern soft elevation for card panels (anything with the card radius).
+   In @layer base so explicit shadow-* utilities still win; dashed CTAs and
+   the route map opt out. */
+@layer base {
+  .rounded-\[var\(--radius-card\)\]:not(.border-dashed) {
+    box-shadow: var(--shadow-card);
+  }
+}
+
+/* Map containers own a stacking context so Naver's high z-index logo/controls
+   stay inside the map (below sheets/overlays) instead of bleeding on top of
+   them. */
+.rd-map {
+  isolation: isolate;
+}
+
+/* Dark map: the canonical invert + hue-rotate darkens Naver's bright tiles.
+   Marker overlays (.rd-mk) carry the same self-inverse filter, so the doubled
+   filter cancels for them and pins keep their true colors on the dark map. */
+.dark .rd-map {
+  filter: invert(1) hue-rotate(180deg);
+}
+.dark .rd-map .rd-mk {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Leg "travel" loop: the transport marker rides the dashed path top → bottom,
+   fading in at the top and out at the bottom so the restart is seamless. */
+@keyframes leg-travel {
+  0% {
+    top: 0;
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  16% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  84% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    top: calc(100% - 40px);
+    opacity: 0;
+    transform: scale(0.7);
+  }
+}
+.leg-travel {
+  animation: leg-travel 2.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .leg-travel {
+    animation: none;
+    top: calc(50% - 20px);
+    opacity: 1;
+  }
+}
+
+/* designed-icon marker: a gentle bob so it feels alive while riding the path */
+@keyframes marker-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1.5px);
+  }
+}
+.marker-bob {
+  animation: marker-bob 1.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marker-bob {
+    animation: none;
+  }
+}
+
+/* Shared-element transitions: keep the default page swap effectively instant
+   so header/title chrome does not blink; the route cover carries continuity. */
+::view-transition-group(*) {
+  animation-duration: 1ms;
+  animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+}
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: 1ms;
+  animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+::view-transition-group(.route-cover-morph) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.2, 0.85, 0.25, 1);
+  overflow: hidden;
+}
+::view-transition-old(.route-cover-morph),
+::view-transition-new(.route-cover-morph) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.2, 0.85, 0.25, 1);
+  height: 100%;
+  object-fit: cover;
+}
+::view-transition-image-pair(.route-cover-morph) {
+  animation: route-cover-soften 320ms cubic-bezier(0.2, 0.85, 0.25, 1) both;
+}
+@keyframes route-cover-soften {
+  0%,
+  100% {
+    filter: blur(0);
+  }
+  45% {
+    filter: blur(1px);
+  }
+}
+
+.route-card-pending-sheen {
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.12) 35%,
+    rgba(255, 255, 255, 0.42) 50%,
+    rgba(255, 255, 255, 0.12) 65%,
+    transparent 100%
+  );
+  transform: translateX(-120%);
+  animation: route-card-pending-sheen 900ms ease-in-out infinite;
+}
+
+@keyframes route-card-pending-sheen {
+  to {
+    transform: translateX(120%);
+  }
+}
+
+/* segment tab strips (홈/보관함/둘러보기) animate via SegPager inline styles;
+   it checks prefers-reduced-motion in JS and snaps instantly when set */
+
+/* explore map mini card: eases in on open and on swiping to a nearby route */
+.tour-card-in {
+  animation: tour-card-in 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes tour-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 1ms;
+  }
+  .route-card-pending-sheen,
+  .tour-card-in {
+    animation: none;
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  /* desktop: cool stage so the centered mobile frame reads as an app */
+  background: var(--stage);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* On phones the frame spans the full width, so the stage is never a backdrop —
+   it only leaks below the frame when the browser's 100% height (large viewport)
+   exceeds the frame's 100dvh (dynamic viewport), showing a grey strip above the
+   home indicator / under the dock. Match the frame's paper so that gap is seamless;
+   keep the stage only where the frame is actually narrower than the viewport (>430px). */
+@media (max-width: 430px) {
+  body {
+    background: var(--paper);
+  }
+}
+
+/* Touch devices: force form controls to ≥16px so iOS doesn't auto-zoom the page
+   on focus (we dropped maximum-scale to keep pinch-zoom for a11y, which re-armed
+   that zoom). Unlayered, so it overrides Tailwind's text-[Npx] utilities; desktop
+   (fine pointer) keeps each input's designed size. */
+@media (pointer: coarse) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+/* hide scrollbars inside scroll regions but keep scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* tactile press feedback: tap shrinks to 95%, springs back to 100% on release.
+   (toggles excluded; inline links unaffected since transform needs a box) */
+a,
+button,
+[role="button"] {
+  /* springy bezier so the release bounces elastically back to 100% */
+  transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+/* Press feedback GROWS (never shrinks) so it stays visible from under a
+   fingertip: it pops up, holds while the finger is down, then springs back on
+   release. This gentle 1.06 pop is the default for arbitrary/large buttons;
+   compact icon controls opt into the full 120% pop via lib/jelly-tap (.jelly)
+   and the BottomNav handlers. */
+a:not(.jelly):active,
+button:not(:disabled):not([role="switch"]):not(.jelly):active,
+[role="button"]:not([role="switch"]):not(.jelly):active {
+  transform: scale(1.06);
+}
+@media (prefers-reduced-motion: reduce) {
+  a:not(.jelly):active,
+  button:not(:disabled):not([role="switch"]):not(.jelly):active,
+  [role="button"]:not([role="switch"]):not(.jelly):active {
+    transform: none;
+  }
+}

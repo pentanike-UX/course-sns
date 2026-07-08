@@ -1,0 +1,42 @@
+# 코스 (course-sns)
+
+코스를 **기록하고 공유**하는 모바일 우선 SNS. routdiary 코드베이스 MVP fork.
+
+- **GitHub**: [pentanike-UX/course-sns](https://github.com/pentanike-UX/course-sns)
+- **현재 버전**: `v0.1.0-mvp` (`src/lib/version.ts`)
+- **배포·인프라 체크리스트**: [`docs/MVP-SETUP.md`](docs/MVP-SETUP.md)
+- **상세 인수인계·IA·함정**: [`docs/HANDOFF.md`](docs/HANDOFF.md) (routdiary 기준 문서, MVP 맥락은 상단 참고)
+
+## 기술 스택
+
+Next.js 16 (App Router) · React 19 · Tailwind 4 · TypeScript · Supabase · Naver Maps · pnpm
+
+## 빠른 시작
+
+```bash
+cd ~/Documents/course-sns
+pnpm install
+cp .env.example .env.local   # 새 Supabase 프로젝트 값 채우기 — MVP-SETUP.md 참고
+pnpm dev                     # http://localhost:3000
+```
+
+## 검증
+
+```bash
+pnpm lint
+pnpm build
+pnpm test:e2e    # Playwright 스모크 (데모 계정, 읽기 전용)
+```
+
+## 문서
+
+| 파일 | 내용 |
+|------|------|
+| [`docs/MVP-SETUP.md`](docs/MVP-SETUP.md) | Supabase migration, Vercel env, 네이버 Maps URL 등록 |
+| [`docs/HANDOFF.md`](docs/HANDOFF.md) | 제품 IA, Supabase/OAuth, 완료·TODO, 함정 |
+| [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md) | UI 스타일 가이드 |
+| [`.env.example`](.env.example) | 환경변수 템플릿 |
+
+## 원본
+
+[routdiary](https://github.com/pentanike-UX/routdiary) — 여행 루트 일기 SNS (별도 Supabase·Vercel·도메인)
