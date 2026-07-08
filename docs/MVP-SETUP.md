@@ -9,13 +9,11 @@
 - migration `0001`–`0009` 적용 완료 (`supabase db push`)
 - 데모 계정: `demo@course-sns.app` / `demo1234` (공개 시드 루트 1건 포함)
 
-**수동 확인 (대시보드)**:
+**수동 확인 (대시보드)** — Auth URL은 `supabase config push`로 적용 완료 ✅
 
-1. **Authentication → URL Configuration**
-   - Site URL: `https://course-sns.vercel.app`
-   - Redirect URLs: `https://course-sns.vercel.app/**`, `http://localhost:3000/**`
-2. **Google OAuth** (선택): 콜백 `https://pbyxnvtgsrwmsvxnynif.supabase.co/auth/v1/callback`
-3. **Storage**: `route-photos` bucket 존재 확인
+1. ~~**Authentication → URL Configuration**~~ ✅ `site_url` + redirect URLs 반영됨
+2. **Google OAuth** (선택): 콜백 `https://pbyxnvtgsrwmsvxnynif.supabase.co/auth/v1/callback` — routdiary와 동일 Client ID/Secret을 Supabase Providers에 입력
+3. **Storage**: `route-photos` bucket ✅ 확인됨
 
 ## 2. 로컬 `.env.local`
 
@@ -45,14 +43,16 @@ cp .env.example .env.local
 
 수동 확인:
 
-## 4. 네이버 Maps / Search URL 등록
+## 4. 네이버 Maps / Search URL 등록 ⚠️ 수동 필요
 
-[NCP Console](https://console.ncloud.com) → AI·NAVER API → Application:
+[NCP Console](https://console.ncloud.com) → AI·NAVER API → Application (Client ID `pzni5385ah`):
 
 | 서비스 | 등록 URL |
 |--------|----------|
-| Maps (Web) | `http://localhost:3000`, `https://course-sns.vercel.app` |
+| Maps (Web) | `http://localhost:3000`, `https://routdiary.vercel.app`, **`https://course-sns.vercel.app`** |
 | Search (선택) | 동일 |
+
+> 프로덕션 지도가 빈 화면이면 **Web 서비스 URL에 `course-sns.vercel.app` 미등록**이 가장 흔한 원인입니다.
 
 > Preview 배포 URL은 매번 달라지므로, 프리뷰에서 지도 테스트 시 해당 URL을 추가하거나 Production만 등록합니다.
 
