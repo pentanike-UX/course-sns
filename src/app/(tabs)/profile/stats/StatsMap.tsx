@@ -38,7 +38,7 @@ export default function StatsMap({ points }: Props) {
               map,
               icon: {
                 content:
-                  '<div class="rd-mk" style="width:14px;height:14px;border-radius:50%;background:#22c55e;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>',
+                  '<div class="rd-mk" style="width:14px;height:14px;border-radius:50%;background:#ef4444;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>',
                 anchor: new naver.maps.Point(7, 7),
               },
             }),

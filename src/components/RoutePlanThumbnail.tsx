@@ -97,7 +97,7 @@ export default function RoutePlanThumbnail({
             }}
           >
             <circle cx={p.x} cy={p.y} r="5.6" fill="#ffffff" />
-            <circle cx={p.x} cy={p.y} r="4.4" fill="#16a34a" />
+            <circle cx={p.x} cy={p.y} r="4.4" fill="#dc2626" />
             <text
               x={p.x}
               y={p.y + 1.7}

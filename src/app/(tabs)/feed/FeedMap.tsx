@@ -126,10 +126,10 @@ function boundsOf(map: any): Bounds | null {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const pinIcon = (naver: any, p: FeedMapPoint, highlighted: boolean) => {
   const size = highlighted ? 48 : 40;
-  const border = highlighted ? "3px solid #22c55e" : "3px solid #fff";
+  const border = highlighted ? "3px solid #ef4444" : "3px solid #fff";
   const thumb = p.coverPhotoUrl
     ? `<img src="${p.coverPhotoUrl}" alt="" style="width:100%;height:100%;object-fit:cover" />`
-    : `<div style="width:100%;height:100%;background:#22c55e"></div>`;
+    : `<div style="width:100%;height:100%;background:#ef4444"></div>`;
   return {
     content: `<div class="rd-mk" style="width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;border:${border};box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer">${thumb}</div>`,
     anchor: new naver.maps.Point(size / 2, size / 2),
@@ -140,7 +140,7 @@ const pinIcon = (naver: any, p: FeedMapPoint, highlighted: boolean) => {
 const clusterIcon = (naver: any, n: number) => {
   const size = n < 10 ? 38 : n < 30 ? 46 : 54;
   return {
-    content: `<div class="rd-mk" style="display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:50%;background:#22c55e;color:#fff;font-weight:700;font-size:13px;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer">${n}</div>`,
+    content: `<div class="rd-mk" style="display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:50%;background:#ef4444;color:#fff;font-weight:700;font-size:13px;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer">${n}</div>`,
     anchor: new naver.maps.Point(size / 2, size / 2),
   };
 };
@@ -470,7 +470,7 @@ export default function FeedMap({
     polylineRef.current = new naver.maps.Polyline({
       map,
       path: selected.path.map((p) => new naver.maps.LatLng(p.lat, p.lng)),
-      strokeColor: "#22c55e",
+      strokeColor: "#ef4444",
       strokeWeight: 3,
       strokeOpacity: 0.75,
       strokeLineCap: "round",

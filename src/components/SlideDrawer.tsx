@@ -188,7 +188,11 @@ export default function SlideDrawer({
       <div
         ref={backdropRef}
         className={`absolute inset-0 bg-black/30 ease-out ${
-          useEnterTransition ? `transition-opacity ${show ? "opacity-100" : "opacity-0"}` : "opacity-100"
+          useEnterTransition
+            ? `transition-opacity ${show ? "opacity-100" : "opacity-0"}`
+            : panelVisible
+              ? "opacity-100"
+              : "opacity-0"
         }`}
         style={useEnterTransition ? motion : undefined}
         onClick={onDismiss}

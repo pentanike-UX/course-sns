@@ -18,24 +18,26 @@
    new components.
    ────────────────────────────────────────────────────────────── */
 :root {
-  /* === Primary green scale (System B) === */
-  --primary-green-900: #0f3d2e;
-  --primary-green-800: #14532d;
-  --primary-green-700: #15803d;
-  --primary-green-600: #16a34a;
-  --primary-green-500: #22c55e;
-  --primary-green-400: #4ade80;
-  --primary-green-300: #86efac;
-  --primary-green-200: #bbf7d0;
-  --primary-green-100: #dcfce7;
-  --primary-green-50: #f0fdf4;
+  /* === Primary accent scale (System B) ===
+     Names kept as --primary-green-* so every existing utility re-skins in place,
+     but the VALUES now hold the red point-color system. */
+  --primary-green-900: #7f1d1d;
+  --primary-green-800: #991b1b;
+  --primary-green-700: #b91c1c;
+  --primary-green-600: #dc2626;
+  --primary-green-500: #ef4444;
+  --primary-green-400: #f87171;
+  --primary-green-300: #fca5a5;
+  --primary-green-200: #fecaca;
+  --primary-green-100: #fee2e2;
+  --primary-green-50: #fef2f2;
 
-  /* === Brand (System A foundation) === */
-  --brand-primary: #22c55e;
-  --brand-primary-hover: #16a34a;
-  --brand-primary-pressed: #15803d;
-  --brand-primary-soft: rgba(34, 197, 94, 0.12);
-  --brand-primary-soft-2: rgba(34, 197, 94, 0.18);
+  /* === Brand (System A foundation) — red point color === */
+  --brand-primary: #ef4444;
+  --brand-primary-hover: #dc2626;
+  --brand-primary-pressed: #b91c1c;
+  --brand-primary-soft: rgba(239, 68, 68, 0.12);
+  --brand-primary-soft-2: rgba(239, 68, 68, 0.18);
 
   /* === Secondary accents === */
   --accent-mint: #86efac;
@@ -57,14 +59,14 @@
   --line: #e3eae6; /* hairline borders */
   --plan-ink: #323d50; /* navy used by the designed route/leg line work */
 
-  /* === routdiary brand alias (was terracotta sunset → now brand green) ===
+  /* === routdiary brand alias (now the red point color) ===
      Kept under the old names so existing utilities (bg-sunset, text-sunset-ink,
      bg-sunset-wash) re-skin without touching components. */
-  --sunset: #16a34a; /* primary action / accent */
-  --sunset-ink: #15803d; /* text on soft wash */
-  --sunset-wash: #dcfce7; /* tinted background */
+  --sunset: #dc2626; /* primary action / accent */
+  --sunset-ink: #b91c1c; /* text on soft wash */
+  --sunset-wash: #fee2e2; /* tinted background */
   --sky: #3b87e8; /* links / map / transit */
-  --leaf: #15803d; /* success / nature */
+  --leaf: #15803d; /* success / nature (stays green) */
 
   /* === Status === */
   --success: #16a34a;
@@ -109,7 +111,7 @@
   /* === Shadow === */
   --shadow-sm: 0 1px 2px rgba(15, 61, 46, 0.05), 0 4px 12px rgba(15, 61, 46, 0.04);
   --shadow-md: 0 8px 24px rgba(15, 61, 46, 0.08);
-  --shadow-brand: 0 8px 20px rgba(22, 163, 74, 0.18);
+  --shadow-brand: 0 8px 20px rgba(220, 38, 38, 0.18);
   --shadow-card: 0 1px 2px rgba(17, 24, 28, 0.04), 0 2px 8px -2px rgba(17, 24, 28, 0.05),
     0 10px 26px -8px rgba(17, 24, 28, 0.1);
 }
@@ -131,17 +133,17 @@
   /* lighten the navy line work so it reads on the dark timeline */
   --plan-ink: #aeb9c4;
 
-  /* brand (brighter green reads better on dark) */
-  --brand-primary: #22c55e;
-  --brand-primary-hover: #4ade80;
-  --brand-primary-pressed: #86efac;
-  --brand-primary-soft: rgba(34, 197, 94, 0.16);
-  --brand-primary-soft-2: rgba(34, 197, 94, 0.22);
+  /* brand (brighter red reads better on dark) */
+  --brand-primary: #f87171;
+  --brand-primary-hover: #fca5a5;
+  --brand-primary-pressed: #fecaca;
+  --brand-primary-soft: rgba(248, 113, 113, 0.16);
+  --brand-primary-soft-2: rgba(248, 113, 113, 0.22);
 
   /* routdiary aliases */
-  --sunset: #22c55e;
-  --sunset-ink: #4ade80;
-  --sunset-wash: rgba(34, 197, 94, 0.16);
+  --sunset: #f87171;
+  --sunset-ink: #fca5a5;
+  --sunset-wash: rgba(248, 113, 113, 0.16);
   --sky: #60a5fa;
   --leaf: #4ade80;
 

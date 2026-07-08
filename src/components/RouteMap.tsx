@@ -147,7 +147,7 @@ function travelerHtml(mode: TransportMode): string {
   if (cached) return cached;
   const el = legIconEl(mode);
   const svg = el ? renderToStaticMarkup(el).replace("<svg ", '<svg width="22" height="22" ') : "";
-  const inner = svg || '<span style="display:block;width:9px;height:9px;border-radius:50%;background:#16a34a"></span>';
+  const inner = svg || '<span style="display:block;width:9px;height:9px;border-radius:50%;background:#dc2626"></span>';
   const html = `<div class="rd-mk" style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.35)">${inner}</div>`;
   travelerHtmlCache.set(mode, html);
   return html;
@@ -269,7 +269,7 @@ function renderRoute(
       map,
       title: spot.title,
       icon: {
-        content: `<div class="rd-mk" style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#16a34a;color:#fff;font-size:13px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:${onSpotClick ? "pointer" : "default"}">${label}</div>`,
+        content: `<div class="rd-mk" style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#dc2626;color:#fff;font-size:13px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:${onSpotClick ? "pointer" : "default"}">${label}</div>`,
         anchor: new naver.maps.Point(13, 13),
       },
     });
