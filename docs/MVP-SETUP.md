@@ -43,16 +43,15 @@ cp .env.example .env.local
 
 수동 확인:
 
-## 4. 네이버 Maps / Search URL 등록 ⚠️ 수동 필요
+## 4. 네이버 Maps / Search URL 등록 ✅
 
-[NCP Console](https://console.ncloud.com) → AI·NAVER API → Application (Client ID `pzni5385ah`):
+[NCP Console](https://console.ncloud.com) → Maps → Application `routdiary` (Client ID `pzni5385ah`):
 
 | 서비스 | 등록 URL |
 |--------|----------|
-| Maps (Web) | `http://localhost:3000`, `https://routdiary.vercel.app`, **`https://course-sns.vercel.app`** |
-| Search (선택) | 동일 |
+| Maps (Web) | `http://localhost:3000`, `https://routdiary.vercel.app`, `https://course-sns.vercel.app` |
 
-> 프로덕션 지도가 빈 화면이면 **Web 서비스 URL에 `course-sns.vercel.app` 미등록**이 가장 흔한 원인입니다.
+> **저장** 버튼 클릭 후 반영까지 1–2분 걸릴 수 있습니다. 지도가 안 보이면 시크릿 창에서 새로고침해 보세요.
 
 > Preview 배포 URL은 매번 달라지므로, 프리뷰에서 지도 테스트 시 해당 URL을 추가하거나 Production만 등록합니다.
 
