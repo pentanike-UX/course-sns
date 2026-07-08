@@ -999,10 +999,12 @@ export default function RouteForm({
     <div className="flex items-center justify-between rounded-xl border border-line bg-card px-4 py-3.5">
       <div>
         <div className="text-[14px] font-semibold text-ink">
-          {visibility === "private" ? "비공개 코스" : "공개 루트"}
+          {visibility === "private" ? "비공개 코스" : "공개 코스"}
         </div>
         <div className="text-[12px] text-ink-faint">
-          {visibility === "private" ? "나만 볼 수 있어요" : "둘러보기 피드에 공개돼요"}
+          {visibility === "private"
+            ? "나만 볼 수 있어요"
+            : "둘러보기에 공유돼 다른 사람이 따라갈 수 있어요"}
         </div>
       </div>
       <button

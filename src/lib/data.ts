@@ -69,6 +69,7 @@ type RouteRowLite = {
   visibility: Visibility;
   created_at: string;
   like_count: number;
+  copy_count: number;
   author: ProfileRow | null;
   spots: { count: number }[];
   thumbnail_spots?: {
@@ -108,6 +109,7 @@ function toSummary(r: RouteRowLite): RouteSummary {
     visibility: r.visibility,
     createdAt: r.created_at,
     likeCount: r.like_count,
+    copyCount: r.copy_count ?? 0,
     copyPurpose: copySource?.purpose,
     thumbnailPoints,
   };
@@ -116,7 +118,7 @@ function toSummary(r: RouteRowLite): RouteSummary {
 // `spots` is embedded with an explicit FK hint: legs has FKs to both routes
 // and spots, so PostgREST otherwise sees an ambiguous (junction) relationship.
 const LITE_SELECT =
-  "id, title, region, theme, mood, cover_photo_url, visibility, created_at, like_count, author:profiles!routes_author_id_fkey(id, handle, display_name, avatar_url), spots!spots_route_id_fkey(count), thumbnail_spots:spots!spots_route_id_fkey(title, lat, lng, order_index), copy_source:route_copies!route_copies_copied_route_id_fkey(purpose)";
+  "id, title, region, theme, mood, cover_photo_url, visibility, created_at, like_count, copy_count, author:profiles!routes_author_id_fkey(id, handle, display_name, avatar_url), spots!spots_route_id_fkey(count), thumbnail_spots:spots!spots_route_id_fkey(title, lat, lng, order_index), copy_source:route_copies!route_copies_copied_route_id_fkey(purpose)";
 
 export async function getMyRoutes(): Promise<RouteSummary[]> {
   const supabase = await getServerClient();
@@ -807,17 +809,17 @@ export async function getUnreadNotificationCount(): Promise<number> {
   return count ?? 0;
 }
 
-/** The current user's default visibility for new routes (defaults to private). */
+/** The current user's default visibility for new courses (course-first: public). */
 export async function getMyDefaultVisibility(): Promise<Visibility> {
   const supabase = await getServerClient();
   const user = await getAuthUser();
-  if (!user) return "private";
+  if (!user) return "public";
   const { data } = await supabase
     .from("profiles")
     .select("default_visibility")
     .eq("id", user.id)
     .maybeSingle();
-  return (data?.default_visibility as Visibility) ?? "private";
+  return (data?.default_visibility as Visibility) ?? "public";
 }
 
 /** Count of the current user's saved + liked routes (cheap head queries). */
@@ -960,6 +962,7 @@ export async function getRoute(id: string): Promise<Route | null> {
     likeCount: r.like_count,
     bookmarkCount: r.bookmark_count,
     commentCount: r.comment_count ?? 0,
+    copyCount: r.copy_count ?? 0,
     liked,
     bookmarked,
   };

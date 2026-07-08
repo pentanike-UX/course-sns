@@ -7,10 +7,18 @@ import { useAuthGate } from "@/components/AuthGate";
 import type { CopyPurpose } from "@/lib/types";
 
 /**
- * "이 루트 따라가기" — copies the route into my diary as a private draft and
- * lands on its edit page (the server action redirects on success).
+ * "이 코스 따라가기" — copies the course into my library as a private draft and
+ * lands on its edit page (the server action redirects on success). This is the
+ * hero action of the 코스 mental model, so it can render as a full-width primary
+ * CTA (`prominent`) or the compact inline pill (default).
  */
-export default function CopyRouteButton({ routeId }: { routeId: string }) {
+export default function CopyRouteButton({
+  routeId,
+  prominent = false,
+}: {
+  routeId: string;
+  prominent?: boolean;
+}) {
   const { requireAuth } = useAuthGate();
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
@@ -47,10 +55,14 @@ export default function CopyRouteButton({ routeId }: { routeId: string }) {
           setOpen(true);
         }}
         disabled={pending}
-        className="flex items-center gap-1.5 rounded-full border border-line bg-card px-3.5 py-2 text-[14px] font-semibold text-ink transition-colors disabled:opacity-60"
+        className={
+          prominent
+            ? "flex w-full items-center justify-center gap-2 rounded-full bg-sunset px-4 py-3.5 text-[15px] font-bold text-white shadow-[var(--shadow-sm)] transition-transform active:scale-[0.98] disabled:opacity-60"
+            : "flex items-center gap-1.5 rounded-full border border-line bg-card px-3.5 py-2 text-[14px] font-semibold text-ink transition-colors disabled:opacity-60"
+        }
       >
         <RouteIcon />
-        {pending ? "가져오는 중…" : "이 루트 따라가기"}
+        {pending ? "가져오는 중…" : "이 코스 따라가기"}
       </button>
       {open && (
         <div className="fixed inset-0 z-40 flex items-end bg-black/35" role="presentation">
@@ -69,17 +81,17 @@ export default function CopyRouteButton({ routeId }: { routeId: string }) {
             <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-line" />
             <SheetCloseButton onClick={() => !pending && setOpen(false)} />
             <h3 className="pr-9 text-[19px] font-black leading-tight text-ink">
-              이 루트를 내 여행으로 시작할까요?
+              이 코스로 시작해 볼까요?
             </h3>
             <p className="mt-2 text-[13px] leading-relaxed text-ink-soft">
-              장소와 이동 정보만 내 비공개 초안으로 가져와요. 원작자의 사진,
-              코스 내용, 감정은 복사되지 않아요.
+              장소와 동선을 그대로 내 코스로 가져와요. 내 일정에 맞게 자유롭게
+              바꿀 수 있어요.
             </p>
 
             <ul className="mt-4 space-y-2 text-[13px] text-ink-soft">
-              <GuideItem>코스 순서와 이동 정보를 참고할 수 있어요</GuideItem>
-              <GuideItem>내 일정에 맞게 장소를 빼거나 추가할 수 있어요</GuideItem>
-              <GuideItem>사진과 감상은 내 여행으로 직접 채워 넣어요</GuideItem>
+              <GuideItem>코스 순서와 이동 정보를 그대로 담아요</GuideItem>
+              <GuideItem>장소를 빼거나 더해 내 코스로 다듬어요</GuideItem>
+              <GuideItem>사진·메모는 다녀와서 채워 넣으면 완성돼요</GuideItem>
             </ul>
 
             <div className="mt-5 grid gap-2">
@@ -87,14 +99,14 @@ export default function CopyRouteButton({ routeId }: { routeId: string }) {
                 value="plan"
                 selected={purpose === "plan"}
                 title="아직 안 다녀왔어요"
-                desc="여행 계획 초안으로 가져와요"
+                desc="코스 계획 초안으로 가져와요"
                 onSelect={setPurpose}
               />
               <PurposeOption
                 value="record"
                 selected={purpose === "record"}
                 title="이미 다녀왔어요"
-                desc="내 여행 기록으로 작성해요"
+                desc="내 코스 기록으로 작성해요"
                 onSelect={setPurpose}
               />
             </div>

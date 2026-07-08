@@ -338,6 +338,7 @@ export type Database = {
           best_season: string | null
           bookmark_count: number
           comment_count: number
+          copy_count: number
           cover_photo_url: string | null
           created_at: string
           est_cost_krw: number | null
@@ -356,6 +357,7 @@ export type Database = {
           best_season?: string | null
           bookmark_count?: number
           comment_count?: number
+          copy_count?: number
           cover_photo_url?: string | null
           created_at?: string
           est_cost_krw?: number | null
@@ -374,6 +376,7 @@ export type Database = {
           best_season?: string | null
           bookmark_count?: number
           comment_count?: number
+          copy_count?: number
           cover_photo_url?: string | null
           created_at?: string
           est_cost_krw?: number | null

@@ -125,6 +125,8 @@ export interface Route {
   likeCount: number;
   bookmarkCount: number;
   commentCount: number;
+  /** how many people have "따라가기"-copied this course */
+  copyCount: number;
   liked?: boolean;
   bookmarked?: boolean;
 }
@@ -149,6 +151,8 @@ export interface RouteSummary {
   visibility: Visibility;
   createdAt: string;
   likeCount: number;
+  /** how many people have "따라가기"-copied this course */
+  copyCount: number;
   liked?: boolean;
   copyPurpose?: CopyPurpose;
   thumbnailPoints?: RouteThumbnailPoint[];

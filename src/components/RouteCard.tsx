@@ -148,6 +148,11 @@ export default function RouteCard({
           {route.mood && <Chip>{route.mood}</Chip>}
           <span className="ml-auto flex items-center gap-2 text-[12px] text-white/85">
             <span>스팟 {route.spotCount}</span>
+            {route.visibility === "public" && route.copyCount > 0 && (
+              <span className="flex items-center gap-1" aria-label={`${route.copyCount}명이 따라감`}>
+                <FollowIcon /> {route.copyCount}
+              </span>
+            )}
             {route.visibility === "public" && (
               <span className="flex items-center gap-1">
                 <HeartIcon /> {route.likeCount}
@@ -200,6 +205,21 @@ function HeartIcon() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
       <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+    </svg>
+  );
+}
+
+function FollowIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="6" cy="18" r="2.2" stroke="currentColor" strokeWidth="1.9" />
+      <path
+        d="M8.2 18H15a3.4 3.4 0 0 0 0-6.8H9a3.4 3.4 0 0 1 0-6.8h3"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeDasharray="0.1 3.3"
+      />
     </svg>
   );
 }

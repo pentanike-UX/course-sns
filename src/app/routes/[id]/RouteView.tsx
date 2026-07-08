@@ -172,17 +172,61 @@ export default function RouteView({ route, isOwner, mapSlot, lineageSlot, copyCo
     author: route.author,
   };
 
+  const followCount = route.copyCount ?? 0;
   const social = !isOwner ? (
-    <div className="flex flex-wrap items-center gap-2 px-4 pt-4">
-      <RouteActions
-        routeId={route.id}
-        initialLiked={route.liked ?? false}
-        initialLikeCount={route.likeCount}
-        initialBookmarked={route.bookmarked ?? false}
-      />
-      {route.visibility === "public" && <CopyRouteButton routeId={route.id} />}
+    <div className="px-4 pt-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <RouteActions
+          routeId={route.id}
+          initialLiked={route.liked ?? false}
+          initialLikeCount={route.likeCount}
+          initialBookmarked={route.bookmarked ?? false}
+        />
+        {route.visibility === "public" && followCount > 0 && (
+          <span className="ml-auto flex items-center gap-1.5 text-[13px] font-semibold text-sunset-ink">
+            <FollowIcon />
+            {followCount}명이 따라갔어요
+          </span>
+        )}
+      </div>
+      {route.visibility === "public" && (
+        <div className="mt-3">
+          <CopyRouteButton routeId={route.id} prominent />
+        </div>
+      )}
     </div>
   ) : null;
+
+  // "이 코스를 쓸 수 있나?"를 한눈에 — 이동 시간·거리·이동수단·스팟·비용 요약.
+  const transitLabel = summarizeTransit(route.legs);
+  const summaryStats = [
+    planDurationMin > 0
+      ? { icon: <ClockIcon />, label: formatDuration(planDurationMin) }
+      : null,
+    planDistanceMeters > 0
+      ? { icon: <RulerIcon />, label: formatDistance(planDistanceMeters) }
+      : null,
+    transitLabel ? { icon: <MoveIcon />, label: transitLabel } : null,
+    { icon: <StopIcon />, label: `스팟 ${route.spots.length}` },
+    route.estCostKrw
+      ? { icon: <WonIcon />, label: formatKrw(route.estCostKrw) }
+      : null,
+  ].filter((s) => s !== null) as { icon: React.ReactNode; label: string }[];
+
+  const courseSummary =
+    route.spots.length > 0 ? (
+      <div className="no-scrollbar flex items-center gap-2 overflow-x-auto px-4 pt-4">
+        {summaryStats.map((s, i) => (
+          <span
+            key={i}
+            className="flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-card px-3 py-1.5 text-[12.5px] font-semibold text-ink-soft"
+          >
+            <span className="text-ink-faint">{s.icon}</span>
+            {s.label}
+          </span>
+        ))}
+      </div>
+    ) : null;
 
   // a tappable author card → their profile (the discovery → follow entry point)
   const authorCard = !isOwner && route.author.handle ? (
@@ -360,12 +404,13 @@ export default function RouteView({ route, isOwner, mapSlot, lineageSlot, copyCo
           />
         </div>
 
+        {courseSummary}
         {social}
         {authorCard}
 
         <section className="pt-5">
           <h2 className="px-4 text-[16px] font-bold text-ink">
-            루트 따라가기
+            코스 따라가기
             <span className="ml-1.5 text-[13px] font-medium text-ink-faint">
               스팟 {route.spots.length}곳
             </span>
@@ -422,12 +467,13 @@ export default function RouteView({ route, isOwner, mapSlot, lineageSlot, copyCo
         <RouteHeroMeta meta={heroMeta} className="absolute inset-x-0 bottom-0 z-[3] p-4 text-white" />
       </div>
 
+      {courseSummary}
       {social}
       {authorCard}
 
       <section className="px-4 pt-7">
         <h2 className="text-[16px] font-bold text-ink">
-          루트 따라가기
+          코스 따라가기
           <span className="ml-1.5 text-[13px] font-medium text-ink-faint">
             스팟 {route.spots.length}곳
           </span>
@@ -898,6 +944,82 @@ function PinIcon() {
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
       <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" stroke="currentColor" strokeWidth="1.8" />
       <circle cx="12" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
+/** One-line "how do I get around this course?" label from its legs. */
+function summarizeTransit(legs: Leg[]): string | null {
+  if (!legs.length) return null;
+  const modes = new Set(legs.map((l) => l.transport));
+  if (modes.has("car") || modes.has("taxi")) return "차량 이동";
+  if ([...modes].every((m) => m === "walk")) return "도보 코스";
+  if (modes.has("bike")) return "자전거 포함";
+  return "뚜벅이 가능";
+}
+
+function ClockIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M12 7.5V12l3 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function RulerIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M4 15 15 4l5 5L9 20l-5-5Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      <path d="M8 11l1.6 1.6M11 8l1.6 1.6M14 5l1.6 1.6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function MoveIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="6" cy="18" r="2.3" stroke="currentColor" strokeWidth="1.7" />
+      <path
+        d="M8.3 18H15a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h3"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeDasharray="0.1 3.2"
+      />
+    </svg>
+  );
+}
+
+function StopIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" stroke="currentColor" strokeWidth="1.7" />
+      <circle cx="12" cy="10" r="2.2" fill="currentColor" />
+    </svg>
+  );
+}
+
+function WonIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M4 7l2.5 10L12 8l5.5 9L20 7M3.5 11h17" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function FollowIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="6" cy="18" r="2.3" stroke="currentColor" strokeWidth="1.8" />
+      <path
+        d="M8.3 18H15a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h3"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeDasharray="0.1 3.4"
+      />
+      <path d="M18 3c-1.6 0-3 1.3-3 2.9 0 2 3 4.5 3 4.5s3-2.5 3-4.5C21 4.3 19.6 3 18 3Z" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   );
 }
