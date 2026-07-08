@@ -34,7 +34,7 @@ import { compressImage, mapWithConcurrency } from "@/lib/image";
 import { loadNaverMaps, NAVER_MAP_KEY, reverseGeocodeDetail } from "@/lib/naver";
 import ChipSheet from "@/components/ChipSheet";
 import MoodSheet from "@/components/MoodSheet";
-import { THEME_OPTIONS, RECOMMEND_OPTIONS, moodByLabel } from "@/lib/meta-options";
+import { THEME_OPTIONS, RECOMMEND_OPTIONS, DIFFICULTY_OPTIONS, moodByLabel } from "@/lib/meta-options";
 import { createRoute, updateRoute, signPhotoUploads } from "@/app/routes/new/actions";
 import { convertPlanDraftToRecord } from "@/app/routes/[id]/actions";
 import type { RouteCopyContext } from "@/lib/data";
@@ -85,6 +85,7 @@ export type RouteFormInitial = {
   mood: string;
   recommendedFor: string;
   bestSeason: string;
+  difficulty: string;
   estCost: string;
   visibility: Visibility;
   spots: {
@@ -235,6 +236,7 @@ export default function RouteForm({
   const [mood, setMood] = useState(initial?.mood ?? "");
   const [recommendedFor, setRecommendedFor] = useState(initial?.recommendedFor ?? "");
   const [bestSeason, setBestSeason] = useState(initial?.bestSeason ?? "");
+  const [difficulty, setDifficulty] = useState(initial?.difficulty ?? "");
   const [estCost, setEstCost] = useState(initial?.estCost ?? "");
   const [visibility, setVisibility] = useState<Visibility>(
     initial?.visibility ?? defaultVisibility ?? "private",
@@ -646,6 +648,7 @@ export default function RouteForm({
         mood: mood.trim() || undefined,
         recommendedFor: recommendedFor.trim() || undefined,
         bestSeason: bestSeason.trim() || undefined,
+        difficulty: difficulty || undefined,
         estCostKrw: estCost ? Number(estCost.replace(/[^0-9]/g, "")) : undefined,
         visibility,
         coverPath,
@@ -705,6 +708,7 @@ export default function RouteForm({
     mood,
     recommendedFor,
     bestSeason,
+    difficulty,
     estCost,
     visibility,
     spots: spots.map((s) => ({
@@ -978,6 +982,30 @@ export default function RouteForm({
         value={recommendedFor}
         onClick={() => setSheet("recommend")}
       />
+      <div>
+        <div className="mb-1.5 text-[12px] font-medium text-ink-faint">난이도</div>
+        <div className="flex gap-2">
+          {DIFFICULTY_OPTIONS.map((d) => {
+            const active = difficulty === d.key;
+            return (
+              <button
+                key={d.key}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setDifficulty(active ? "" : d.key)}
+                className={`flex-1 rounded-xl border px-2 py-2.5 text-center transition-colors ${
+                  active ? "border-sunset bg-sunset-wash" : "border-line bg-paper"
+                }`}
+              >
+                <span className={`block text-[13px] font-bold ${active ? "text-sunset-ink" : "text-ink"}`}>
+                  {d.label}
+                </span>
+                <span className="mt-0.5 block text-[11px] text-ink-faint">{d.desc}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
       <div className="grid grid-cols-2 gap-3">
         <ReadonlyField
           label={isPlanDraft ? "여행 예정" : "방문 시점"}

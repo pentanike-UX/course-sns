@@ -29,8 +29,10 @@ export default async function HomePage({
     sort?: string;
     mode?: string;
     kind?: string;
+    purpose?: string;
     theme?: string;
     mood?: string;
+    difficulty?: string;
     region?: string;
     dtab?: string;
   }>;
@@ -40,8 +42,10 @@ export default async function HomePage({
     sort: sortParam,
     mode: modeParam,
     kind,
+    purpose,
     theme,
     mood,
+    difficulty,
     region,
     dtab,
   } = await searchParams;
@@ -50,7 +54,7 @@ export default async function HomePage({
     sortParam === "popular" ? "popular" : sortParam === "distance" ? "distance" : "recent";
   const sort: FeedSort = clientSort === "popular" ? "popular" : "recent";
   const mode: FeedMode = modeParam === "map" ? "map" : "list";
-  const filters = parseFilters({ kind, theme, mood, region });
+  const filters = parseFilters({ kind, purpose, theme, mood, difficulty, region });
   const diaryTab: HomeTab = dtab === "record" || dtab === "plan" ? dtab : "all";
 
   const [allRoutes, profile, allPoints, myRoutes, unread, counts, defaultVisibility] =

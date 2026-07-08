@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import JellyButton from "@/components/JellyButton";
 import type { FeedSort } from "@/lib/data";
 import { appendFilterParams, filterCount, kindLabel, type FeedFilters } from "@/lib/feed-filters";
-import { moodByLabel } from "@/lib/meta-options";
+import { moodByLabel, difficultyByKey } from "@/lib/meta-options";
 
 export type FeedView = "all" | "following";
 export type FeedMode = "list" | "map";
@@ -126,11 +126,17 @@ function ActiveFilterChips({
 }) {
   const items: { kind: keyof FeedFilters; value: string; label: string }[] = [
     ...(filters.kinds ?? []).map((v) => ({ kind: "kinds" as const, value: v, label: kindLabel(v) })),
+    ...(filters.purposes ?? []).map((v) => ({ kind: "purposes" as const, value: v, label: v })),
     ...filters.themes.map((v) => ({ kind: "themes" as const, value: v, label: v })),
     ...filters.moods.map((v) => ({
       kind: "moods" as const,
       value: v,
       label: `${moodByLabel(v)?.emoji ?? ""} ${v}`.trim(),
+    })),
+    ...(filters.difficulties ?? []).map((v) => ({
+      kind: "difficulties" as const,
+      value: v,
+      label: difficultyByKey(v)?.label ?? v,
     })),
     ...filters.regions.map((v) => ({ kind: "regions" as const, value: v, label: v })),
   ];

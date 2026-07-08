@@ -5,12 +5,23 @@ import type { RouteSummary } from "@/lib/types";
 export type FeedFilters = {
   /** route kind: "record" (루트일기) | "plan" (계획) */
   kinds: string[];
+  /** who the course is for (recommended_for) — course-native purpose facet */
+  purposes: string[];
   themes: string[];
   moods: string[];
+  /** walking/movement intensity keys: "easy" | "normal" | "hard" */
+  difficulties: string[];
   regions: string[];
 };
 
-export const EMPTY_FILTERS: FeedFilters = { kinds: [], themes: [], moods: [], regions: [] };
+export const EMPTY_FILTERS: FeedFilters = {
+  kinds: [],
+  purposes: [],
+  themes: [],
+  moods: [],
+  difficulties: [],
+  regions: [],
+};
 
 /** 루트 종류 facet — a route is a 계획 when its copy lineage says so, else 루트일기. */
 export const KIND_OPTIONS: { value: string; label: string }[] = [
@@ -71,29 +82,44 @@ export function routeMatchesFilters(route: RouteSummary, f: FeedFilters): boolea
     const kind = route.copyPurpose === "plan" ? "plan" : "record";
     if (!f.kinds.includes(kind)) return false;
   }
+  if (f.purposes?.length && !f.purposes.some((p) => route.recommendedFor?.includes(p)))
+    return false;
   if (f.themes.length && !f.themes.some((t) => route.theme?.includes(t))) return false;
   if (f.moods.length && !(route.mood != null && f.moods.includes(route.mood))) return false;
+  if (f.difficulties?.length && !(route.difficulty != null && f.difficulties.includes(route.difficulty)))
+    return false;
   if (f.regions.length && !f.regions.some((label) => regionMatches(route.region, label)))
     return false;
   return true;
 }
 
 export function filterCount(f: FeedFilters): number {
-  return (f.kinds?.length ?? 0) + f.themes.length + f.moods.length + f.regions.length;
+  return (
+    (f.kinds?.length ?? 0) +
+    (f.purposes?.length ?? 0) +
+    f.themes.length +
+    f.moods.length +
+    (f.difficulties?.length ?? 0) +
+    f.regions.length
+  );
 }
 
 export function parseFilters(sp: {
   kind?: string;
+  purpose?: string;
   theme?: string;
   mood?: string;
+  difficulty?: string;
   region?: string;
 }): FeedFilters {
   const split = (s?: string) =>
     s ? s.split(",").map((x) => x.trim()).filter(Boolean) : [];
   return {
     kinds: split(sp.kind),
+    purposes: split(sp.purpose),
     themes: split(sp.theme),
     moods: split(sp.mood),
+    difficulties: split(sp.difficulty),
     regions: split(sp.region),
   };
 }
@@ -101,7 +127,9 @@ export function parseFilters(sp: {
 /** Write active facets onto a URLSearchParams (empty facets are omitted). */
 export function appendFilterParams(params: URLSearchParams, f: FeedFilters) {
   if (f.kinds.length) params.set("kind", f.kinds.join(","));
+  if (f.purposes?.length) params.set("purpose", f.purposes.join(","));
   if (f.themes.length) params.set("theme", f.themes.join(","));
   if (f.moods.length) params.set("mood", f.moods.join(","));
+  if (f.difficulties?.length) params.set("difficulty", f.difficulties.join(","));
   if (f.regions.length) params.set("region", f.regions.join(","));
 }

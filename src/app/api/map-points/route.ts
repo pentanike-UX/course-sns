@@ -17,8 +17,10 @@ export async function GET(request: NextRequest) {
   const q = sp.get("q")?.trim().slice(0, 60) ?? "";
   const view = sp.get("view") === "following" ? ("following" as const) : ("all" as const);
   const filters = parseFilters({
+    purpose: sp.get("purpose") ?? undefined,
     theme: sp.get("theme") ?? undefined,
     mood: sp.get("mood") ?? undefined,
+    difficulty: sp.get("difficulty") ?? undefined,
     region: sp.get("region") ?? undefined,
   });
   const [south, west, north, east] = ["south", "west", "north", "east"].map((k) =>

@@ -341,6 +341,7 @@ export type Database = {
           copy_count: number
           cover_photo_url: string | null
           created_at: string
+          difficulty: string | null
           est_cost_krw: number | null
           id: string
           like_count: number
@@ -360,6 +361,7 @@ export type Database = {
           copy_count?: number
           cover_photo_url?: string | null
           created_at?: string
+          difficulty?: string | null
           est_cost_krw?: number | null
           id?: string
           like_count?: number
@@ -379,6 +381,7 @@ export type Database = {
           copy_count?: number
           cover_photo_url?: string | null
           created_at?: string
+          difficulty?: string | null
           est_cost_krw?: number | null
           id?: string
           like_count?: number

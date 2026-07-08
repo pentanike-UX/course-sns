@@ -30,6 +30,7 @@ export default async function EditRoutePage({
     mood: route.mood ?? "",
     recommendedFor: route.recommendedFor ?? "",
     bestSeason: route.bestSeason ?? "",
+    difficulty: route.difficulty ?? "",
     estCost: route.estCostKrw != null ? String(route.estCostKrw) : "",
     visibility: route.visibility,
     spots: route.spots.map((s) => {

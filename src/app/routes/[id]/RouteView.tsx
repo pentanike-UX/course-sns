@@ -31,6 +31,7 @@ import {
 import type { RouteCopyContext } from "@/lib/data";
 import { formatKrw, formatDuration } from "@/lib/format";
 import { haversineMeters, formatDistance } from "@/lib/geo";
+import { difficultyByKey } from "@/lib/meta-options";
 
 type Layout = "A" | "B";
 
@@ -207,6 +208,9 @@ export default function RouteView({ route, isOwner, mapSlot, lineageSlot, copyCo
       ? { icon: <RulerIcon />, label: formatDistance(planDistanceMeters) }
       : null,
     transitLabel ? { icon: <MoveIcon />, label: transitLabel } : null,
+    difficultyByKey(route.difficulty)
+      ? { icon: <DifficultyIcon />, label: difficultyByKey(route.difficulty)!.label }
+      : null,
     { icon: <StopIcon />, label: `스팟 ${route.spots.length}` },
     route.estCostKrw
       ? { icon: <WonIcon />, label: formatKrw(route.estCostKrw) }
@@ -1004,6 +1008,14 @@ function WonIcon() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path d="M4 7l2.5 10L12 8l5.5 9L20 7M3.5 11h17" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function DifficultyIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M5 20V13M12 20V8M19 20V4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
     </svg>
   );
 }

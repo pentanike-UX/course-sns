@@ -65,6 +65,8 @@ type RouteRowLite = {
   region: string;
   theme: string | null;
   mood: string | null;
+  recommended_for: string | null;
+  difficulty: string | null;
   cover_photo_url: string | null;
   visibility: Visibility;
   created_at: string;
@@ -104,6 +106,8 @@ function toSummary(r: RouteRowLite): RouteSummary {
     region: r.region,
     theme: r.theme ?? undefined,
     mood: r.mood ?? undefined,
+    recommendedFor: r.recommended_for ?? undefined,
+    difficulty: r.difficulty ?? undefined,
     coverPhotoUrl: r.cover_photo_url ?? undefined,
     spotCount: r.spots?.[0]?.count ?? 0,
     visibility: r.visibility,
@@ -118,7 +122,7 @@ function toSummary(r: RouteRowLite): RouteSummary {
 // `spots` is embedded with an explicit FK hint: legs has FKs to both routes
 // and spots, so PostgREST otherwise sees an ambiguous (junction) relationship.
 const LITE_SELECT =
-  "id, title, region, theme, mood, cover_photo_url, visibility, created_at, like_count, copy_count, author:profiles!routes_author_id_fkey(id, handle, display_name, avatar_url), spots!spots_route_id_fkey(count), thumbnail_spots:spots!spots_route_id_fkey(title, lat, lng, order_index), copy_source:route_copies!route_copies_copied_route_id_fkey(purpose)";
+  "id, title, region, theme, mood, recommended_for, difficulty, cover_photo_url, visibility, created_at, like_count, copy_count, author:profiles!routes_author_id_fkey(id, handle, display_name, avatar_url), spots!spots_route_id_fkey(count), thumbnail_spots:spots!spots_route_id_fkey(title, lat, lng, order_index), copy_source:route_copies!route_copies_copied_route_id_fkey(purpose)";
 
 export async function getMyRoutes(): Promise<RouteSummary[]> {
   const supabase = await getServerClient();
@@ -283,6 +287,10 @@ export async function getFeedMapPoints(opts?: {
     if (prefixes.length)
       query = query.or(prefixes.map((p) => `region.ilike.${san(p)}%`).join(","));
   }
+  if (f?.purposes?.length)
+    query = query.or(f.purposes.map((p) => `recommended_for.ilike.%${san(p)}%`).join(","));
+  if (f?.difficulties?.length)
+    query = query.in("difficulty", f.difficulties.map((d) => san(d)));
 
   const { data } = await query;
   const points: FeedMapPoint[] = [];
@@ -953,6 +961,7 @@ export async function getRoute(id: string): Promise<Route | null> {
     mood: r.mood ?? undefined,
     recommendedFor: r.recommended_for ?? undefined,
     bestSeason: r.best_season ?? undefined,
+    difficulty: r.difficulty ?? undefined,
     estCostKrw: r.est_cost_krw ?? undefined,
     visibility: r.visibility,
     coverPhotoUrl: r.cover_photo_url ?? undefined,

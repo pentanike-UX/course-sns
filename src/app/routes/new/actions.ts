@@ -80,6 +80,7 @@ export type CreateRouteInput = {
   mood?: string;
   recommendedFor?: string;
   bestSeason?: string;
+  difficulty?: string;
   estCostKrw?: number;
   visibility: Visibility;
   coverPath?: string;
@@ -106,6 +107,7 @@ export async function createRoute(input: CreateRouteInput) {
       mood: input.mood || null,
       recommended_for: input.recommendedFor || null,
       best_season: input.bestSeason || null,
+      difficulty: input.difficulty || null,
       est_cost_krw: input.estCostKrw ?? null,
       visibility: input.visibility,
       cover_photo_url: input.coverPath ? publicUrl(input.coverPath) : null,
@@ -233,6 +235,7 @@ export async function updateRoute(input: UpdateRouteInput) {
       mood: input.mood || null,
       recommended_for: input.recommendedFor || null,
       best_season: input.bestSeason || null,
+      difficulty: input.difficulty || null,
       est_cost_krw: input.estCostKrw ?? null,
       visibility: input.visibility,
       cover_photo_url: input.coverPath ? publicUrl(input.coverPath) : null,

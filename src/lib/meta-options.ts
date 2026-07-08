@@ -55,3 +55,17 @@ export function moodByLabel(label?: string): MoodLevel | undefined {
   if (!label) return undefined;
   return MOOD_LEVELS.find((m) => m.label === label);
 }
+
+export type DifficultyOption = { key: string; label: string; desc: string };
+
+/** Course walking/movement intensity. Stored as `key`; label shown in UI. */
+export const DIFFICULTY_OPTIONS: DifficultyOption[] = [
+  { key: "easy", label: "가볍게", desc: "짧고 편한 동선" },
+  { key: "normal", label: "보통", desc: "적당한 이동량" },
+  { key: "hard", label: "많이 걸어요", desc: "이동이 많은 코스" },
+];
+
+export function difficultyByKey(key?: string): DifficultyOption | undefined {
+  if (!key) return undefined;
+  return DIFFICULTY_OPTIONS.find((d) => d.key === key);
+}

@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { THEME_OPTIONS, MOOD_LEVELS } from "@/lib/meta-options";
+import {
+  THEME_OPTIONS,
+  MOOD_LEVELS,
+  RECOMMEND_OPTIONS,
+  DIFFICULTY_OPTIONS,
+} from "@/lib/meta-options";
 import {
   REGION_OPTIONS,
   KIND_OPTIONS,
@@ -60,7 +65,7 @@ function Panel({ value, countFor, showKind, onApply, onClose }: Omit<Props, "ope
   };
 
   const total = filterCount(draft);
-  const applyLabel = countFor ? `${countFor(draft)}개 루트 보기` : "필터 적용";
+  const applyLabel = countFor ? `${countFor(draft)}개 코스 보기` : "필터 적용";
 
   return (
     <div className="fixed inset-0 z-50">
@@ -106,7 +111,7 @@ function Panel({ value, countFor, showKind, onApply, onClose }: Omit<Props, "ope
 
           <div className="no-scrollbar max-h-[56vh] overflow-y-auto px-4 pb-2">
             {showKind && (
-              <Section title="루트 종류">
+              <Section title="코스 종류">
                 {KIND_OPTIONS.map((k) => (
                   <Chip
                     key={k.value}
@@ -118,6 +123,28 @@ function Panel({ value, countFor, showKind, onApply, onClose }: Omit<Props, "ope
                 ))}
               </Section>
             )}
+            <Section title="누구와 · 무엇을">
+              {RECOMMEND_OPTIONS.map((p) => (
+                <Chip
+                  key={p}
+                  active={draft.purposes.includes(p)}
+                  onClick={() => toggle("purposes", p)}
+                >
+                  {p}
+                </Chip>
+              ))}
+            </Section>
+            <Section title="난이도">
+              {DIFFICULTY_OPTIONS.map((d) => (
+                <Chip
+                  key={d.key}
+                  active={draft.difficulties.includes(d.key)}
+                  onClick={() => toggle("difficulties", d.key)}
+                >
+                  {d.label}
+                </Chip>
+              ))}
+            </Section>
             <Section title="테마">
               {THEME_OPTIONS.map((t) => (
                 <Chip key={t} active={draft.themes.includes(t)} onClick={() => toggle("themes", t)}>

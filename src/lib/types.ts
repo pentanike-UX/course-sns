@@ -114,6 +114,8 @@ export interface Route {
   recommendedFor?: string;
   /** best time/season to visit */
   bestSeason?: string;
+  /** walking/movement intensity key: "easy" | "normal" | "hard" */
+  difficulty?: string;
   /** rough expected cost, in KRW */
   estCostKrw?: number;
   visibility: Visibility;
@@ -146,6 +148,10 @@ export interface RouteSummary {
   region: string;
   theme?: string;
   mood?: string;
+  /** who this course is recommended for (comma-joined) — used by explore facet */
+  recommendedFor?: string;
+  /** walking/movement intensity key: "easy" | "normal" | "hard" */
+  difficulty?: string;
   coverPhotoUrl?: string;
   spotCount: number;
   visibility: Visibility;

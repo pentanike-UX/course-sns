@@ -73,7 +73,14 @@ function subscribeLayout(onChange: () => void) {
 }
 
 function serializeFilters(f: FeedFilters) {
-  return JSON.stringify({ kinds: f.kinds, themes: f.themes, moods: f.moods, regions: f.regions });
+  return JSON.stringify({
+    kinds: f.kinds,
+    purposes: f.purposes,
+    themes: f.themes,
+    moods: f.moods,
+    difficulties: f.difficulties,
+    regions: f.regions,
+  });
 }
 
 /** Raw serialized filters from sessionStorage, or null when nothing is stored.
@@ -259,8 +266,10 @@ export default function FeedExplorer({
         const p = JSON.parse(storedFiltersRaw) as Partial<FeedFilters>;
         return {
           kinds: p.kinds ?? [],
+          purposes: p.purposes ?? [],
           themes: p.themes ?? [],
           moods: p.moods ?? [],
+          difficulties: p.difficulties ?? [],
           regions: p.regions ?? [],
         };
       } catch {
