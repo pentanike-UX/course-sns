@@ -40,13 +40,13 @@ cp .env.example .env.local
 | `NEXT_PUBLIC_SITE_URL` | ⬜ | 프로덕션 OG URL (Vercel 도메인) |
 | `E2E_DEMO_EMAIL/PASSWORD` | ⬜ | E2E 데모 계정 (기본값 `.env.example` 참고) |
 
-## 3. Vercel (새 프로젝트)
+## 3. Vercel ✅ (완료)
 
-1. [Vercel Dashboard](https://vercel.com) → **Add New Project**
-2. GitHub `pentanike-UX/course-sns` 연결
-3. Framework: **Next.js**, Build: `pnpm build`, Install: `pnpm install`
-4. **Environment Variables**: 위 `.env.local`과 동일 키를 Production·Preview·Development에 등록
-5. 배포 후 **Supabase Site URL / Redirect URLs**를 실제 Vercel URL로 갱신
+- 프로젝트: `pentanike-uxs-projects/course-sns`
+- **프로덕션 URL**: https://course-sns.vercel.app
+- GitHub `pentanike-UX/course-sns` 연결됨
+
+수동 확인:
 
 ## 4. 네이버 Maps / Search URL 등록
 
@@ -54,7 +54,7 @@ cp .env.example .env.local
 
 | 서비스 | 등록 URL |
 |--------|----------|
-| Maps (Web) | `http://localhost:3000`, `https://YOUR-VERCEL-DOMAIN.vercel.app` |
+| Maps (Web) | `http://localhost:3000`, `https://course-sns.vercel.app` |
 | Search (선택) | 동일 |
 
 > Preview 배포 URL은 매번 달라지므로, 프리뷰에서 지도 테스트 시 해당 URL을 추가하거나 Production만 등록합니다.

@@ -3,6 +3,8 @@
 코스를 **기록하고 공유**하는 모바일 우선 SNS. routdiary 코드베이스 MVP fork.
 
 - **GitHub**: [pentanike-UX/course-sns](https://github.com/pentanike-UX/course-sns)
+- **프로덕션**: https://course-sns.vercel.app
+- **Supabase**: `pbyxnvtgsrwmsvxnynif` (routdiary와 분리)
 - **현재 버전**: `v0.1.0-mvp` (`src/lib/version.ts`)
 - **배포·인프라 체크리스트**: [`docs/MVP-SETUP.md`](docs/MVP-SETUP.md)
 - **상세 인수인계·IA·함정**: [`docs/HANDOFF.md`](docs/HANDOFF.md) (routdiary 기준 문서, MVP 맥락은 상단 참고)

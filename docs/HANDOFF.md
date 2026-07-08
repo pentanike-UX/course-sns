@@ -464,7 +464,7 @@
       - 도움말 `/profile/help`(FAQ), 알림은 시스템 부재로 "준비 중" 정직 표기
 
 ### 배포 (완료)
-- **프로덕션**: https://routdiary.vercel.app (Vercel `pentanike-uxs-projects/routdiary`, GitHub 연결 → main push 시 자동 배포)
+- **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
 - **현재 버전**: v1.14.21 (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
