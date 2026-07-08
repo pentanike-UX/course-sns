@@ -7,18 +7,15 @@
 
 - 프로젝트: **course-sns** · ref `pbyxnvtgsrwmsvxnynif` · 리전 `ap-northeast-2`
 - migration `0001`–`0009` 적용 완료 (`supabase db push`)
+- 데모 계정: `demo@course-sns.app` / `demo1234` (공개 시드 루트 1건 포함)
 
-수동 확인:
-   - Site URL: `https://YOUR-VERCEL-DOMAIN.vercel.app` (배포 후 확정)
-   - Redirect URLs: `https://YOUR-VERCEL-DOMAIN.vercel.app/**`, `http://localhost:3000/**`
+**수동 확인 (대시보드)**:
 
-5. **Google OAuth** (선택, routdiary와 동일 패턴)
-   - Google Cloud Console → 승인된 리디렉션 URI에 `https://YOUR_PROJECT_REF.supabase.co/auth/v1/callback` 추가
-   - Supabase → Auth → Providers → Google 활성화
-
-6. **Storage**: migration에 bucket 정책 포함. `route-photos` bucket 생성 여부 확인
-
-7. **데모 계정** (E2E용, 선택): Auth에서 `demo@course-sns.app` / `demo1234` 생성 후 시드 데이터 삽입
+1. **Authentication → URL Configuration**
+   - Site URL: `https://course-sns.vercel.app`
+   - Redirect URLs: `https://course-sns.vercel.app/**`, `http://localhost:3000/**`
+2. **Google OAuth** (선택): 콜백 `https://pbyxnvtgsrwmsvxnynif.supabase.co/auth/v1/callback`
+3. **Storage**: `route-photos` bucket 존재 확인
 
 ## 2. 로컬 `.env.local`
 
