@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_KR } from "next/font/google";
 import NavHistoryTracker from "@/components/NavHistoryTracker";
-import AppSplash from "@/components/AppSplash";
 import AuthGateProvider from "@/components/AuthGate";
 import { getAuthUser } from "@/lib/supabase/auth";
 import "./globals.css";
@@ -82,11 +81,6 @@ export default async function RootLayout({
       <body className="min-h-full">
         <NavHistoryTracker />
         <AuthGateProvider isAuthed={isAuthed}>{children}</AuthGateProvider>
-        {/* Brand splash mounted at the ROOT so it appears once on a cold document
-            load and never again — the root layout is never unmounted by client
-            navigation, so returning to a tab from a detail page no longer reflashes
-            it. In-app screen loading is handled by per-route loading.tsx skeletons. */}
-        <AppSplash />
       </body>
     </html>
   );

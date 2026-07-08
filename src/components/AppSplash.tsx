@@ -14,16 +14,25 @@ import { APP_VERSION } from "@/lib/version";
 const MIN_MS = 420; // keep it on screen at least this long (no flash)
 const MAX_MS = 3500; // never block longer than this
 
+// Show the splash only once per full page load. It lives INSIDE the mobile frame
+// (see MobileFrame) so it stays clipped to the phone column on desktop; because
+// the frame remounts on client navigations (e.g. tab → detail), this module-level
+// flag keeps it from re-flashing after the first appearance. It resets on a real
+// document reload — exactly when a fresh splash is wanted.
+let splashShownThisLoad = false;
+
 export default function AppSplash() {
   const [fading, setFading] = useState(false);
-  const [gone, setGone] = useState(false);
+  const [gone, setGone] = useState(splashShownThisLoad);
 
   useEffect(() => {
+    if (splashShownThisLoad) return;
     const start = Date.now();
     let done = false;
     const finish = () => {
       if (done) return;
       done = true;
+      splashShownThisLoad = true;
       const wait = Math.max(0, MIN_MS - (Date.now() - start));
       window.setTimeout(() => setFading(true), wait);
     };
@@ -52,7 +61,7 @@ export default function AppSplash() {
       onTransitionEnd={() => {
         if (fading) setGone(true);
       }}
-      className={`fixed inset-x-0 inset-y-0 z-[100] mx-auto flex max-w-[430px] flex-col items-center justify-center gap-5 bg-paper transition-opacity duration-300 ${
+      className={`absolute inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-paper transition-opacity duration-300 ${
         fading ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >

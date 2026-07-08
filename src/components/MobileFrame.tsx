@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import AppSplash from "@/components/AppSplash";
 
 /**
  * MobileFrame
@@ -36,6 +37,10 @@ export default function MobileFrame({
       <div className="flex min-h-lvh justify-center">
         <div className="relative flex min-h-lvh w-full max-w-[430px] flex-col bg-paper shadow-[0_0_60px_rgba(0,0,0,0.08)] sm:my-0">
           {children}
+          {/* Brand splash lives inside the frame column so it is always clipped to
+              the phone (never escapes onto the desktop stage). Shown once per page
+              load via a module flag in AppSplash. */}
+          <AppSplash />
         </div>
       </div>
     );
@@ -71,6 +76,10 @@ export default function MobileFrame({
               : "bg-paper/70 backdrop-blur-lg backdrop-saturate-150"
           }`}
         />
+        {/* Brand splash lives inside #app-shell so on desktop it inherits the
+            phone's transform/clip and never escapes onto the stage or brand rail.
+            Shown once per page load via a module flag in AppSplash. */}
+        <AppSplash />
       </div>
     </div>
   );
