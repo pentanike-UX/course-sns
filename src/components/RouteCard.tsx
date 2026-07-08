@@ -153,6 +153,11 @@ export default function RouteCard({
                 <FollowIcon /> {route.copyCount}
               </span>
             )}
+            {route.visibility === "public" && route.completionCount > 0 && (
+              <span className="flex items-center gap-1" aria-label={`${route.completionCount}명이 다녀옴`}>
+                <DoneIcon /> {route.completionCount}
+              </span>
+            )}
             {route.visibility === "public" && (
               <span className="flex items-center gap-1">
                 <HeartIcon /> {route.likeCount}
@@ -219,6 +224,21 @@ function FollowIcon() {
         strokeWidth="1.9"
         strokeLinecap="round"
         strokeDasharray="0.1 3.3"
+      />
+    </svg>
+  );
+}
+
+function DoneIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.8" />
+      <path
+        d="M8.5 12.2l2 2L15.5 9.2"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

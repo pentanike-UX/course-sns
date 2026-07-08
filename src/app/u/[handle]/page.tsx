@@ -41,18 +41,25 @@ export default async function UserProfilePage({
           )}
 
           <div className="mt-4 flex items-stretch gap-2 text-center">
-            <Stat label="루트" value={profile.routes.length} />
-            <Stat
-              label="팔로워"
-              value={profile.followerCount}
-              href={`/u/${profile.handle}/followers`}
-            />
-            <Stat
-              label="팔로잉"
-              value={profile.followingCount}
-              href={`/u/${profile.handle}/following`}
-            />
+            <Stat label="코스" value={profile.routes.length} />
+            <Stat label="팔로워" value={profile.followerCount} href={`/u/${profile.handle}/followers`} />
+            <Stat label="팔로잉" value={profile.followingCount} href={`/u/${profile.handle}/following`} />
           </div>
+
+          {(profile.totalCopyCount > 0 || profile.totalCompletionCount > 0) && (
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {profile.totalCopyCount > 0 && (
+                <span className="rounded-full bg-sunset-wash px-3 py-1.5 text-[12px] font-semibold text-sunset-ink">
+                  총 {profile.totalCopyCount}명이 따라감
+                </span>
+              )}
+              {profile.totalCompletionCount > 0 && (
+                <span className="rounded-full bg-card px-3 py-1.5 text-[12px] font-semibold text-ink-soft ring-1 ring-line">
+                  {profile.totalCompletionCount}명이 다녀왔어요
+                </span>
+              )}
+            </div>
+          )}
 
           <div className="mt-5">
             {profile.isMe ? (
@@ -73,10 +80,10 @@ export default async function UserProfilePage({
         </section>
 
         <section className="px-4 pt-6">
-          <h3 className="mb-3 text-[14px] font-bold text-ink">공개 루트 {profile.routes.length}</h3>
+          <h3 className="mb-3 text-[14px] font-bold text-ink">공개 코스 {profile.routes.length}</h3>
           {profile.routes.length === 0 ? (
             <div className="py-12 text-center text-[13px] text-ink-faint">
-              아직 공개한 루트가 없어요.
+              아직 공개한 코스가 없어요.
             </div>
           ) : (
             <ul className="space-y-4">

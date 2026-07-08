@@ -242,3 +242,60 @@ export async function deleteComment(commentId: string, routeId: string) {
   revalidatePath(`/routes/${routeId}`);
   return { ok: true };
 }
+
+type CompletionResult = { ok?: true; error?: string; needsAuth?: boolean };
+
+/**
+ * "다녀왔어요" — mark a followed course as completed with an optional star
+ * rating and tip. Requires an existing route_copies lineage row (must have
+ * followed the course first). Upserts so the viewer can edit their review.
+ */
+export async function submitCompletion(
+  originalRouteId: string,
+  rating: number | null,
+  tip: string,
+): Promise<CompletionResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "로그인이 필요해요.", needsAuth: true };
+
+  const { data: copy } = await supabase
+    .from("route_copies")
+    .select("id")
+    .eq("original_route_id", originalRouteId)
+    .eq("copier_id", user.id)
+    .maybeSingle();
+  if (!copy) {
+    return { error: "먼저 이 코스를 따라가야 후기를 남길 수 있어요." };
+  }
+
+  const trimmedTip = tip.trim();
+  if (trimmedTip.length > 500) return { error: "팁은 500자 이내로 작성해 주세요." };
+  if (rating !== null && (rating < 1 || rating > 5 || !Number.isInteger(rating))) {
+    return { error: "별점은 1~5 사이로 선택해 주세요." };
+  }
+  if (!rating && !trimmedTip) {
+    return { error: "별점이나 팁 중 하나는 남겨 주세요." };
+  }
+
+  const { error } = await supabase.from("route_completions").upsert(
+    {
+      original_route_id: originalRouteId,
+      completer_id: user.id,
+      route_copy_id: copy.id,
+      rating,
+      tip: trimmedTip || null,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "original_route_id,completer_id" },
+  );
+  if (error) return { error: "후기 등록에 실패했어요. 다시 시도해 주세요." };
+
+  revalidatePath(`/routes/${originalRouteId}`);
+  revalidatePath(`/u/${user.id}`);
+  revalidatePath("/");
+  revalidatePath("/feed");
+  return { ok: true };
+}

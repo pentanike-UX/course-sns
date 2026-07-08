@@ -330,7 +330,62 @@ export type Database = {
           handle?: string
           id?: string
         }
-        Relationships: []
+        Relationships: [        ]
+      }
+      route_completions: {
+        Row: {
+          completer_id: string
+          created_at: string
+          id: string
+          original_route_id: string
+          rating: number | null
+          route_copy_id: string | null
+          tip: string | null
+          updated_at: string
+        }
+        Insert: {
+          completer_id: string
+          created_at?: string
+          id?: string
+          original_route_id: string
+          rating?: number | null
+          route_copy_id?: string | null
+          tip?: string | null
+          updated_at?: string
+        }
+        Update: {
+          completer_id?: string
+          created_at?: string
+          id?: string
+          original_route_id?: string
+          rating?: number | null
+          route_copy_id?: string | null
+          tip?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "route_completions_completer_id_fkey"
+            columns: ["completer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "route_completions_original_route_id_fkey"
+            columns: ["original_route_id"]
+            isOneToOne: false
+            referencedRelation: "routes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "route_completions_route_copy_id_fkey"
+            columns: ["route_copy_id"]
+            isOneToOne: false
+            referencedRelation: "route_copies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       routes: {
         Row: {
@@ -338,6 +393,9 @@ export type Database = {
           best_season: string | null
           bookmark_count: number
           comment_count: number
+          completion_count: number
+          completion_rating_count: number
+          completion_rating_sum: number
           copy_count: number
           cover_photo_url: string | null
           created_at: string
@@ -358,6 +416,9 @@ export type Database = {
           best_season?: string | null
           bookmark_count?: number
           comment_count?: number
+          completion_count?: number
+          completion_rating_count?: number
+          completion_rating_sum?: number
           copy_count?: number
           cover_photo_url?: string | null
           created_at?: string
@@ -378,6 +439,9 @@ export type Database = {
           best_season?: string | null
           bookmark_count?: number
           comment_count?: number
+          completion_count?: number
+          completion_rating_count?: number
+          completion_rating_sum?: number
           copy_count?: number
           cover_photo_url?: string | null
           created_at?: string
@@ -487,7 +551,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      notification_type: "like" | "comment" | "follow"
+      notification_type: "like" | "comment" | "follow" | "completion"
       route_copy_purpose: "plan" | "record"
       transport_mode:
         | "walk"

@@ -33,7 +33,7 @@ function CopyLineageContent({ stats }: { stats?: RouteCopyStats | null }) {
     <section className="px-4 pt-7">
       <div className="flex items-end justify-between gap-3">
         <div>
-          <h2 className="text-[16px] font-bold text-ink">이 루트를 따라간 사람들</h2>
+          <h2 className="text-[16px] font-bold text-ink">이 코스를 따라간 사람들</h2>
           <p className="mt-0.5 text-[12px] leading-relaxed text-ink-faint">
             {stats.total}명이 이 코스를 내 여행 초안으로 가져갔어요.
           </p>

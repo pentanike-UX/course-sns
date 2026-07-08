@@ -7,6 +7,7 @@ import {
   getCurrentProfile,
   getRouteMeta,
   getRouteCopyContext,
+  getViewerCompletionState,
 } from "@/lib/data";
 import RouteView from "./RouteView";
 import RouteMapSection from "./RouteMapSection";
@@ -14,6 +15,9 @@ import RouteCommentsSection, { RouteCommentsFallback } from "./RouteCommentsSect
 import RouteCopyLineageSection, {
   RouteCopyLineageFallback,
 } from "./RouteCopyLineageSection";
+import RouteCompletionsSection, {
+  RouteCompletionsFallback,
+} from "./RouteCompletionsSection";
 
 export const viewport: Viewport = {
   themeColor: "#101815",
@@ -52,10 +56,11 @@ export default async function RouteDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [route, me, copyContext] = await Promise.all([
+  const [route, me, copyContext, viewerCompletion] = await Promise.all([
     getRoute(id),
     getCurrentProfile(),
     getRouteCopyContext(id),
+    getViewerCompletionState(id),
   ]);
   if (!route) notFound();
   const isOwner = !!me && me.id === route.author.id;
@@ -67,6 +72,7 @@ export default async function RouteDetailPage({
           route={route}
           isOwner={isOwner}
           copyContext={copyContext}
+          viewerCompletion={viewerCompletion}
           lineageSlot={
             isOwner ? (
               <Suspense fallback={<RouteCopyLineageFallback />}>
@@ -80,6 +86,16 @@ export default async function RouteDetailPage({
             </Suspense>
           }
         />
+
+        {route.visibility === "public" && route.completionCount > 0 && (
+          <Suspense fallback={<RouteCompletionsFallback />}>
+            <RouteCompletionsSection
+              routeId={route.id}
+              completionCount={route.completionCount}
+              completionRatingAvg={route.completionRatingAvg}
+            />
+          </Suspense>
+        )}
 
         <Suspense fallback={<RouteCommentsFallback commentCount={route.commentCount} />}>
           <RouteCommentsSection

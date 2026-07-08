@@ -27,7 +27,7 @@ export default async function NotificationsPage() {
             <div className="px-8 py-20 text-center text-[14px] text-ink-faint">
               아직 알림이 없어요.
               <br />
-              좋아요·댓글·팔로우가 생기면 여기 모여요.
+              좋아요·댓글·팔로우·완주 후기가 생기면 여기 모여요.
             </div>
           ) : (
             <ul>
@@ -53,11 +53,15 @@ function NotificationRow({ n }: { n: AppNotification }) {
       <>회원님을 팔로우하기 시작했어요</>
     ) : n.type === "like" ? (
       <>
-        회원님의 루트 <b className="font-semibold text-ink">{n.routeTitle ?? ""}</b>를 좋아해요
+        회원님의 코스 <b className="font-semibold text-ink">{n.routeTitle ?? ""}</b>를 좋아해요
+      </>
+    ) : n.type === "completion" ? (
+      <>
+        회원님의 코스 <b className="font-semibold text-ink">{n.routeTitle ?? ""}</b>를 다녀왔어요
       </>
     ) : (
       <>
-        회원님의 루트 <b className="font-semibold text-ink">{n.routeTitle ?? ""}</b>에 댓글을 남겼어요
+        회원님의 코스 <b className="font-semibold text-ink">{n.routeTitle ?? ""}</b>에 댓글을 남겼어요
       </>
     );
 
@@ -91,4 +95,5 @@ const ICON: Record<AppNotification["type"], string> = {
   like: "❤️",
   comment: "💬",
   follow: "➕",
+  completion: "✅",
 };

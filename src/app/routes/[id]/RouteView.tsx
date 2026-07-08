@@ -13,6 +13,7 @@ import RouteActions from "./RouteActions";
 import RouteDetailChromeTone from "./RouteDetailChromeTone";
 import RouteHeroMeta from "./RouteHeroMeta";
 import CopyRouteButton from "./CopyRouteButton";
+import CompleteCourseButton from "./CompleteCourseButton";
 import RouteAuthorCard from "./RouteAuthorCard";
 import RouteMenu from "./RouteMenu";
 import ConvertPlanButton from "./ConvertPlanButton";
@@ -27,6 +28,7 @@ import {
   type RouteThumbnailPoint,
   type Spot,
   type TransportMode,
+  type ViewerCompletionState,
 } from "@/lib/types";
 import type { RouteCopyContext } from "@/lib/data";
 import { formatKrw, formatDuration } from "@/lib/format";
@@ -43,6 +45,7 @@ type Props = {
   mapSlot?: React.ReactNode;
   lineageSlot?: React.ReactNode;
   copyContext?: RouteCopyContext | null;
+  viewerCompletion?: ViewerCompletionState | null;
 };
 
 const ROUTE_LAYOUT_EVENT = "routdiary:route-layout";
@@ -72,7 +75,14 @@ function subscribeRouteLayout(onStoreChange: () => void) {
  *  - B: no hero; an Instagram-style feed of per-spot photo carousels with
  *       movement info blocks between consecutive spots.
  */
-export default function RouteView({ route, isOwner, mapSlot, lineageSlot, copyContext }: Props) {
+export default function RouteView({
+  route,
+  isOwner,
+  mapSlot,
+  lineageSlot,
+  copyContext,
+  viewerCompletion,
+}: Props) {
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
   const layout = useSyncExternalStore(
     subscribeRouteLayout,
@@ -174,6 +184,7 @@ export default function RouteView({ route, isOwner, mapSlot, lineageSlot, copyCo
   };
 
   const followCount = route.copyCount ?? 0;
+  const completionCount = route.completionCount ?? 0;
   const social = !isOwner ? (
     <div className="px-4 pt-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -183,16 +194,30 @@ export default function RouteView({ route, isOwner, mapSlot, lineageSlot, copyCo
           initialLikeCount={route.likeCount}
           initialBookmarked={route.bookmarked ?? false}
         />
-        {route.visibility === "public" && followCount > 0 && (
-          <span className="ml-auto flex items-center gap-1.5 text-[13px] font-semibold text-sunset-ink">
-            <FollowIcon />
-            {followCount}명이 따라갔어요
-          </span>
+        {route.visibility === "public" && (followCount > 0 || completionCount > 0) && (
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+            {followCount > 0 && (
+              <span className="flex items-center gap-1.5 text-[13px] font-semibold text-sunset-ink">
+                <FollowIcon />
+                {followCount}명이 따라갔어요
+              </span>
+            )}
+            {completionCount > 0 && (
+              <span className="flex items-center gap-1 text-[13px] font-semibold text-sunset-ink">
+                <CheckBadgeIcon />
+                {completionCount}명이 다녀왔어요
+                {route.completionRatingAvg ? ` · ${route.completionRatingAvg}점` : ""}
+              </span>
+            )}
+          </div>
         )}
       </div>
       {route.visibility === "public" && (
-        <div className="mt-3">
+        <div className="mt-3 space-y-2">
           <CopyRouteButton routeId={route.id} prominent />
+          {viewerCompletion?.hasCopied && (
+            <CompleteCourseButton routeId={route.id} state={viewerCompletion} />
+          )}
         </div>
       )}
     </div>
@@ -1032,6 +1057,21 @@ function FollowIcon() {
         strokeDasharray="0.1 3.4"
       />
       <path d="M18 3c-1.6 0-3 1.3-3 2.9 0 2 3 4.5 3 4.5s3-2.5 3-4.5C21 4.3 19.6 3 18 3Z" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function CheckBadgeIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
+      <path
+        d="M8 12.2l2.2 2.2L16 8.8"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

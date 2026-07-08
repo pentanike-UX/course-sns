@@ -91,7 +91,25 @@ export interface Comment {
   author: RouteAuthor;
 }
 
-export type NotificationType = "like" | "comment" | "follow";
+export type NotificationType = "like" | "comment" | "follow" | "completion";
+
+export interface RouteCompletion {
+  id: string;
+  rating?: number;
+  tip?: string;
+  createdAt: string;
+  completer: RouteAuthor;
+}
+
+export interface ViewerCompletionState {
+  hasCopied: boolean;
+  routeCopyId?: string;
+  completion?: {
+    id: string;
+    rating?: number;
+    tip?: string;
+  };
+}
 
 export interface AppNotification {
   id: string;
@@ -129,6 +147,10 @@ export interface Route {
   commentCount: number;
   /** how many people have "따라가기"-copied this course */
   copyCount: number;
+  /** how many people marked "다녀왔어요" with a review */
+  completionCount: number;
+  /** average star rating from completions (1–5), undefined when none rated */
+  completionRatingAvg?: number;
   liked?: boolean;
   bookmarked?: boolean;
 }
@@ -159,6 +181,10 @@ export interface RouteSummary {
   likeCount: number;
   /** how many people have "따라가기"-copied this course */
   copyCount: number;
+  /** how many people marked "다녀왔어요" */
+  completionCount: number;
+  /** average star rating from completions (1–5) */
+  completionRatingAvg?: number;
   liked?: boolean;
   copyPurpose?: CopyPurpose;
   thumbnailPoints?: RouteThumbnailPoint[];

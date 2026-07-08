@@ -13,6 +13,8 @@ import type {
   Visibility,
   CopyPurpose,
   RouteThumbnailPoint,
+  RouteCompletion,
+  ViewerCompletionState,
 } from "./types";
 
 const BUCKET = "route-photos";
@@ -72,6 +74,9 @@ type RouteRowLite = {
   created_at: string;
   like_count: number;
   copy_count: number;
+  completion_count: number;
+  completion_rating_sum: number;
+  completion_rating_count: number;
   author: ProfileRow | null;
   spots: { count: number }[];
   thumbnail_spots?: {
@@ -84,6 +89,11 @@ type RouteRowLite = {
   // object — but be lenient in case the cardinality detection ever changes
   copy_source?: { purpose: CopyPurpose } | { purpose: CopyPurpose }[] | null;
 };
+
+function completionRatingAvg(sum: number, count: number): number | undefined {
+  if (count <= 0) return undefined;
+  return Math.round((sum / count) * 10) / 10;
+}
 
 function toSummary(r: RouteRowLite): RouteSummary {
   const copySource = Array.isArray(r.copy_source)
@@ -114,6 +124,11 @@ function toSummary(r: RouteRowLite): RouteSummary {
     createdAt: r.created_at,
     likeCount: r.like_count,
     copyCount: r.copy_count ?? 0,
+    completionCount: r.completion_count ?? 0,
+    completionRatingAvg: completionRatingAvg(
+      r.completion_rating_sum ?? 0,
+      r.completion_rating_count ?? 0,
+    ),
     copyPurpose: copySource?.purpose,
     thumbnailPoints,
   };
@@ -122,7 +137,7 @@ function toSummary(r: RouteRowLite): RouteSummary {
 // `spots` is embedded with an explicit FK hint: legs has FKs to both routes
 // and spots, so PostgREST otherwise sees an ambiguous (junction) relationship.
 const LITE_SELECT =
-  "id, title, region, theme, mood, recommended_for, difficulty, cover_photo_url, visibility, created_at, like_count, copy_count, author:profiles!routes_author_id_fkey(id, handle, display_name, avatar_url), spots!spots_route_id_fkey(count), thumbnail_spots:spots!spots_route_id_fkey(title, lat, lng, order_index), copy_source:route_copies!route_copies_copied_route_id_fkey(purpose)";
+  "id, title, region, theme, mood, recommended_for, difficulty, cover_photo_url, visibility, created_at, like_count, copy_count, completion_count, completion_rating_sum, completion_rating_count, author:profiles!routes_author_id_fkey(id, handle, display_name, avatar_url), spots!spots_route_id_fkey(count), thumbnail_spots:spots!spots_route_id_fkey(title, lat, lng, order_index), copy_source:route_copies!route_copies_copied_route_id_fkey(purpose)";
 
 export async function getMyRoutes(): Promise<RouteSummary[]> {
   const supabase = await getServerClient();
@@ -456,6 +471,73 @@ export async function getRouteCopyContext(
   };
 }
 
+type CompletionRow = {
+  id: string;
+  rating: number | null;
+  tip: string | null;
+  created_at: string;
+  completer: ProfileRow | null;
+};
+
+/** Public completion reviews for a course (visible to anyone who can read the route). */
+export async function getRouteCompletions(originalRouteId: string): Promise<RouteCompletion[]> {
+  const supabase = await getServerClient();
+  const { data } = await supabase
+    .from("route_completions")
+    .select(
+      "id, rating, tip, created_at, completer:profiles!route_completions_completer_id_fkey(id, handle, display_name, avatar_url)",
+    )
+    .eq("original_route_id", originalRouteId)
+    .order("created_at", { ascending: false })
+    .limit(20);
+
+  return ((data as CompletionRow[] | null) ?? []).map((c) => ({
+    id: c.id,
+    rating: c.rating ?? undefined,
+    tip: c.tip ?? undefined,
+    createdAt: c.created_at,
+    completer: toAuthor(c.completer),
+  }));
+}
+
+/** Whether the viewer copied this course and has already left a completion. */
+export async function getViewerCompletionState(
+  originalRouteId: string,
+): Promise<ViewerCompletionState | null> {
+  const user = await getAuthUser();
+  if (!user) return null;
+  const supabase = await getServerClient();
+
+  const [{ data: copy }, { data: completion }] = await Promise.all([
+    supabase
+      .from("route_copies")
+      .select("id")
+      .eq("original_route_id", originalRouteId)
+      .eq("copier_id", user.id)
+      .maybeSingle(),
+    supabase
+      .from("route_completions")
+      .select("id, rating, tip")
+      .eq("original_route_id", originalRouteId)
+      .eq("completer_id", user.id)
+      .maybeSingle(),
+  ]);
+
+  if (!copy) return { hasCopied: false };
+
+  return {
+    hasCopied: true,
+    routeCopyId: copy.id,
+    completion: completion
+      ? {
+          id: completion.id,
+          rating: completion.rating ?? undefined,
+          tip: completion.tip ?? undefined,
+        }
+      : undefined,
+  };
+}
+
 /** Aggregates for the profile 여행 통계 page. Null when not logged in. */
 export async function getMyTravelStats(): Promise<TravelStats | null> {
   const user = await getAuthUser();
@@ -583,6 +665,10 @@ export type UserProfile = {
   routes: RouteSummary[];
   followerCount: number;
   followingCount: number;
+  /** sum of copy_count across this creator's public courses */
+  totalCopyCount: number;
+  /** sum of completion_count across this creator's public courses */
+  totalCompletionCount: number;
   /** whether the current viewer follows this profile */
   isFollowing: boolean;
   /** whether this profile follows the current viewer back */
@@ -649,6 +735,14 @@ export async function getUserProfile(handle: string): Promise<UserProfile | null
     routes: ((routesRes.data as RouteRowLite[] | null) ?? []).map(toSummary),
     followerCount: followers.count ?? 0,
     followingCount: following.count ?? 0,
+    totalCopyCount: ((routesRes.data as RouteRowLite[] | null) ?? []).reduce(
+      (sum, r) => sum + (r.copy_count ?? 0),
+      0,
+    ),
+    totalCompletionCount: ((routesRes.data as RouteRowLite[] | null) ?? []).reduce(
+      (sum, r) => sum + (r.completion_count ?? 0),
+      0,
+    ),
     isFollowing: !!mine.data,
     followsMe: !!theirs.data,
     isMe: user?.id === prof.id,
@@ -972,6 +1066,11 @@ export async function getRoute(id: string): Promise<Route | null> {
     bookmarkCount: r.bookmark_count,
     commentCount: r.comment_count ?? 0,
     copyCount: r.copy_count ?? 0,
+    completionCount: r.completion_count ?? 0,
+    completionRatingAvg: completionRatingAvg(
+      r.completion_rating_sum ?? 0,
+      r.completion_rating_count ?? 0,
+    ),
     liked,
     bookmarked,
   };
