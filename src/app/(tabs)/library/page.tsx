@@ -2,7 +2,8 @@ import AppHeader from "@/components/AppHeader";
 import LibraryTabs, { type LibraryTab } from "./LibraryTabs";
 import {
   getBookmarkedRoutes,
-  getLikedRoutes,
+  getMyFollowedCourses,
+  getFollowingCourseStream,
   getMyFollowing,
 } from "@/lib/data";
 
@@ -12,14 +13,18 @@ export default async function LibraryPage({
   searchParams: Promise<{ tab?: string }>;
 }) {
   const { tab } = await searchParams;
-  // 보관함 defaults to 좋아요 (the heart nav icon); others need an explicit ?tab=.
+  // Default = 따라가는 중 (transfer loop). ?tab=saved | people
   const active: LibraryTab =
-    tab === "saved" ? "saved" : tab === "following" ? "following" : "liked";
+    tab === "saved"
+      ? "saved"
+      : tab === "people" || tab === "following"
+        ? "followingPeople"
+        : "following";
 
-  // fetch everything so the segment switches without a round-trip
-  const [saved, liked, followingPeople] = await Promise.all([
+  const [followed, saved, followingCourses, followingPeople] = await Promise.all([
+    getMyFollowedCourses(),
     getBookmarkedRoutes(),
-    getLikedRoutes(),
+    getFollowingCourseStream(),
     getMyFollowing(),
   ]);
 
@@ -27,8 +32,9 @@ export default async function LibraryPage({
     <>
       <AppHeader title="보관함" large />
       <LibraryTabs
+        followed={followed}
         saved={saved}
-        liked={liked}
+        followingCourses={followingCourses}
         followingPeople={followingPeople}
         initialTab={active}
       />

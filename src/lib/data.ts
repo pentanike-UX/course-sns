@@ -682,6 +682,81 @@ export async function getLikedRoutes(): Promise<RouteSummary[]> {
   return collectedRoutes("likes");
 }
 
+export type FollowedCourseStatus = "tuning" | "ready" | "done";
+
+export type FollowedCourse = RouteSummary & {
+  /** my copy purpose */
+  followPurpose: CopyPurpose;
+  /** original public course id (for 다녀왔어요) */
+  originalRouteId?: string;
+  followStatus: FollowedCourseStatus;
+};
+
+/**
+ * Courses I brought in via "따라가기" — my private drafts, newest copy first.
+ * Status: done (다녀왔어요) · tuning (계획 다듬는 중) · ready (기록/실행 준비).
+ */
+export async function getMyFollowedCourses(): Promise<FollowedCourse[]> {
+  const user = await getAuthUser();
+  if (!user) return [];
+  const supabase = await getServerClient();
+
+  const { data } = await supabase
+    .from("route_copies")
+    .select(
+      `purpose, created_at, original_route_id, copied_route:routes!route_copies_copied_route_id_fkey(${LITE_SELECT})`,
+    )
+    .eq("copier_id", user.id)
+    .order("created_at", { ascending: false });
+
+  type Row = {
+    purpose: CopyPurpose;
+    created_at: string;
+    original_route_id: string | null;
+    copied_route: RouteRowLite | null;
+  };
+
+  const rows = ((data as Row[] | null) ?? []).filter((r) => r.copied_route);
+  const originalIds = rows
+    .map((r) => r.original_route_id)
+    .filter((id): id is string => !!id);
+
+  const completed = new Set<string>();
+  if (originalIds.length) {
+    const { data: comps } = await supabase
+      .from("route_completions")
+      .select("original_route_id")
+      .eq("completer_id", user.id)
+      .in("original_route_id", originalIds);
+    for (const c of comps ?? []) {
+      if (c.original_route_id) completed.add(c.original_route_id);
+    }
+  }
+
+  return rows.map((r) => {
+    const summary = toSummary(r.copied_route as RouteRowLite);
+    const originalId = r.original_route_id ?? undefined;
+    const followStatus: FollowedCourseStatus =
+      originalId && completed.has(originalId)
+        ? "done"
+        : r.purpose === "plan"
+          ? "tuning"
+          : "ready";
+    return {
+      ...summary,
+      followPurpose: r.purpose,
+      originalRouteId: originalId,
+      followStatus,
+      copyPurpose: r.purpose,
+    };
+  });
+}
+
+/** Public courses from people I follow (보관함 팔로잉 코스 스트림). */
+export async function getFollowingCourseStream(): Promise<RouteSummary[]> {
+  return getFollowingFeed({ sort: "recent" });
+}
+
 export type UserProfile = {
   id: string;
   handle: string;
