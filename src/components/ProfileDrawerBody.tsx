@@ -8,7 +8,7 @@ import type { RouteAuthor, RouteSummary, Visibility } from "@/lib/types";
 /**
  * The body of the profile drawer (avatar, stats, settings). Extracted so it can
  * be rendered both as the routed /profile drawer AND as a live overlay stacked
- * on top of the 내 일기 drawer (feed → profile) without unmounting feed.
+ * on top of the 내 코스 drawer (feed → profile) without unmounting feed.
  */
 export default function ProfileDrawerBody({
   routes,

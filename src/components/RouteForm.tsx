@@ -981,18 +981,14 @@ export default function RouteForm({
 
   const metaSelectors = (
     <>
-      <div className="grid grid-cols-2 gap-3">
-        <SelectTrigger label="테마" placeholder="테마 선택" value={theme} onClick={() => setSheet("theme")} />
-        <SelectTrigger label="감정" placeholder="감정 선택" value={moodDisplay} onClick={() => setSheet("mood")} />
-      </div>
       <SelectTrigger
         label="추천 대상"
-        placeholder="추천 대상 선택"
+        placeholder="누가 따라가면 좋을까요?"
         value={recommendedFor}
         onClick={() => setSheet("recommend")}
       />
       <div>
-        <div className="mb-1.5 text-[12px] font-medium text-ink-faint">난이도</div>
+        <div className="mb-1.5 text-[12px] font-medium text-ink-faint">난이도 · 이동량</div>
         <div className="flex gap-2">
           {DIFFICULTY_OPTIONS.map((d) => {
             const active = difficulty === d.key;
@@ -1014,6 +1010,10 @@ export default function RouteForm({
             );
           })}
         </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <SelectTrigger label="테마" placeholder="테마 선택" value={theme} onClick={() => setSheet("theme")} />
+        <SelectTrigger label="감정" placeholder="선택" value={moodDisplay} onClick={() => setSheet("mood")} />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <ReadonlyField
