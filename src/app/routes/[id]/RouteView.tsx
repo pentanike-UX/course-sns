@@ -49,7 +49,7 @@ type Props = {
   viewerCompletion?: ViewerCompletionState | null;
 };
 
-const ROUTE_LAYOUT_EVENT = "routdiary:route-layout";
+const ROUTE_LAYOUT_EVENT = "course:route-layout";
 const DEFAULT_LAYOUT: Layout = "A";
 
 function readStoredLayout(): Layout {

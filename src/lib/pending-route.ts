@@ -1,7 +1,13 @@
 import type { RouteSummary } from "@/lib/types";
+import {
+  COURSE_STORAGE,
+  readSession,
+  writeSession,
+  removeSession,
+} from "@/lib/course-storage";
 
 export const ROUTE_ENTER_MORPH_NAME = "route-cover-enter";
-export const PENDING_ROUTE_KEY = "routdiary:pending-route";
+export const PENDING_ROUTE_KEY = COURSE_STORAGE.pendingRoute;
 
 const PENDING_ROUTE_TTL_MS = 8000;
 
@@ -40,23 +46,19 @@ export function writePendingRoute(route: RouteSummary) {
     thumbnailPoints: route.thumbnailPoints?.slice(0, 16),
     createdAtMs: Date.now(),
   };
-  try {
-    window.sessionStorage.setItem(PENDING_ROUTE_KEY, JSON.stringify(pending));
-  } catch {
-    /* ignore storage failures */
-  }
+  writeSession(PENDING_ROUTE_KEY, JSON.stringify(pending));
 }
 
 export function readPendingRoute(routeId?: string): PendingRoute | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = window.sessionStorage.getItem(PENDING_ROUTE_KEY);
+    const raw = readSession(PENDING_ROUTE_KEY);
     if (!raw) return null;
     const pending = JSON.parse(raw) as PendingRoute;
     if (!pending?.id || !pending.createdAtMs) return null;
     if (routeId && pending.id !== routeId) return null;
     if (Date.now() - pending.createdAtMs > PENDING_ROUTE_TTL_MS) {
-      window.sessionStorage.removeItem(PENDING_ROUTE_KEY);
+      removeSession(PENDING_ROUTE_KEY);
       return null;
     }
     return pending;
@@ -69,9 +71,5 @@ export function clearPendingRoute(routeId?: string) {
   if (typeof window === "undefined") return;
   const pending = readPendingRoute(routeId);
   if (!pending) return;
-  try {
-    window.sessionStorage.removeItem(PENDING_ROUTE_KEY);
-  } catch {
-    /* ignore storage failures */
-  }
+  removeSession(PENDING_ROUTE_KEY);
 }

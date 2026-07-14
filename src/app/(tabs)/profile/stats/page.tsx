@@ -46,7 +46,7 @@ export default async function TravelStatsPage() {
         <AppHeader back="/profile" title="여행 통계" />
         <div className="px-4 py-16 text-center text-[14px] text-ink-faint">
           아직 기록한 코스가 없어요.
-          <br />첫 하루를 기록하면 통계가 쌓이기 시작해요.
+          <br />첫 코스를 남기면 통계가 쌓이기 시작해요.
           <div className="mt-5">
             <Link
               href="/routes/new"

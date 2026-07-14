@@ -48,7 +48,7 @@ export default function FeedControls({
     // container (FeedExplorer), which pins it to the top while the identity row
     // above it auto-hides on scroll — so the filters stay reachable throughout.
     <div className="bg-paper/95 px-4 pb-2 pt-2 backdrop-blur">
-      {/* 필터 · 최신순 · 인기순 · 거리순 — 보기 유형 */}
+      {/* 필터 · 최신 · 따라간 · 다녀온 · 가까운 — 보기 유형 */}
       <div className="flex items-center gap-2">
         <FilterButton count={activeCount} onClick={onOpenFilter} />
         <div className="no-scrollbar flex min-w-0 items-center gap-1.5 overflow-x-auto">

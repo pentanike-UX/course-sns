@@ -1,7 +1,7 @@
 import { SegmentedControlSkeleton, Skeleton } from "@/components/Skeleton";
 import { HomeRoutePanelSkeleton } from "@/components/RouteCardSkeleton";
 
-/** Placeholder shown while the 내 일기 drawer shell slides in (deferBody). */
+/** Placeholder shown while the 내 코스 drawer shell slides in (deferBody). */
 export default function DiaryDrawerSkeleton() {
   return (
     <>

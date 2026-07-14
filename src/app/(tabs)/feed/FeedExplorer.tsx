@@ -32,6 +32,7 @@ import {
   routeMatchesFilters,
   type FeedFilters,
 } from "@/lib/feed-filters";
+import { COURSE_STORAGE, readLocal, writeLocal, readSession, writeSession } from "@/lib/course-storage";
 import { difficultyByKey } from "@/lib/meta-options";
 
 // 지도 ↔ 둘러보기 conveyor timing. The bottom nav stays put and just moves its
@@ -45,26 +46,21 @@ const MAP_EXIT_MS = 460;
 
 // persistence so the feed view survives a round-trip to a route detail (the feed
 // remounts on back, which would otherwise reset the layout + filters to defaults).
-const LAYOUT_KEY = "routdiary:feed-layout";
-const LAYOUT_EVENT = "routdiary:feed-layout-change";
-const FILTERS_KEY = "routdiary:feed-filters";
-const FILTERS_EVENT = "routdiary:feed-filters-change";
+const LAYOUT_KEY = COURSE_STORAGE.feedLayout;
+const LAYOUT_EVENT = COURSE_STORAGE.feedLayoutEvent;
+const FILTERS_KEY = COURSE_STORAGE.feedFilters;
+const FILTERS_EVENT = COURSE_STORAGE.feedFiltersEvent;
 const DEFAULT_LAYOUT: FeedLayout = "grid";
 
 function readLayout(): FeedLayout {
-  if (typeof window === "undefined") return DEFAULT_LAYOUT;
-  try {
-    const v = localStorage.getItem(LAYOUT_KEY);
-    if (v === "grid" || v === "small" || v === "large") return v;
-  } catch {
-    /* ignore */
-  }
+  const v = readLocal(LAYOUT_KEY);
+  if (v === "grid" || v === "small" || v === "large") return v;
   return DEFAULT_LAYOUT;
 }
 
 function subscribeLayout(onChange: () => void) {
   const onStorage = (e: StorageEvent) => {
-    if (e.key === LAYOUT_KEY) onChange();
+    if (e.key === LAYOUT_KEY || e.key === "routdiary:feed-layout") onChange();
   };
   window.addEventListener("storage", onStorage);
   window.addEventListener(LAYOUT_EVENT, onChange);
@@ -88,17 +84,12 @@ function serializeFilters(f: FeedFilters) {
 /** Raw serialized filters from sessionStorage, or null when nothing is stored.
  *  Returned as a string so useSyncExternalStore compares snapshots by value. */
 function readStoredFilters(): string | null {
-  if (typeof window === "undefined") return null;
-  try {
-    return sessionStorage.getItem(FILTERS_KEY);
-  } catch {
-    return null;
-  }
+  return readSession(FILTERS_KEY);
 }
 
 function subscribeFilters(onChange: () => void) {
   const onStorage = (e: StorageEvent) => {
-    if (e.key === FILTERS_KEY) onChange();
+    if (e.key === FILTERS_KEY || e.key === "routdiary:feed-filters") onChange();
   };
   window.addEventListener("storage", onStorage);
   window.addEventListener(FILTERS_EVENT, onChange);
@@ -250,11 +241,7 @@ export default function FeedExplorer({
   // hydration — no setState-in-effect, no hydration mismatch.
   const layout = useSyncExternalStore(subscribeLayout, readLayout, () => DEFAULT_LAYOUT);
   const changeLayout = (next: FeedLayout) => {
-    try {
-      localStorage.setItem(LAYOUT_KEY, next);
-    } catch {
-      /* ignore */
-    }
+    writeLocal(LAYOUT_KEY, next);
     window.dispatchEvent(new Event(LAYOUT_EVENT));
   };
 
@@ -304,7 +291,7 @@ export default function FeedExplorer({
   // the current viewport in place) — so just sync the URL shallowly.
   const applyFilters = (next: FeedFilters) => {
     try {
-      sessionStorage.setItem(FILTERS_KEY, serializeFilters(next));
+      writeSession(FILTERS_KEY, serializeFilters(next));
     } catch {
       /* ignore */
     }

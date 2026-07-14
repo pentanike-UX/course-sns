@@ -1136,7 +1136,7 @@ export default function RouteForm({
             disabled={convertingRecord}
             className="mt-3 w-full rounded-xl bg-ink px-3 py-2.5 text-[13px] font-bold text-paper disabled:opacity-40"
           >
-            {convertingRecord ? "전환 중…" : "여행 기록으로 전환"}
+            {convertingRecord ? "전환 중…" : "코스 기록으로 전환"}
           </button>
         </div>
       )}
@@ -1146,7 +1146,7 @@ export default function RouteForm({
   if (isDirectPlanCreate) {
     return (
       <PlannerFrame
-        header={<AppHeader left={plannerCloseButton} right={tempSaveButton} title="새 여행 계획" />}
+        header={<AppHeader left={plannerCloseButton} right={tempSaveButton} title="새 코스 계획" />}
       >
         <form
           id="route-form"
@@ -1281,7 +1281,7 @@ export default function RouteForm({
             className={`${isPlanDraft ? "mt-8 border-t border-line pt-6" : "pt-4"} scroll-mt-16`}
           >
             <StepHeading
-              title={isPlanDraft ? "스팟을 내 일정에 맞게 다듬어요" : "어디에서의 하루였나요?"}
+              title={isPlanDraft ? "스팟을 내 일정에 맞게 다듬어요" : "어디를 다녀왔나요?"}
               desc={isPlanDraft ? "장소 이름, 주소, 위치, 순서를 확인해 실제 여행 계획으로 정리해 주세요." : "지역과 다녀온 장소들을 확인하고 다듬어 주세요."}
             />
             <Field label="지역" value={region} onChange={setRegion} placeholder="예: 제주 구좌·성산" required />
@@ -1292,17 +1292,17 @@ export default function RouteForm({
           <section data-section="move" ref={(el) => { sectionEls.current.move = el; }} className="mt-9 scroll-mt-16 border-t border-line pt-6">
             <StepHeading
               title="스팟 사이의 이동"
-              desc={isPlanDraft ? "예상 이동 수단과 시간을 넣어 하루 동선의 무리를 미리 확인해 보세요." : "이동 수단과 소요 시간을 남기면 지도에 동선이 그려져요."}
+              desc={isPlanDraft ? "예상 이동 수단과 시간을 넣어 동선 무리를 미리 확인해 보세요." : "이동 수단과 소요 시간을 남기면 지도에 동선이 그려져요."}
             />
             {legsBlock}
           </section>
 
           <section data-section="story" ref={(el) => { sectionEls.current.story = el; }} className="mt-9 scroll-mt-16 border-t border-line pt-6">
             <StepHeading
-              title={isPlanDraft ? "계획의 조건을 정리해요" : "이 하루의 이야기"}
+              title={isPlanDraft ? "계획의 조건을 정리해요" : "이 코스를 한마디로"}
               desc={isPlanDraft ? "제목, 추천 대상, 난이도, 예상 비용을 정리하면 따라가기 쉬운 계획이 돼요." : "추천 대상·난이도·테마를 남기면 남이 따라가기 쉬워져요."}
             />
-            <Field label="제목" value={title} onChange={setTitle} placeholder="예: 제주 동쪽, 바람의 하루" required />
+            <Field label="제목" value={title} onChange={setTitle} placeholder="예: 제주 동쪽 바람 코스" required />
             {metaSelectors}
           </section>
 
@@ -1376,7 +1376,7 @@ export default function RouteForm({
         {step === 2 && (
           <>
             <StepHeading
-              title={region ? `${region}에서의 하루, 맞나요?` : "어디에서의 하루인가요?"}
+              title={region ? `${region} 코스, 맞나요?` : "어느 지역 코스인가요?"}
               desc={bestSeason ? `${bestSeason}의 기록을 정리하고 있어요. 장소를 확인하고 다듬어 주세요.` : "사진으로 만든 장소를 확인하고 다듬어 주세요."}
             />
             <Field label="지역" value={region} onChange={setRegion} placeholder="예: 서울 종로" required />
@@ -1395,7 +1395,7 @@ export default function RouteForm({
         {step === 4 && (
           <>
             <StepHeading title="이 코스를 한마디로" desc="추천 대상·난이도·테마를 남기면 따라가기 쉬워져요." />
-            <Field label="제목" value={title} onChange={setTitle} placeholder="예: 제주 동쪽, 바람의 하루" required />
+            <Field label="제목" value={title} onChange={setTitle} placeholder="예: 제주 동쪽 바람 코스" required />
             {metaSelectors}
           </>
         )}
@@ -2742,7 +2742,7 @@ function analyzePlan(spots: DraftSpot[]): PlanAnalysis {
   if (spots.length >= 7) {
     warnings.push({
       tone: "hard",
-      title: "하루 일정이 꽤 빡빡해요",
+      title: "일정이 꽤 빡빡해요",
       body: `스팟 ${spots.length}곳은 이동과 대기 시간을 고려하면 피로도가 높을 수 있어요.`,
     });
   } else if (spots.length >= 5) {

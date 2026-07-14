@@ -9,6 +9,7 @@ import RouteDetailSheet from "./RouteDetailSheet";
 import { loadNaverMaps, NAVER_MAP_KEY } from "@/lib/naver";
 import type { FeedMapPoint } from "@/lib/data";
 import { appendFilterParams, type FeedFilters } from "@/lib/feed-filters";
+import { COURSE_STORAGE, readSession, writeSession } from "@/lib/course-storage";
 
 type Props = {
   points: FeedMapPoint[];
@@ -36,7 +37,7 @@ const DEFAULT_CENTER = { lat: 37.5665, lng: 126.978 };
 const CLUSTER_PX = 60;
 /** a cluster that still doesn't split here is "co-located" → tap shows a list */
 const MAX_SPLIT_ZOOM = 19;
-const CAMERA_KEY = "routdiary:feed-map-camera";
+const CAMERA_KEY = COURSE_STORAGE.feedMapCamera;
 /** idle → viewport fetch debounce */
 const FETCH_DEBOUNCE_MS = 400;
 
@@ -95,7 +96,7 @@ const splitsEventually = (points: FeedMapPoint[]) =>
 
 const loadCamera = (): Camera | null => {
   try {
-    const v = sessionStorage.getItem(CAMERA_KEY);
+    const v = readSession(CAMERA_KEY);
     return v ? (JSON.parse(v) as Camera) : null;
   } catch {
     return null;
@@ -388,7 +389,7 @@ export default function FeedMap({
             scheduleViewportFetch();
             try {
               const c = map.getCenter();
-              sessionStorage.setItem(
+              writeSession(
                 CAMERA_KEY,
                 JSON.stringify({ lat: c.lat(), lng: c.lng(), zoom: map.getZoom() }),
               );

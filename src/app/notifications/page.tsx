@@ -27,7 +27,7 @@ export default async function NotificationsPage() {
             <div className="px-8 py-20 text-center text-[14px] text-ink-faint">
               아직 알림이 없어요.
               <br />
-              좋아요·댓글·팔로우·완주 후기가 생기면 여기 모여요.
+              완주 후기·팔로우·댓글이 생기면 여기 모여요.
             </div>
           ) : (
             <ul>

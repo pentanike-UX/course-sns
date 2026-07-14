@@ -986,16 +986,29 @@ export async function getNotifications(): Promise<AppNotification[]> {
     .order("created_at", { ascending: false })
     .limit(50);
 
+  // Transfer signals first (completion / follow), then social chatter.
+  const rank: Record<AppNotification["type"], number> = {
+    completion: 0,
+    follow: 1,
+    comment: 2,
+    like: 3,
+  };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return ((data as any[]) ?? []).map((n) => ({
+  const mapped = ((data as any[]) ?? []).map((n) => ({
     id: n.id,
-    type: n.type,
+    type: n.type as AppNotification["type"],
     read: n.read,
     createdAt: n.created_at,
     actor: toAuthor(n.actor),
     routeId: n.route_id ?? undefined,
     routeTitle: n.route?.title ?? undefined,
   }));
+  return mapped.sort((a, b) => {
+    if (a.read !== b.read) return a.read ? 1 : -1;
+    const rd = rank[a.type] - rank[b.type];
+    if (rd !== 0) return rd;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 }
 
 /** Unread notification count for the bell badge. */
