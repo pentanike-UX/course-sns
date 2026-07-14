@@ -16,7 +16,7 @@ export default function RouteFormLoadingShell({
       <AppHeader
         back={back}
         closeButton
-        title={isEdit ? "루트 수정" : "새 루트 기록"}
+        title={isEdit ? "코스 수정" : "새 코스 만들기"}
         right={isEdit ? <Skeleton className="h-8 w-16 rounded-full bg-sunset-wash" /> : undefined}
       />
 

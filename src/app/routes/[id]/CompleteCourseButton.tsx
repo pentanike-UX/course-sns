@@ -73,7 +73,7 @@ export default function CompleteCourseButton({
       <ActionBottomSheet
         open={open}
         title={hasCompletion ? "후기 수정" : "다녀왔어요!"}
-        description="이 코스를 다녀오셨나요? 별점과 팁을 남기면 다른 사람의 선택에 도움이 돼요."
+        description="이 코스를 다녀오셨나요? 별점과 한 줄 팁을 남기면 다음 사람의 선택에 도움이 돼요."
         primaryLabel={pending ? "저장 중…" : "후기 남기기"}
         secondaryLabel="취소"
         onClose={() => !pending && setOpen(false)}

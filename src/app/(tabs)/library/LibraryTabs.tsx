@@ -80,18 +80,18 @@ function EmptyState({ tab }: { tab: "saved" | "liked" }) {
         {tab === "saved" ? <BookmarkIcon /> : <HeartIcon />}
       </div>
       <p className="text-[14px] font-semibold text-ink">
-        {tab === "saved" ? "저장한 루트가 없어요" : "좋아요한 루트가 없어요"}
+        {tab === "saved" ? "저장한 코스가 없어요" : "좋아요한 코스가 없어요"}
       </p>
       <p className="mt-1 text-[13px] leading-relaxed text-ink-faint">
         {tab === "saved" ? (
           <>
-            둘러보기에서 마음에 드는 루트를
+            둘러보기에서 마음에 드는 코스를
             <br />
             저장해 두면 여기 모여요.
           </>
         ) : (
           <>
-            마음에 든 루트에 좋아요를 누르면
+            마음에 든 코스에 좋아요를 누르면
             <br />
             여기에서 다시 볼 수 있어요.
           </>

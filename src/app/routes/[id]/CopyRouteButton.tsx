@@ -75,7 +75,7 @@ export default function CopyRouteButton({
           <div
             role="dialog"
             aria-modal="true"
-            aria-label="이 루트 따라가기 안내"
+            aria-label="이 코스 따라가기 안내"
             className="relative w-full rounded-t-[28px] bg-card px-4 pb-[max(env(safe-area-inset-bottom),18px)] pt-4 shadow-[0_-12px_40px_rgba(0,0,0,0.18)]"
           >
             <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-line" />

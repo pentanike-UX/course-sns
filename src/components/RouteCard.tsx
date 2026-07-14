@@ -144,8 +144,10 @@ export default function RouteCard({
         )}
 
         <div className="mt-2.5 flex items-center gap-1.5">
-          {route.theme && <Chip>{route.theme}</Chip>}
-          {route.mood && <Chip>{route.mood}</Chip>}
+          {route.recommendedFor?.split(",")[0]?.trim() && (
+            <Chip>{route.recommendedFor.split(",")[0].trim()}</Chip>
+          )}
+          {route.theme && !route.recommendedFor && <Chip>{route.theme}</Chip>}
           <span className="ml-auto flex items-center gap-2 text-[12px] text-white/85">
             <span>스팟 {route.spotCount}</span>
             {route.visibility === "public" && route.copyCount > 0 && (
@@ -158,11 +160,13 @@ export default function RouteCard({
                 <DoneIcon /> {route.completionCount}
               </span>
             )}
-            {route.visibility === "public" && (
-              <span className="flex items-center gap-1">
-                <HeartIcon /> {route.likeCount}
-              </span>
-            )}
+            {route.visibility === "public" &&
+              route.copyCount === 0 &&
+              route.completionCount === 0 && (
+                <span className="flex items-center gap-1 opacity-80">
+                  <HeartIcon /> {route.likeCount}
+                </span>
+              )}
           </span>
         </div>
       </div>

@@ -1094,7 +1094,7 @@ export default function RouteForm({
     <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/30">
       <div className="rounded-2xl bg-card px-6 py-5 text-center shadow-xl">
         <div className="text-2xl">⏳</div>
-        <p className="mt-1 text-[14px] font-semibold text-ink">루트를 저장하는 중…</p>
+        <p className="mt-1 text-[14px] font-semibold text-ink">코스를 저장하는 중…</p>
         <p className="text-[12px] text-ink-faint">
           {isPlanDraft ? "동선 정보를 저장하고 있어요" : "사진 업로드 중일 수 있어요"}
         </p>
@@ -1221,7 +1221,7 @@ export default function RouteForm({
         <AppHeader
           back={`/routes/${routeId}`}
           closeButton
-          title="루트 수정"
+          title="코스 수정"
           right={
             <button
               form="route-form"
@@ -1287,7 +1287,7 @@ export default function RouteForm({
           <section data-section="story" ref={(el) => { sectionEls.current.story = el; }} className="mt-9 scroll-mt-16 border-t border-line pt-6">
             <StepHeading
               title={isPlanDraft ? "계획의 조건을 정리해요" : "이 하루의 이야기"}
-              desc={isPlanDraft ? "제목, 테마, 추천 대상, 예상 비용을 정리하면 여행 전에도 꺼내 보기 쉬워요." : "제목과 테마·감정을 남기면 코스다워져요."}
+              desc={isPlanDraft ? "제목, 추천 대상, 난이도, 예상 비용을 정리하면 따라가기 쉬운 계획이 돼요." : "추천 대상·난이도·테마를 남기면 남이 따라가기 쉬워져요."}
             />
             <Field label="제목" value={title} onChange={setTitle} placeholder="예: 제주 동쪽, 바람의 하루" required />
             {metaSelectors}
@@ -1296,7 +1296,7 @@ export default function RouteForm({
           <section data-section="share" ref={(el) => { sectionEls.current.share = el; }} className="mt-9 scroll-mt-16 border-t border-line pt-6">
             <StepHeading
               title="공개 범위"
-              desc={isPlanDraft ? "계획 단계에서는 비공개로 다듬고, 준비가 되면 공개로 바꿀 수 있어요." : "나만의 코스로 둘지, 다른 사람과 나눌지 선택하세요."}
+              desc={isPlanDraft ? "계획 단계에서는 비공개로 다듬고, 준비가 되면 공개로 바꿀 수 있어요." : "나만 쓸 코스로 둘지, 다른 사람이 따라가게 공개할지 선택하세요."}
             />
             {visibilityBox}
           </section>
@@ -1316,7 +1316,7 @@ export default function RouteForm({
 
   return (
     <MobileFrame shell>
-      <AppHeader back="/" closeButton title="새 루트 기록" />
+      <AppHeader back="/" closeButton title="새 코스 만들기" />
       <Stepper steps={STEP_LABELS} current={step} />
 
       <form id="route-form" onSubmit={handleSave} className="no-scrollbar flex-1 overflow-y-auto px-4 pb-4">
@@ -1381,7 +1381,7 @@ export default function RouteForm({
 
         {step === 4 && (
           <>
-            <StepHeading title="이 하루를 한마디로" desc="제목과 테마·감정을 남기면 코스다워져요." />
+            <StepHeading title="이 코스를 한마디로" desc="추천 대상·난이도·테마를 남기면 따라가기 쉬워져요." />
             <Field label="제목" value={title} onChange={setTitle} placeholder="예: 제주 동쪽, 바람의 하루" required />
             {metaSelectors}
           </>
@@ -1389,7 +1389,7 @@ export default function RouteForm({
 
         {step === 5 && (
           <>
-            <StepHeading title="마지막! 공개 범위를 정해요" desc="나만의 코스로 둘지, 다른 사람과 나눌지 선택하세요." />
+            <StepHeading title="마지막! 공개 범위를 정해요" desc="나만 쓸 코스로 둘지, 다른 사람이 따라가게 공개할지 선택하세요." />
             <div className="mb-4 rounded-[var(--radius-card)] border border-line bg-card p-4">
               <div className="text-[12px] text-ink-faint">{region} · {bestSeason || "날짜 미정"}</div>
               <div className="mt-0.5 text-[17px] font-black text-ink">{title || "제목 없음"}</div>
@@ -3037,8 +3037,8 @@ function CopyContextBanner({ context }: { context?: RouteCopyContext | null }) {
       </h2>
       <p className="mt-1.5 text-[13px] leading-relaxed text-ink-soft">
         {isPlan
-          ? "원본 루트의 장소와 이동 정보를 바탕으로, 지도에서 동선을 먼저 확인하고 내 일정에 맞게 다듬어 보세요."
-          : "이미 다녀온 장소에 사진과 그날의 감상을 채워 나만의 코스 기록으로 완성해 보세요."}
+          ? "원본 코스의 장소와 이동 정보를 바탕으로, 지도에서 동선을 먼저 확인하고 내 일정에 맞게 다듬어 보세요."
+          : "이미 다녀온 장소에 사진과 팁을 채워, 다음 사람이 따라갈 수 있는 코스로 완성해 보세요."}
       </p>
       {context.original && (
         <Link

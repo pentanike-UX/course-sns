@@ -48,7 +48,7 @@ export default function HomeRoutesTabs({
       <>
         <section className="flex items-center justify-between px-4 pt-2">
           <h3 className="text-[15px] font-bold text-ink">
-            {t === "plan" ? "여행 계획" : t === "record" ? "여행 기록" : "내 루트"}{" "}
+            {t === "plan" ? "코스 계획" : t === "record" ? "코스 기록" : "내 코스"}{" "}
             {visible.length}
           </h3>
           <span className="text-[12px] text-ink-faint">최근순</span>
@@ -73,7 +73,7 @@ export default function HomeRoutesTabs({
                   className="flex items-center justify-center gap-2 rounded-[var(--radius-card)] border-2 border-dashed border-sunset/45 bg-sunset-wash/35 py-6 text-[14px] font-bold text-sunset-ink"
                 >
                   <PlusIcon />
-                  새 여행 계획 만들기
+                  새 코스 계획 만들기
                 </Link>
               </li>
               <li>
@@ -93,7 +93,7 @@ export default function HomeRoutesTabs({
                 className="flex items-center justify-center gap-2 rounded-[var(--radius-card)] border-2 border-dashed border-line py-7 text-[14px] font-semibold text-ink-soft"
               >
                 <PlusIcon />
-                새로운 하루 기록하기
+                새 코스 만들기
               </Link>
             </li>
           )}

@@ -45,7 +45,7 @@ export default function ProfileDrawerBody({
       </section>
 
       <section className="mx-4 mt-4 grid grid-cols-4 divide-x divide-line rounded-[var(--radius-card)] border border-line bg-card py-4 text-center">
-        <Stat label="루트" value={routes.length} />
+        <Stat label="코스" value={routes.length} />
         <Stat label="공개" value={publicCount} />
         <Stat label="저장" value={counts.saved} href="/library?tab=saved" />
         <Stat label="좋아요" value={counts.liked} href="/library?tab=liked" />
@@ -75,7 +75,7 @@ export default function ProfileDrawerBody({
         </ul>
 
         <p className="mt-6 text-center text-[12px] text-ink-faint">
-          코스 · 코스 기록·공유
+          코스 · 따라갈 수 있는 이동 코스
           <br />
           <span className="text-[11px]">{APP_VERSION}</span>
         </p>

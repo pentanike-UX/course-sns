@@ -25,7 +25,7 @@ export default function DeleteAccountButton() {
       <ActionBottomSheet
         open={confirming}
         title="정말 계정을 삭제할까요?"
-        description="모든 루트, 사진, 좋아요, 댓글, 팔로우가 영구 삭제되며 되돌릴 수 없어요."
+        description="모든 코스, 사진, 좋아요, 댓글, 팔로우가 영구 삭제되며 되돌릴 수 없어요."
         primaryLabel={pending ? "삭제 중…" : "영구 삭제"}
         secondaryLabel="취소"
         primaryTone="danger"

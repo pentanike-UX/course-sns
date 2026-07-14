@@ -92,7 +92,7 @@ export default function FeedRouteCard({
           <div className="absolute inset-0 bg-gradient-to-t from-black/72 via-black/10 to-black/15" />
           <div className="absolute left-3 right-3 top-3 flex items-center justify-between gap-2">
             <OwnerPill route={route} />
-            <LikePill route={route} />
+            <TransferPill route={route} />
           </div>
           <div className="absolute inset-x-0 bottom-0 p-4 text-white">
             <h3 className="line-clamp-2 text-[21px] font-black leading-tight drop-shadow-sm">
@@ -122,7 +122,7 @@ export default function FeedRouteCard({
       <div className="absolute inset-0 bg-gradient-to-t from-black/78 via-black/10 to-black/20" />
       <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2.5">
         <OwnerPill route={route} compact />
-        <LikePill route={route} compact />
+        <TransferPill route={route} compact />
       </div>
       <div className="absolute inset-x-0 bottom-0 p-3 text-white">
         <h3 className="line-clamp-2 text-[15px] font-black leading-tight text-white">
@@ -239,27 +239,70 @@ function OwnerPill({ route, compact = false }: { route: RouteSummary; compact?: 
   );
 }
 
-function LikePill({ route, compact = false }: { route: RouteSummary; compact?: boolean }) {
+function TransferPill({ route, compact = false }: { route: RouteSummary; compact?: boolean }) {
+  const copies = route.copyCount ?? 0;
+  const done = route.completionCount ?? 0;
+  const label =
+    copies > 0
+      ? `${copies} 따라감`
+      : done > 0
+        ? `${done} 다녀옴`
+        : route.recommendedFor?.split(",")[0]?.trim() ||
+          (route.difficulty === "easy"
+            ? "가볍게"
+            : route.difficulty === "hard"
+              ? "많이 걸어요"
+              : null);
+
+  if (!label && route.likeCount <= 0) return null;
+
   return (
     <span
-      className={`flex shrink-0 items-center gap-1 rounded-full bg-white/88 font-black text-[#16211c] shadow-sm ring-1 ring-black/[0.04] backdrop-blur ${
-        compact ? "px-2 py-1 text-[11px]" : "px-2.5 py-1.5 text-[12px]"
+      className={`flex shrink-0 items-center gap-1 rounded-full bg-white/88 font-black text-ink shadow-sm ring-1 ring-black/[0.04] backdrop-blur ${
+        compact ? "max-w-[108px] px-2 py-1 text-[11px]" : "px-2.5 py-1.5 text-[12px]"
       }`}
     >
-      <HeartIcon /> {route.likeCount}
+      {copies > 0 ? (
+        <>
+          <FollowGlyph /> <span className="truncate">{label}</span>
+        </>
+      ) : done > 0 ? (
+        <>
+          <DoneGlyph /> <span className="truncate">{label}</span>
+        </>
+      ) : label ? (
+        <span className="truncate font-bold text-ink-soft">{label}</span>
+      ) : (
+        <>
+          <HeartIcon /> {route.likeCount}
+        </>
+      )}
     </span>
   );
 }
 
 function MetaRow({ route, className = "" }: { route: RouteSummary; className?: string }) {
+  const purpose = route.recommendedFor?.split(",")[0]?.trim();
+  const copies = route.copyCount ?? 0;
+  const done = route.completionCount ?? 0;
   return (
     <div className={`flex min-w-0 items-center gap-1.5 text-[12px] font-medium text-ink-faint ${className}`}>
-      {route.theme && <MiniChip>{route.theme}</MiniChip>}
-      {route.mood && <MiniChip>{route.mood}</MiniChip>}
+      {purpose && <MiniChip>{purpose}</MiniChip>}
+      {route.theme && !purpose && <MiniChip>{route.theme}</MiniChip>}
       <span className="ml-auto shrink-0">스팟 {route.spotCount}</span>
-      <span className="flex shrink-0 items-center gap-1 text-ink-soft">
-        <HeartIcon /> {route.likeCount}
-      </span>
+      {copies > 0 ? (
+        <span className="flex shrink-0 items-center gap-1 text-ink-soft" aria-label={`${copies}명이 따라감`}>
+          <FollowGlyph /> {copies}
+        </span>
+      ) : done > 0 ? (
+        <span className="flex shrink-0 items-center gap-1 text-ink-soft" aria-label={`${done}명이 다녀옴`}>
+          <DoneGlyph /> {done}
+        </span>
+      ) : (
+        <span className="flex shrink-0 items-center gap-1 text-ink-soft">
+          <HeartIcon /> {route.likeCount}
+        </span>
+      )}
     </div>
   );
 }
@@ -307,6 +350,34 @@ function HeartIcon() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" className="shrink-0">
       <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+    </svg>
+  );
+}
+
+function FollowGlyph() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="shrink-0" aria-hidden>
+      <path
+        d="M4 12h12M12 6l6 6-6 6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function DoneGlyph() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="shrink-0" aria-hidden>
+      <path
+        d="M20 6 9 17l-5-5"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

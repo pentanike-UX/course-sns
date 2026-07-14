@@ -106,19 +106,19 @@ function BrandRail() {
       </div>
 
       <h1 className="mt-9 break-keep text-[2.6rem] font-black leading-[1.15] tracking-[-0.01em] text-ink">
-        걸은 길이
+        좋은 길을
         <br />
-        그대로 코스가 된다
+        따라갈 수 있게
       </h1>
       <p className="mt-5 max-w-[34ch] break-keep text-[15px] leading-relaxed text-ink-soft">
-        스팟 · 사진 · 이동 · 감정까지, 다녀온 길을 지도 위 하나의 코스로 기록하세요. 마음에 든
-        크리에이터를 팔로우하면 그들의 새 코스가 내 보관함으로 모입니다.
+        스팟 · 이동 · 시간 · 팁까지, 다녀온 동선을 지도 위 하나의 코스로 남기세요. 마음에 든
+        코스를 따라가고, 다녀온 후기가 다음 사람을 돕습니다.
       </p>
 
       <ul className="mt-9 space-y-4">
-        <Pillar title="지도 위에 기록" desc="다녀온 길과 스팟을 한 장의 코스로" />
-        <Pillar title="나만의 코스 책장" desc="기록의 흔적이 그대로 큐레이션이 되도록" />
-        <Pillar title="크리에이터를 팔로우" desc="좋아하는 사람의 다음 코스를 구독" />
+        <Pillar title="코스 발견" desc="지역·누구와·난이도로 따라갈 동선을 고르세요" />
+        <Pillar title="따라가기" desc="장소와 이동을 내 초안으로 가져와 다듬어요" />
+        <Pillar title="다녀온 영향" desc="후기와 팔로우가 다음 코스를 열어요" />
       </ul>
 
       <p className="mt-11 inline-flex items-center gap-2 text-[13px] font-medium text-ink-faint">

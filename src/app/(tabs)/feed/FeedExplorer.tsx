@@ -28,9 +28,11 @@ import {
   EMPTY_FILTERS,
   appendFilterParams,
   filterCount,
+  kindLabel,
   routeMatchesFilters,
   type FeedFilters,
 } from "@/lib/feed-filters";
+import { difficultyByKey } from "@/lib/meta-options";
 
 // 지도 ↔ 둘러보기 conveyor timing. The bottom nav stays put and just moves its
 // selection to the 지도 tab; MAP_SLIDE_DELAY holds the screen slide back until
@@ -403,7 +405,7 @@ export default function FeedExplorer({
       <div className="px-4 py-16 text-center text-[14px] text-ink-faint">
         {hasFilters ? (
           <>
-            조건에 맞는 루트가 없어요.
+            조건에 맞는 코스가 없어요. 지역만 바꿔 보세요.
             <br />
             <button
               type="button"
@@ -415,13 +417,13 @@ export default function FeedExplorer({
           </>
         ) : q ? (
           <>
-            ‘{q}’에 맞는 루트를 찾지 못했어요.
+            ‘{q}’에 맞는 코스를 찾지 못했어요.
             <br />다른 검색어로 시도해 보세요.
           </>
         ) : (
           <>
-            아직 공개된 루트가 없어요.
-            <br />첫 번째 공개 루트의 주인공이 되어보세요!
+            아직 공개된 코스가 없어요.
+            <br />첫 번째 공개 코스의 주인공이 되어보세요!
           </>
         )}
       </div>
@@ -731,18 +733,33 @@ function MapTopControls({
       {activeCount > 0 && (
         <div className="no-scrollbar flex gap-2 overflow-x-auto">
           {[
-            ...filters.themes.map((v) => ["themes", v] as const),
-            ...filters.moods.map((v) => ["moods", v] as const),
-            ...filters.regions.map((v) => ["regions", v] as const),
-          ].map(([kind, value]) => (
+            ...filters.regions.map((v) => ({ kind: "regions" as const, value: v, label: v })),
+            ...(filters.purposes ?? []).map((v) => ({
+              kind: "purposes" as const,
+              value: v,
+              label: v,
+            })),
+            ...(filters.difficulties ?? []).map((v) => ({
+              kind: "difficulties" as const,
+              value: v,
+              label: difficultyByKey(v)?.label ?? v,
+            })),
+            ...(filters.kinds ?? []).map((v) => ({
+              kind: "kinds" as const,
+              value: v,
+              label: kindLabel(v),
+            })),
+            ...filters.themes.map((v) => ({ kind: "themes" as const, value: v, label: v })),
+            ...filters.moods.map((v) => ({ kind: "moods" as const, value: v, label: v })),
+          ].map(({ kind, value, label }) => (
             <button
               key={`${kind}:${value}`}
               type="button"
               onClick={() => onRemoveFilter(kind, value)}
-              aria-label={`${value} 필터 제거`}
+              aria-label={`${label} 필터 제거`}
               className="flex shrink-0 items-center gap-1 rounded-full bg-ink py-1.5 pl-3 pr-2 text-[12px] font-semibold text-paper"
             >
-              {value}
+              {label}
               <MapChipX />
             </button>
           ))}

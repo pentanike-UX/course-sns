@@ -22,7 +22,7 @@ type Props = {
   /** live result count for a draft (list mode). Omitted on the map, where pins
    *  are fetched server-side per viewport so a total count isn't meaningful. */
   countFor?: (draft: FeedFilters) => number;
-  /** show the 루트 종류(루트일기/계획) facet — list mode only (map pins lack purpose) */
+  /** show the 코스 종류(기록/계획) facet — list mode only (map pins lack purpose) */
   showKind?: boolean;
   onApply: (f: FeedFilters) => void;
   onClose: () => void;
@@ -110,19 +110,17 @@ function Panel({ value, countFor, showKind, onApply, onClose }: Omit<Props, "ope
           </div>
 
           <div className="no-scrollbar max-h-[56vh] overflow-y-auto px-4 pb-2">
-            {showKind && (
-              <Section title="코스 종류">
-                {KIND_OPTIONS.map((k) => (
-                  <Chip
-                    key={k.value}
-                    active={draft.kinds.includes(k.value)}
-                    onClick={() => toggle("kinds", k.value)}
-                  >
-                    {k.label}
-                  </Chip>
-                ))}
-              </Section>
-            )}
+            <Section title="지역">
+              {REGION_OPTIONS.map((r) => (
+                <Chip
+                  key={r.label}
+                  active={draft.regions.includes(r.label)}
+                  onClick={() => toggle("regions", r.label)}
+                >
+                  {r.label}
+                </Chip>
+              ))}
+            </Section>
             <Section title="누구와 · 무엇을">
               {RECOMMEND_OPTIONS.map((p) => (
                 <Chip
@@ -145,6 +143,19 @@ function Panel({ value, countFor, showKind, onApply, onClose }: Omit<Props, "ope
                 </Chip>
               ))}
             </Section>
+            {showKind && (
+              <Section title="코스 종류">
+                {KIND_OPTIONS.map((k) => (
+                  <Chip
+                    key={k.value}
+                    active={draft.kinds.includes(k.value)}
+                    onClick={() => toggle("kinds", k.value)}
+                  >
+                    {k.label}
+                  </Chip>
+                ))}
+              </Section>
+            )}
             <Section title="테마">
               {THEME_OPTIONS.map((t) => (
                 <Chip key={t} active={draft.themes.includes(t)} onClick={() => toggle("themes", t)}>
@@ -152,29 +163,7 @@ function Panel({ value, countFor, showKind, onApply, onClose }: Omit<Props, "ope
                 </Chip>
               ))}
             </Section>
-            <Section title="감정">
-              {MOOD_LEVELS.map((m) => (
-                <Chip
-                  key={m.key}
-                  active={draft.moods.includes(m.label)}
-                  onClick={() => toggle("moods", m.label)}
-                >
-                  <span className="mr-1">{m.emoji}</span>
-                  {m.label}
-                </Chip>
-              ))}
-            </Section>
-            <Section title="지역">
-              {REGION_OPTIONS.map((r) => (
-                <Chip
-                  key={r.label}
-                  active={draft.regions.includes(r.label)}
-                  onClick={() => toggle("regions", r.label)}
-                >
-                  {r.label}
-                </Chip>
-              ))}
-            </Section>
+            <MoodSection draft={draft} toggle={toggle} />
           </div>
 
           <div className="px-4 pt-2">
@@ -197,6 +186,48 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
     <div className="border-b border-line py-4 last:border-0">
       <h4 className="mb-2.5 text-[13px] font-bold text-ink-soft">{title}</h4>
       <div className="flex flex-wrap gap-2">{children}</div>
+    </div>
+  );
+}
+
+/** Mood is secondary for course shopping — collapsed by default unless already selected. */
+function MoodSection({
+  draft,
+  toggle,
+}: {
+  draft: FeedFilters;
+  toggle: (kind: keyof FeedFilters, v: string) => void;
+}) {
+  const hasMood = draft.moods.length > 0;
+  const [open, setOpen] = useState(hasMood);
+  return (
+    <div className="border-b border-line py-4 last:border-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="mb-2.5 flex w-full items-center justify-between text-left"
+        aria-expanded={open}
+      >
+        <h4 className="text-[13px] font-bold text-ink-soft">
+          감정 {hasMood ? `(${draft.moods.length})` : ""}
+          <span className="ml-1.5 font-medium text-ink-faint">선택</span>
+        </h4>
+        <span className="text-[12px] font-semibold text-ink-faint">{open ? "접기" : "더보기"}</span>
+      </button>
+      {open && (
+        <div className="flex flex-wrap gap-2">
+          {MOOD_LEVELS.map((m) => (
+            <Chip
+              key={m.key}
+              active={draft.moods.includes(m.label)}
+              onClick={() => toggle("moods", m.label)}
+            >
+              <span className="mr-1">{m.emoji}</span>
+              {m.label}
+            </Chip>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

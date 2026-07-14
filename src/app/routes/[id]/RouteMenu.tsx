@@ -96,7 +96,7 @@ export default function RouteMenu({
         >
           {confirming ? (
             <div className="p-3">
-              <p className="mb-2 text-[13px] text-ink-soft">이 루트를 삭제할까요?</p>
+              <p className="mb-2 text-[13px] text-ink-soft">이 코스를 삭제할까요?</p>
               <div className="flex gap-2">
                 <button
                   type="button"

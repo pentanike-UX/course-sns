@@ -116,7 +116,7 @@ export async function createRoute(input: CreateRouteInput) {
     .single();
 
   if (routeErr || !route) {
-    return { error: "루트 저장에 실패했어요. 다시 시도해 주세요." };
+    return { error: "코스 저장에 실패했어요. 다시 시도해 주세요." };
   }
 
   const childErr = await insertChildren(supabase, route.id, input.spots, input.legs);
@@ -241,7 +241,7 @@ export async function updateRoute(input: UpdateRouteInput) {
       cover_photo_url: input.coverPath ? publicUrl(input.coverPath) : null,
     })
     .eq("id", input.id);
-  if (routeErr) return { error: "루트 수정에 실패했어요." };
+  if (routeErr) return { error: "코스 수정에 실패했어요." };
 
   // replace children (cascade deletes legs + photos with the spots)
   await supabase.from("spots").delete().eq("route_id", input.id);

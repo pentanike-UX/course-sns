@@ -125,20 +125,20 @@ function ActiveFilterChips({
   onRemove: (kind: keyof FeedFilters, value: string) => void;
 }) {
   const items: { kind: keyof FeedFilters; value: string; label: string }[] = [
-    ...(filters.kinds ?? []).map((v) => ({ kind: "kinds" as const, value: v, label: kindLabel(v) })),
+    ...filters.regions.map((v) => ({ kind: "regions" as const, value: v, label: v })),
     ...(filters.purposes ?? []).map((v) => ({ kind: "purposes" as const, value: v, label: v })),
+    ...(filters.difficulties ?? []).map((v) => ({
+      kind: "difficulties" as const,
+      value: v,
+      label: difficultyByKey(v)?.label ?? v,
+    })),
+    ...(filters.kinds ?? []).map((v) => ({ kind: "kinds" as const, value: v, label: kindLabel(v) })),
     ...filters.themes.map((v) => ({ kind: "themes" as const, value: v, label: v })),
     ...filters.moods.map((v) => ({
       kind: "moods" as const,
       value: v,
       label: `${moodByLabel(v)?.emoji ?? ""} ${v}`.trim(),
     })),
-    ...(filters.difficulties ?? []).map((v) => ({
-      kind: "difficulties" as const,
-      value: v,
-      label: difficultyByKey(v)?.label ?? v,
-    })),
-    ...filters.regions.map((v) => ({ kind: "regions" as const, value: v, label: v })),
   ];
   return (
     <div className="no-scrollbar -mx-4 mt-2.5 flex gap-2 overflow-x-auto px-4">

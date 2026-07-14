@@ -251,7 +251,7 @@ export default function RouteDetailSheet({
         ref={sheetRef}
         role="dialog"
         aria-modal
-        aria-label={title || "루트 상세"}
+        aria-label={title || "코스 상세"}
         className="absolute inset-x-0 bottom-0 top-[max(40px,env(safe-area-inset-top))] z-40 flex flex-col overflow-hidden rounded-t-[24px] bg-paper shadow-[0_-8px_40px_rgba(0,0,0,0.22)] will-change-transform"
       >
         {/* drag zone: grabber floats above the title row, mirroring the search sheet */}
@@ -294,7 +294,7 @@ export default function RouteDetailSheet({
 
           {error ? (
             <div className="px-5 py-16 text-center text-[14px] text-ink-faint">
-              루트를 불러오지 못했어요.
+              코스를 불러오지 못했어요.
               <div className="mt-3">
                 <Link
                   href={`/routes/${id}`}

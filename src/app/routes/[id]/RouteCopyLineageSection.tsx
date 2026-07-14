@@ -88,7 +88,7 @@ function CopyLineageContent({ stats }: { stats?: RouteCopyStats | null }) {
 
       {stats.privateCount > 0 && (
         <p className="mt-3 rounded-xl border border-dashed border-line bg-card px-3 py-2 text-[12px] leading-relaxed text-ink-faint">
-          비공개로 가져간 루트 {stats.privateCount}개는 제목과 사진 없이 집계만 보여요.
+          비공개로 가져간 코스 {stats.privateCount}개는 제목과 사진 없이 집계만 보여요.
         </p>
       )}
     </section>
