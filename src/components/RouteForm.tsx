@@ -119,6 +119,8 @@ type Props = (
   placeSearchEnabled?: boolean;
   /** Present when this edit draft was created from another public route. */
   copyContext?: RouteCopyContext | null;
+  /** Landed here right after "이 코스 따라가기" (`?followed=1`). */
+  followedFromExplore?: boolean;
 };
 
 const emptyLeg = (): DraftLeg => ({ transport: "walk", durationMin: "", caution: "" });
@@ -223,6 +225,7 @@ export default function RouteForm({
   intent = "record",
   placeSearchEnabled,
   copyContext,
+  followedFromExplore = false,
 }: Props) {
   const router = useRouter();
   const isEdit = mode === "edit";
@@ -234,6 +237,7 @@ export default function RouteForm({
     : isDirectPlanCreate
       ? "/routes/new?type=plan"
       : "/routes/new";
+  const [showFollowGuide, setShowFollowGuide] = useState(followedFromExplore);
 
   const [title, setTitle] = useState(initial?.title ?? "");
   const [region, setRegion] = useState(initial?.region ?? "");
@@ -1201,6 +1205,11 @@ export default function RouteForm({
             onOptimizeOrder={optimizeSpotOrder}
             onFillEstimatedDurations={fillEstimatedDurations}
           />
+          {showFollowGuide && (
+            <div className="absolute inset-x-3 top-3 z-20">
+              <FollowNextStepsCard onDismiss={() => setShowFollowGuide(false)} plan />
+            </div>
+          )}
           {saveError && (
             <p className="absolute left-4 right-4 top-3 z-20 rounded-xl bg-sunset-wash px-3 py-2 text-center text-[13px] text-sunset-ink shadow">
               {saveError}
@@ -1250,7 +1259,11 @@ export default function RouteForm({
         </nav>
 
         <form id="route-form" onSubmit={handleSave} className="px-4 pb-28">
-          <CopyContextBanner context={copyContext} />
+          <CopyContextBanner
+            context={copyContext}
+            followGuide={showFollowGuide}
+            onDismissFollowGuide={() => setShowFollowGuide(false)}
+          />
 
           {isPlanDraft && (
             <section data-section="map" ref={(el) => { sectionEls.current.map = el; }} className="scroll-mt-16 pt-4">
@@ -3023,32 +3036,80 @@ function StepHeading({ title, desc }: { title: string; desc: string }) {
   );
 }
 
-function CopyContextBanner({ context }: { context?: RouteCopyContext | null }) {
-  if (!context) return null;
+function CopyContextBanner({
+  context,
+  followGuide,
+  onDismissFollowGuide,
+}: {
+  context?: RouteCopyContext | null;
+  followGuide?: boolean;
+  onDismissFollowGuide?: () => void;
+}) {
+  if (!context && !followGuide) return null;
 
-  const isPlan = context.purpose === "plan";
+  const isPlan = context?.purpose === "plan";
   return (
-    <section className="mt-4 rounded-[var(--radius-card)] border border-sunset/25 bg-sunset-wash/60 p-4">
-      <div className="inline-flex rounded-full bg-card px-2.5 py-1 text-[11px] font-bold text-sunset-ink ring-1 ring-sunset/15">
-        {isPlan ? "여행 계획 초안" : "여행 기록 초안"}
-      </div>
-      <h2 className="mt-3 text-[18px] font-black leading-tight text-ink">
-        {isPlan ? "여행 계획 초안이 만들어졌어요" : "내 여행 기록으로 가져왔어요"}
-      </h2>
-      <p className="mt-1.5 text-[13px] leading-relaxed text-ink-soft">
-        {isPlan
-          ? "원본 코스의 장소와 이동 정보를 바탕으로, 지도에서 동선을 먼저 확인하고 내 일정에 맞게 다듬어 보세요."
-          : "이미 다녀온 장소에 사진과 팁을 채워, 다음 사람이 따라갈 수 있는 코스로 완성해 보세요."}
-      </p>
-      {context.original && (
-        <Link
-          href={`/routes/${context.original.id}`}
-          className="mt-3 block truncate text-[12px] font-semibold text-sunset-ink underline-offset-2 hover:underline"
-        >
-          {context.original.author.displayName}님의 ‘{context.original.title}’에서 시작
-        </Link>
+    <section className="mt-4 space-y-3">
+      {followGuide && (
+        <FollowNextStepsCard onDismiss={onDismissFollowGuide} plan={!!isPlan || !context} />
+      )}
+      {context && (
+        <div className="rounded-[var(--radius-card)] border border-sunset/25 bg-sunset-wash/60 p-4">
+          <div className="inline-flex rounded-full bg-card px-2.5 py-1 text-[11px] font-bold text-sunset-ink ring-1 ring-sunset/15">
+            {isPlan ? "코스 계획 초안" : "코스 기록 초안"}
+          </div>
+          <h2 className="mt-3 text-[18px] font-black leading-tight text-ink">
+            {isPlan ? "따라갈 계획이 만들어졌어요" : "내 코스 기록으로 가져왔어요"}
+          </h2>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-ink-soft">
+            {isPlan
+              ? "원본 코스의 장소와 이동 정보를 바탕으로, 지도에서 동선을 먼저 확인하고 내 일정에 맞게 다듬어 보세요."
+              : "이미 다녀온 장소에 사진과 팁을 채워, 다음 사람이 따라갈 수 있는 코스로 완성해 보세요."}
+          </p>
+          {context.original && (
+            <Link
+              href={`/routes/${context.original.id}`}
+              className="mt-3 block truncate text-[12px] font-semibold text-sunset-ink underline-offset-2 hover:underline"
+            >
+              {context.original.author.displayName}님의 ‘{context.original.title}’에서 시작
+            </Link>
+          )}
+        </div>
       )}
     </section>
+  );
+}
+
+function FollowNextStepsCard({
+  onDismiss,
+  plan,
+}: {
+  onDismiss?: () => void;
+  plan?: boolean;
+}) {
+  return (
+    <div className="rounded-[var(--radius-card)] border border-line bg-card p-4 shadow-[var(--shadow-sm)]">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-wide text-sunset">가져왔어요</p>
+          <h3 className="mt-1 text-[16px] font-black text-ink">스팟을 내 일정에 맞게 다듬어 보세요</h3>
+        </div>
+        {onDismiss && (
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold text-ink-soft"
+          >
+            닫기
+          </button>
+        )}
+      </div>
+      <ol className="mt-3 space-y-1.5 text-[13px] text-ink-soft">
+        <li>1. 스팟 확인 · 빼기/더하기</li>
+        <li>2. 이동·시간 맞추기</li>
+        <li>3. {plan ? "다녀오면 ‘다녀왔어요’로 후기" : "사진·팁 채우고 공개"}</li>
+      </ol>
+    </div>
   );
 }
 

@@ -53,17 +53,22 @@ export default function FeedControls({
         <FilterButton count={activeCount} onClick={onOpenFilter} />
         <div className="no-scrollbar flex min-w-0 items-center gap-1.5 overflow-x-auto">
           <SortChip
-            label="최신순"
+            label="최신"
             active={sort === "recent"}
             onClick={() => router.replace(sortUrl("recent"))}
           />
           <SortChip
-            label="인기순"
-            active={sort === "popular"}
-            onClick={() => router.replace(sortUrl("popular"))}
+            label="많이 따라간"
+            active={sort === "followed"}
+            onClick={() => router.replace(sortUrl("followed"))}
           />
           <SortChip
-            label="거리순"
+            label="많이 다녀온"
+            active={sort === "completed"}
+            onClick={() => router.replace(sortUrl("completed"))}
+          />
+          <SortChip
+            label="가까운"
             active={sort === "distance"}
             onClick={() => router.replace(sortUrl("distance"))}
           />

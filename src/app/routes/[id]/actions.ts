@@ -178,7 +178,7 @@ export async function copyRoute(routeId: string, purpose: CopyPurpose) {
   revalidatePath("/");
   revalidatePath("/feed");
   revalidatePath(`/routes/${routeId}`);
-  redirect(`/routes/${newRoute.id}/edit`);
+  redirect(`/routes/${newRoute.id}/edit?followed=1`);
 }
 
 export async function convertPlanDraftToRecord(routeId: string) {

@@ -33,6 +33,7 @@ import {
 import type { RouteCopyContext } from "@/lib/data";
 import { formatKrw, formatDuration } from "@/lib/format";
 import { haversineMeters, formatDistance } from "@/lib/geo";
+import { summarizeTransit } from "@/lib/course-spec";
 import { difficultyByKey } from "@/lib/meta-options";
 
 type Layout = "A" | "B";
@@ -224,7 +225,7 @@ export default function RouteView({
   ) : null;
 
   // "이 코스를 쓸 수 있나?"를 한눈에 — 이동 시간·거리·이동수단·스팟·비용 요약.
-  const transitLabel = summarizeTransit(route.legs);
+  const transitLabel = summarizeTransit(route.legs.map((l) => l.transport));
   const summaryStats = [
     planDurationMin > 0
       ? { icon: <ClockIcon />, label: formatDuration(planDurationMin) }
@@ -975,16 +976,6 @@ function PinIcon() {
       <circle cx="12" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.8" />
     </svg>
   );
-}
-
-/** One-line "how do I get around this course?" label from its legs. */
-function summarizeTransit(legs: Leg[]): string | null {
-  if (!legs.length) return null;
-  const modes = new Set(legs.map((l) => l.transport));
-  if (modes.has("car") || modes.has("taxi")) return "차량 이동";
-  if ([...modes].every((m) => m === "walk")) return "도보 코스";
-  if (modes.has("bike")) return "자전거 포함";
-  return "뚜벅이 가능";
 }
 
 function ClockIcon() {

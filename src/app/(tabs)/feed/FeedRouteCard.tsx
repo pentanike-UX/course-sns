@@ -11,6 +11,7 @@ import { formatDate } from "@/lib/format";
 import { ROUTE_ENTER_MORPH_NAME, writePendingRoute } from "@/lib/pending-route";
 import type { RouteSummary } from "@/lib/types";
 import type { FeedLayout } from "./FeedControls";
+import { courseSpecParts } from "@/lib/course-spec";
 
 export default function FeedRouteCard({
   route,
@@ -72,6 +73,7 @@ export default function FeedRouteCard({
           <h3 className="mt-1 line-clamp-2 text-[15px] font-black leading-snug text-ink">
             {route.title}
           </h3>
+          <SpecLine route={route} className="mt-1.5 text-ink-soft" />
           <p className="mt-1 flex items-center gap-1 truncate text-[12px] font-medium text-ink-faint">
             <PinIcon /> <span className="truncate">{route.region}</span>
           </p>
@@ -101,6 +103,7 @@ export default function FeedRouteCard({
             <p className="mt-1 flex items-center gap-1 text-[12px] font-medium text-white/85">
               <PinIcon /> {route.region}
             </p>
+            <SpecLine route={route} className="mt-2 text-white/85" />
           </div>
         </div>
         <div className="flex items-center gap-2 px-3.5 py-3 text-[12px] font-medium text-ink-faint">
@@ -131,6 +134,7 @@ export default function FeedRouteCard({
         <p className="mt-1 flex items-center gap-1 truncate text-[11px] font-medium text-white/85">
           <PinIcon /> <span className="truncate">{route.region}</span>
         </p>
+        <SpecLine route={route} className="mt-1.5 text-white/80" />
         <p className="mt-1.5 text-[11px] font-medium text-white/75">
           스팟 {route.spotCount}개 · {formatDate(route.createdAt)}
         </p>
@@ -236,6 +240,21 @@ function OwnerPill({ route, compact = false }: { route: RouteSummary; compact?: 
       <Avatar route={route} size={compact ? "xs" : "sm"} />
       <span className="truncate font-bold">{route.author.displayName}</span>
     </AuthorTap>
+  );
+}
+
+function SpecLine({ route, className = "" }: { route: RouteSummary; className?: string }) {
+  const parts = courseSpecParts({
+    durationMin: route.totalDurationMin,
+    distanceMeters: route.approxDistanceM,
+    transitLabel: route.transitLabel,
+    difficulty: route.difficulty,
+  });
+  if (!parts.length) return null;
+  return (
+    <p className={`truncate text-[11px] font-semibold tracking-tight ${className}`}>
+      {parts.join(" · ")}
+    </p>
   );
 }
 

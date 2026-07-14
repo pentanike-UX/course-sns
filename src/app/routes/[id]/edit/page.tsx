@@ -6,10 +6,13 @@ import type { Leg } from "@/lib/types";
 
 export default async function EditRoutePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ followed?: string }>;
 }) {
   const { id } = await params;
+  const sp = await searchParams;
 
   const [route, me, copyContext] = await Promise.all([
     getRoute(id),
@@ -62,6 +65,7 @@ export default async function EditRoutePage({
       initial={initial}
       copyContext={copyContext}
       placeSearchEnabled={isPlaceSearchEnabled()}
+      followedFromExplore={sp.followed === "1"}
     />
   );
 }
