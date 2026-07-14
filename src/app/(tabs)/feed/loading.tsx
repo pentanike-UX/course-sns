@@ -2,7 +2,7 @@ import AppHeader from "@/components/AppHeader";
 import { HeaderActionSkeleton, Skeleton, SegmentedControlSkeleton } from "@/components/Skeleton";
 import { HomeRoutePanelSkeleton } from "@/components/RouteCardSkeleton";
 
-// this tab now hosts the user's own diary (내 일기)
+// this tab now hosts the user's own courses (내 코스)
 export default function FeedLoading() {
   return (
     <>

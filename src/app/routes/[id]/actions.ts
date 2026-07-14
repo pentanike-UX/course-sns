@@ -91,8 +91,8 @@ export async function copyRoute(routeId: string, purpose: CopyPurpose) {
     )
     .eq("id", routeId)
     .single();
-  if (!src) return { error: "루트를 찾을 수 없어요." };
-  if (src.author_id === user.id) return { error: "내 루트는 이미 내 코스에 있어요." };
+  if (!src) return { error: "코스를 찾을 수 없어요." };
+  if (src.author_id === user.id) return { error: "내 코스는 이미 내 보관함에 있어요." };
 
   const { data: newRoute, error: routeErr } = await supabase
     .from("routes")
@@ -108,7 +108,7 @@ export async function copyRoute(routeId: string, purpose: CopyPurpose) {
     })
     .select("id")
     .single();
-  if (routeErr || !newRoute) return { error: "루트 복제에 실패했어요. 다시 시도해 주세요." };
+  if (routeErr || !newRoute) return { error: "코스 가져오기에 실패했어요. 다시 시도해 주세요." };
 
   const cleanupDraft = async () => {
     await supabase.from("routes").delete().eq("id", newRoute.id);
@@ -178,7 +178,7 @@ export async function copyRoute(routeId: string, purpose: CopyPurpose) {
   revalidatePath("/");
   revalidatePath("/feed");
   revalidatePath(`/routes/${routeId}`);
-  redirect(`/routes/${newRoute.id}/edit`);
+  redirect(`/routes/${newRoute.id}/edit?followed=1`);
 }
 
 export async function convertPlanDraftToRecord(routeId: string) {

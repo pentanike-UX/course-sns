@@ -42,23 +42,15 @@ export default async function UserProfilePage({
 
           <div className="mt-4 flex items-stretch gap-2 text-center">
             <Stat label="코스" value={profile.routes.length} />
+            <Stat label="따라감" value={profile.totalCopyCount} />
+            <Stat label="다녀옴" value={profile.totalCompletionCount} />
             <Stat label="팔로워" value={profile.followerCount} href={`/u/${profile.handle}/followers`} />
-            <Stat label="팔로잉" value={profile.followingCount} href={`/u/${profile.handle}/following`} />
           </div>
 
-          {(profile.totalCopyCount > 0 || profile.totalCompletionCount > 0) && (
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
-              {profile.totalCopyCount > 0 && (
-                <span className="rounded-full bg-sunset-wash px-3 py-1.5 text-[12px] font-semibold text-sunset-ink">
-                  총 {profile.totalCopyCount}명이 따라감
-                </span>
-              )}
-              {profile.totalCompletionCount > 0 && (
-                <span className="rounded-full bg-card px-3 py-1.5 text-[12px] font-semibold text-ink-soft ring-1 ring-line">
-                  {profile.totalCompletionCount}명이 다녀왔어요
-                </span>
-              )}
-            </div>
+          {profile.isMe && profile.totalCopyCount > 0 && (
+            <p className="mt-3 text-center text-[12px] font-medium text-ink-soft">
+              내 코스를 {profile.totalCopyCount}명이 따라갔어요
+            </p>
           )}
 
           <div className="mt-5">
@@ -80,7 +72,8 @@ export default async function UserProfilePage({
         </section>
 
         <section className="px-4 pt-6">
-          <h3 className="mb-3 text-[14px] font-bold text-ink">공개 코스 {profile.routes.length}</h3>
+          <h3 className="mb-1 text-[14px] font-bold text-ink">코스 책장</h3>
+          <p className="mb-3 text-[12px] text-ink-faint">따라갈 수 있는 공개 코스 {profile.routes.length}</p>
           {profile.routes.length === 0 ? (
             <div className="py-12 text-center text-[13px] text-ink-faint">
               아직 공개한 코스가 없어요.

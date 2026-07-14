@@ -9,6 +9,7 @@ import RouteDetailSheet from "./RouteDetailSheet";
 import { loadNaverMaps, NAVER_MAP_KEY } from "@/lib/naver";
 import type { FeedMapPoint } from "@/lib/data";
 import { appendFilterParams, type FeedFilters } from "@/lib/feed-filters";
+import { COURSE_STORAGE, readSession, writeSession } from "@/lib/course-storage";
 
 type Props = {
   points: FeedMapPoint[];
@@ -36,7 +37,7 @@ const DEFAULT_CENTER = { lat: 37.5665, lng: 126.978 };
 const CLUSTER_PX = 60;
 /** a cluster that still doesn't split here is "co-located" → tap shows a list */
 const MAX_SPLIT_ZOOM = 19;
-const CAMERA_KEY = "routdiary:feed-map-camera";
+const CAMERA_KEY = COURSE_STORAGE.feedMapCamera;
 /** idle → viewport fetch debounce */
 const FETCH_DEBOUNCE_MS = 400;
 
@@ -95,7 +96,7 @@ const splitsEventually = (points: FeedMapPoint[]) =>
 
 const loadCamera = (): Camera | null => {
   try {
-    const v = sessionStorage.getItem(CAMERA_KEY);
+    const v = readSession(CAMERA_KEY);
     return v ? (JSON.parse(v) as Camera) : null;
   } catch {
     return null;
@@ -388,7 +389,7 @@ export default function FeedMap({
             scheduleViewportFetch();
             try {
               const c = map.getCenter();
-              sessionStorage.setItem(
+              writeSession(
                 CAMERA_KEY,
                 JSON.stringify({ lat: c.lat(), lng: c.lng(), zoom: map.getZoom() }),
               );
@@ -584,14 +585,14 @@ export default function FeedMap({
         <div
           className={`pointer-events-none absolute inset-x-4 ${chipTop} z-10 rounded-xl bg-card/90 px-4 py-3 text-center text-[13px] text-ink-faint shadow-[var(--shadow-sm)] backdrop-blur`}
         >
-          이 지역엔 좌표가 있는 공개 루트가 아직 없어요
+          이 지역엔 좌표가 있는 공개 코스가 아직 없어요
         </div>
       ) : (
         viewportEmpty && (
           <div
             className={`pointer-events-none absolute inset-x-10 ${chipTop} z-10 rounded-full bg-card/90 px-4 py-2 text-center text-[12px] text-ink-faint shadow-[var(--shadow-sm)] backdrop-blur`}
           >
-            이 지역엔 아직 공개 루트가 없어요
+            이 지역엔 아직 공개 코스가 없어요
           </div>
         )
       )}
@@ -647,9 +648,9 @@ export default function FeedMap({
               <div className="flex items-center justify-between px-1 pb-1.5 pt-2.5">
                 <span className="text-[12px] font-semibold text-ink-soft">
                   {listGroup
-                    ? `이곳의 루트 ${bodyList.length}`
+                    ? `이곳의 코스 ${bodyList.length}`
                     : bodyList.length > 0
-                      ? `이 지도 영역 · 루트 ${bodyList.length}`
+                      ? `이 지도 영역 · 코스 ${bodyList.length}`
                       : "둘러보기"}
                 </span>
                 {listGroup && (
@@ -666,8 +667,8 @@ export default function FeedMap({
               {bodyList.length === 0 ? (
                 <p className="whitespace-pre-line px-1 py-10 text-center text-[13px] text-ink-faint">
                   {pts.length === 0
-                    ? "이 지역엔 좌표가 있는 공개 루트가 아직 없어요"
-                    : "이 화면엔 공개 루트가 없어요.\n지도를 움직여 보세요."}
+                    ? "이 지역엔 좌표가 있는 공개 코스가 아직 없어요"
+                    : "이 화면엔 공개 코스가 없어요.\n지도를 움직여 보세요."}
                 </p>
               ) : (
                 <ul className="space-y-1 pb-2">
@@ -728,7 +729,7 @@ export default function FeedMap({
             >
               <div className="flex items-center justify-between px-4 py-2.5">
                 <span className="text-[13px] font-bold text-ink">
-                  이 지역 루트 {listGroup.length}
+                  이 지역 코스 {listGroup.length}
                 </span>
                 <button
                   type="button"
@@ -814,7 +815,7 @@ function SheetSelectedCard({
             <button
               type="button"
               onClick={() => onStep(-1)}
-              aria-label="이전 루트"
+              aria-label="이전 코스"
               className="flex h-8 w-8 items-center justify-center rounded-full border border-line text-ink-soft"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -827,7 +828,7 @@ function SheetSelectedCard({
             <button
               type="button"
               onClick={() => onStep(1)}
-              aria-label="다음 루트"
+              aria-label="다음 코스"
               className="flex h-8 w-8 items-center justify-center rounded-full border border-line text-ink-soft"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">

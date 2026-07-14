@@ -94,7 +94,7 @@ export default function FeedSearchOverlay({
         {filtered.length === 0 ? (
           <p className="py-16 text-center text-[14px] text-ink-faint">
             {text.trim()
-              ? `'${text}'에 맞는 루트를 찾지 못했어요.`
+              ? `'${text}'에 맞는 코스를 찾지 못했어요.`
               : "검색어를 입력하세요."}
           </p>
         ) : (

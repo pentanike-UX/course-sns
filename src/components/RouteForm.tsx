@@ -119,6 +119,8 @@ type Props = (
   placeSearchEnabled?: boolean;
   /** Present when this edit draft was created from another public route. */
   copyContext?: RouteCopyContext | null;
+  /** Landed here right after "이 코스 따라가기" (`?followed=1`). */
+  followedFromExplore?: boolean;
 };
 
 const emptyLeg = (): DraftLeg => ({ transport: "walk", durationMin: "", caution: "" });
@@ -223,6 +225,7 @@ export default function RouteForm({
   intent = "record",
   placeSearchEnabled,
   copyContext,
+  followedFromExplore = false,
 }: Props) {
   const router = useRouter();
   const isEdit = mode === "edit";
@@ -234,6 +237,7 @@ export default function RouteForm({
     : isDirectPlanCreate
       ? "/routes/new?type=plan"
       : "/routes/new";
+  const [showFollowGuide, setShowFollowGuide] = useState(followedFromExplore);
 
   const [title, setTitle] = useState(initial?.title ?? "");
   const [region, setRegion] = useState(initial?.region ?? "");
@@ -977,18 +981,14 @@ export default function RouteForm({
 
   const metaSelectors = (
     <>
-      <div className="grid grid-cols-2 gap-3">
-        <SelectTrigger label="테마" placeholder="테마 선택" value={theme} onClick={() => setSheet("theme")} />
-        <SelectTrigger label="감정" placeholder="감정 선택" value={moodDisplay} onClick={() => setSheet("mood")} />
-      </div>
       <SelectTrigger
         label="추천 대상"
-        placeholder="추천 대상 선택"
+        placeholder="누가 따라가면 좋을까요?"
         value={recommendedFor}
         onClick={() => setSheet("recommend")}
       />
       <div>
-        <div className="mb-1.5 text-[12px] font-medium text-ink-faint">난이도</div>
+        <div className="mb-1.5 text-[12px] font-medium text-ink-faint">난이도 · 이동량</div>
         <div className="flex gap-2">
           {DIFFICULTY_OPTIONS.map((d) => {
             const active = difficulty === d.key;
@@ -1010,6 +1010,10 @@ export default function RouteForm({
             );
           })}
         </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <SelectTrigger label="테마" placeholder="테마 선택" value={theme} onClick={() => setSheet("theme")} />
+        <SelectTrigger label="감정" placeholder="선택" value={moodDisplay} onClick={() => setSheet("mood")} />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <ReadonlyField
@@ -1094,7 +1098,7 @@ export default function RouteForm({
     <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/30">
       <div className="rounded-2xl bg-card px-6 py-5 text-center shadow-xl">
         <div className="text-2xl">⏳</div>
-        <p className="mt-1 text-[14px] font-semibold text-ink">루트를 저장하는 중…</p>
+        <p className="mt-1 text-[14px] font-semibold text-ink">코스를 저장하는 중…</p>
         <p className="text-[12px] text-ink-faint">
           {isPlanDraft ? "동선 정보를 저장하고 있어요" : "사진 업로드 중일 수 있어요"}
         </p>
@@ -1132,7 +1136,7 @@ export default function RouteForm({
             disabled={convertingRecord}
             className="mt-3 w-full rounded-xl bg-ink px-3 py-2.5 text-[13px] font-bold text-paper disabled:opacity-40"
           >
-            {convertingRecord ? "전환 중…" : "여행 기록으로 전환"}
+            {convertingRecord ? "전환 중…" : "코스 기록으로 전환"}
           </button>
         </div>
       )}
@@ -1142,7 +1146,7 @@ export default function RouteForm({
   if (isDirectPlanCreate) {
     return (
       <PlannerFrame
-        header={<AppHeader left={plannerCloseButton} right={tempSaveButton} title="새 여행 계획" />}
+        header={<AppHeader left={plannerCloseButton} right={tempSaveButton} title="새 코스 계획" />}
       >
         <form
           id="route-form"
@@ -1201,6 +1205,11 @@ export default function RouteForm({
             onOptimizeOrder={optimizeSpotOrder}
             onFillEstimatedDurations={fillEstimatedDurations}
           />
+          {showFollowGuide && (
+            <div className="absolute inset-x-3 top-3 z-20">
+              <FollowNextStepsCard onDismiss={() => setShowFollowGuide(false)} plan />
+            </div>
+          )}
           {saveError && (
             <p className="absolute left-4 right-4 top-3 z-20 rounded-xl bg-sunset-wash px-3 py-2 text-center text-[13px] text-sunset-ink shadow">
               {saveError}
@@ -1221,7 +1230,7 @@ export default function RouteForm({
         <AppHeader
           back={`/routes/${routeId}`}
           closeButton
-          title="루트 수정"
+          title="코스 수정"
           right={
             <button
               form="route-form"
@@ -1250,7 +1259,11 @@ export default function RouteForm({
         </nav>
 
         <form id="route-form" onSubmit={handleSave} className="px-4 pb-28">
-          <CopyContextBanner context={copyContext} />
+          <CopyContextBanner
+            context={copyContext}
+            followGuide={showFollowGuide}
+            onDismissFollowGuide={() => setShowFollowGuide(false)}
+          />
 
           {isPlanDraft && (
             <section data-section="map" ref={(el) => { sectionEls.current.map = el; }} className="scroll-mt-16 pt-4">
@@ -1268,7 +1281,7 @@ export default function RouteForm({
             className={`${isPlanDraft ? "mt-8 border-t border-line pt-6" : "pt-4"} scroll-mt-16`}
           >
             <StepHeading
-              title={isPlanDraft ? "스팟을 내 일정에 맞게 다듬어요" : "어디에서의 하루였나요?"}
+              title={isPlanDraft ? "스팟을 내 일정에 맞게 다듬어요" : "어디를 다녀왔나요?"}
               desc={isPlanDraft ? "장소 이름, 주소, 위치, 순서를 확인해 실제 여행 계획으로 정리해 주세요." : "지역과 다녀온 장소들을 확인하고 다듬어 주세요."}
             />
             <Field label="지역" value={region} onChange={setRegion} placeholder="예: 제주 구좌·성산" required />
@@ -1279,24 +1292,24 @@ export default function RouteForm({
           <section data-section="move" ref={(el) => { sectionEls.current.move = el; }} className="mt-9 scroll-mt-16 border-t border-line pt-6">
             <StepHeading
               title="스팟 사이의 이동"
-              desc={isPlanDraft ? "예상 이동 수단과 시간을 넣어 하루 동선의 무리를 미리 확인해 보세요." : "이동 수단과 소요 시간을 남기면 지도에 동선이 그려져요."}
+              desc={isPlanDraft ? "예상 이동 수단과 시간을 넣어 동선 무리를 미리 확인해 보세요." : "이동 수단과 소요 시간을 남기면 지도에 동선이 그려져요."}
             />
             {legsBlock}
           </section>
 
           <section data-section="story" ref={(el) => { sectionEls.current.story = el; }} className="mt-9 scroll-mt-16 border-t border-line pt-6">
             <StepHeading
-              title={isPlanDraft ? "계획의 조건을 정리해요" : "이 하루의 이야기"}
-              desc={isPlanDraft ? "제목, 테마, 추천 대상, 예상 비용을 정리하면 여행 전에도 꺼내 보기 쉬워요." : "제목과 테마·감정을 남기면 코스다워져요."}
+              title={isPlanDraft ? "계획의 조건을 정리해요" : "이 코스를 한마디로"}
+              desc={isPlanDraft ? "제목, 추천 대상, 난이도, 예상 비용을 정리하면 따라가기 쉬운 계획이 돼요." : "추천 대상·난이도·테마를 남기면 남이 따라가기 쉬워져요."}
             />
-            <Field label="제목" value={title} onChange={setTitle} placeholder="예: 제주 동쪽, 바람의 하루" required />
+            <Field label="제목" value={title} onChange={setTitle} placeholder="예: 제주 동쪽 바람 코스" required />
             {metaSelectors}
           </section>
 
           <section data-section="share" ref={(el) => { sectionEls.current.share = el; }} className="mt-9 scroll-mt-16 border-t border-line pt-6">
             <StepHeading
               title="공개 범위"
-              desc={isPlanDraft ? "계획 단계에서는 비공개로 다듬고, 준비가 되면 공개로 바꿀 수 있어요." : "나만의 코스로 둘지, 다른 사람과 나눌지 선택하세요."}
+              desc={isPlanDraft ? "계획 단계에서는 비공개로 다듬고, 준비가 되면 공개로 바꿀 수 있어요." : "나만 쓸 코스로 둘지, 다른 사람이 따라가게 공개할지 선택하세요."}
             />
             {visibilityBox}
           </section>
@@ -1316,7 +1329,7 @@ export default function RouteForm({
 
   return (
     <MobileFrame shell>
-      <AppHeader back="/" closeButton title="새 루트 기록" />
+      <AppHeader back="/" closeButton title="새 코스 만들기" />
       <Stepper steps={STEP_LABELS} current={step} />
 
       <form id="route-form" onSubmit={handleSave} className="no-scrollbar flex-1 overflow-y-auto px-4 pb-4">
@@ -1363,7 +1376,7 @@ export default function RouteForm({
         {step === 2 && (
           <>
             <StepHeading
-              title={region ? `${region}에서의 하루, 맞나요?` : "어디에서의 하루인가요?"}
+              title={region ? `${region} 코스, 맞나요?` : "어느 지역 코스인가요?"}
               desc={bestSeason ? `${bestSeason}의 기록을 정리하고 있어요. 장소를 확인하고 다듬어 주세요.` : "사진으로 만든 장소를 확인하고 다듬어 주세요."}
             />
             <Field label="지역" value={region} onChange={setRegion} placeholder="예: 서울 종로" required />
@@ -1381,15 +1394,15 @@ export default function RouteForm({
 
         {step === 4 && (
           <>
-            <StepHeading title="이 하루를 한마디로" desc="제목과 테마·감정을 남기면 코스다워져요." />
-            <Field label="제목" value={title} onChange={setTitle} placeholder="예: 제주 동쪽, 바람의 하루" required />
+            <StepHeading title="이 코스를 한마디로" desc="추천 대상·난이도·테마를 남기면 따라가기 쉬워져요." />
+            <Field label="제목" value={title} onChange={setTitle} placeholder="예: 제주 동쪽 바람 코스" required />
             {metaSelectors}
           </>
         )}
 
         {step === 5 && (
           <>
-            <StepHeading title="마지막! 공개 범위를 정해요" desc="나만의 코스로 둘지, 다른 사람과 나눌지 선택하세요." />
+            <StepHeading title="마지막! 공개 범위를 정해요" desc="나만 쓸 코스로 둘지, 다른 사람이 따라가게 공개할지 선택하세요." />
             <div className="mb-4 rounded-[var(--radius-card)] border border-line bg-card p-4">
               <div className="text-[12px] text-ink-faint">{region} · {bestSeason || "날짜 미정"}</div>
               <div className="mt-0.5 text-[17px] font-black text-ink">{title || "제목 없음"}</div>
@@ -2729,7 +2742,7 @@ function analyzePlan(spots: DraftSpot[]): PlanAnalysis {
   if (spots.length >= 7) {
     warnings.push({
       tone: "hard",
-      title: "하루 일정이 꽤 빡빡해요",
+      title: "일정이 꽤 빡빡해요",
       body: `스팟 ${spots.length}곳은 이동과 대기 시간을 고려하면 피로도가 높을 수 있어요.`,
     });
   } else if (spots.length >= 5) {
@@ -3023,32 +3036,80 @@ function StepHeading({ title, desc }: { title: string; desc: string }) {
   );
 }
 
-function CopyContextBanner({ context }: { context?: RouteCopyContext | null }) {
-  if (!context) return null;
+function CopyContextBanner({
+  context,
+  followGuide,
+  onDismissFollowGuide,
+}: {
+  context?: RouteCopyContext | null;
+  followGuide?: boolean;
+  onDismissFollowGuide?: () => void;
+}) {
+  if (!context && !followGuide) return null;
 
-  const isPlan = context.purpose === "plan";
+  const isPlan = context?.purpose === "plan";
   return (
-    <section className="mt-4 rounded-[var(--radius-card)] border border-sunset/25 bg-sunset-wash/60 p-4">
-      <div className="inline-flex rounded-full bg-card px-2.5 py-1 text-[11px] font-bold text-sunset-ink ring-1 ring-sunset/15">
-        {isPlan ? "여행 계획 초안" : "여행 기록 초안"}
-      </div>
-      <h2 className="mt-3 text-[18px] font-black leading-tight text-ink">
-        {isPlan ? "여행 계획 초안이 만들어졌어요" : "내 여행 기록으로 가져왔어요"}
-      </h2>
-      <p className="mt-1.5 text-[13px] leading-relaxed text-ink-soft">
-        {isPlan
-          ? "원본 루트의 장소와 이동 정보를 바탕으로, 지도에서 동선을 먼저 확인하고 내 일정에 맞게 다듬어 보세요."
-          : "이미 다녀온 장소에 사진과 그날의 감상을 채워 나만의 코스 기록으로 완성해 보세요."}
-      </p>
-      {context.original && (
-        <Link
-          href={`/routes/${context.original.id}`}
-          className="mt-3 block truncate text-[12px] font-semibold text-sunset-ink underline-offset-2 hover:underline"
-        >
-          {context.original.author.displayName}님의 ‘{context.original.title}’에서 시작
-        </Link>
+    <section className="mt-4 space-y-3">
+      {followGuide && (
+        <FollowNextStepsCard onDismiss={onDismissFollowGuide} plan={!!isPlan || !context} />
+      )}
+      {context && (
+        <div className="rounded-[var(--radius-card)] border border-sunset/25 bg-sunset-wash/60 p-4">
+          <div className="inline-flex rounded-full bg-card px-2.5 py-1 text-[11px] font-bold text-sunset-ink ring-1 ring-sunset/15">
+            {isPlan ? "코스 계획 초안" : "코스 기록 초안"}
+          </div>
+          <h2 className="mt-3 text-[18px] font-black leading-tight text-ink">
+            {isPlan ? "따라갈 계획이 만들어졌어요" : "내 코스 기록으로 가져왔어요"}
+          </h2>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-ink-soft">
+            {isPlan
+              ? "원본 코스의 장소와 이동 정보를 바탕으로, 지도에서 동선을 먼저 확인하고 내 일정에 맞게 다듬어 보세요."
+              : "이미 다녀온 장소에 사진과 팁을 채워, 다음 사람이 따라갈 수 있는 코스로 완성해 보세요."}
+          </p>
+          {context.original && (
+            <Link
+              href={`/routes/${context.original.id}`}
+              className="mt-3 block truncate text-[12px] font-semibold text-sunset-ink underline-offset-2 hover:underline"
+            >
+              {context.original.author.displayName}님의 ‘{context.original.title}’에서 시작
+            </Link>
+          )}
+        </div>
       )}
     </section>
+  );
+}
+
+function FollowNextStepsCard({
+  onDismiss,
+  plan,
+}: {
+  onDismiss?: () => void;
+  plan?: boolean;
+}) {
+  return (
+    <div className="rounded-[var(--radius-card)] border border-line bg-card p-4 shadow-[var(--shadow-sm)]">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-wide text-sunset">가져왔어요</p>
+          <h3 className="mt-1 text-[16px] font-black text-ink">스팟을 내 일정에 맞게 다듬어 보세요</h3>
+        </div>
+        {onDismiss && (
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold text-ink-soft"
+          >
+            닫기
+          </button>
+        )}
+      </div>
+      <ol className="mt-3 space-y-1.5 text-[13px] text-ink-soft">
+        <li>1. 스팟 확인 · 빼기/더하기</li>
+        <li>2. 이동·시간 맞추기</li>
+        <li>3. {plan ? "다녀오면 ‘다녀왔어요’로 후기" : "사진·팁 채우고 공개"}</li>
+      </ol>
+    </div>
   );
 }
 

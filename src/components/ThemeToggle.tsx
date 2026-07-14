@@ -5,7 +5,7 @@ import JellyButton from "@/components/JellyButton";
 
 type Theme = "light" | "dark";
 
-const THEME_EVENT = "routdiary:theme";
+const THEME_EVENT = "course:theme";
 const DEFAULT_THEME: Theme = "light";
 
 function readTheme(): Theme {

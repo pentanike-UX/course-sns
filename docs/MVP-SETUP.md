@@ -81,3 +81,4 @@ pnpm test:e2e   # .env.local + 데모 계정·공개 루트 시드 필요
 - `routes` → `courses` URL·DB rename
 - monorepo / 공통 패키지
 - routdiary 전용 카피·기능 분리
+- 코스 포지션 UX 적용: [`COURSE-UX-DESIGN.md`](COURSE-UX-DESIGN.md) Phase 0–3

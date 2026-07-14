@@ -1,7 +1,7 @@
-# routdiary Design System
+# 코스 Design System
 
 > UI·인터페이스 일관성을 위한 정본 가이드. **코드 토큰 = 스펙** — 값을 바꿀 때는 `src/app/globals.css`를 먼저 수정하고, 이 문서와 `docs/HANDOFF.md` §7에 변경 이유를 남긴다.  
-> 최종 업데이트: 2026-07-06 · 앱 v1.14.21
+> 최종 업데이트: 2026-07-14 · course-sns MVP · **브랜드 포인트 컬러 = 레드** (`globals.css` 정본)
 
 ---
 
@@ -9,11 +9,11 @@
 
 | 원칙 | 설명 |
 |------|------|
-| **Fresh / Light / Trust / Friendly** | 밝고 가벼운 여행 일기. 과장된 장식보다 사진·지도·타임라인이 주인공 |
+| **Fresh / Light / Trust / Followable** | 밝고 가벼운 **따라갈 수 있는 코스**. 과장된 장식보다 사진·지도·동선이 주인공 |
 | **모바일 우선 (~430px)** | 모든 화면은 폰 프레임 안에서 설계. 데스크톱은 같은 UI + 좌측 레일 |
 | **iOS 멘탈모델** | large title, edge drawer, bottom sheet, 44pt 터치, 슬라이드 전환 |
 | **토큰 우선** | 하드코딩 hex 대신 CSS 변수 / Tailwind semantic (`bg-paper`, `text-ink`) |
-| **역할 분리** | **브랜드 그린** = CTA·내비·FAB / **ink neutral** = 선택·필터 active |
+| **역할 분리** | **브랜드 레드** = CTA·내비·FAB / **ink neutral** = 선택·필터 active |
 
 ---
 
@@ -21,7 +21,7 @@
 
 **파일:** `src/app/globals.css`
 
-새 컴포넌트는 아래 semantic 이름을 쓴다. `--sunset` 등 legacy alias는 기존 코드 호환용 — **신규 작성 시 `--brand-primary` / Tailwind `bg-sunset`(=그린) 혼용 가능**.
+새 컴포넌트는 아래 semantic 이름을 쓴다. `--sunset` / `--primary-green-*` 는 **legacy 이름** — 값은 레드 포인트 컬러. 신규는 `--brand-primary` 또는 `bg-sunset`(=레드) 사용.
 
 ### 2.1 컬러
 
@@ -38,23 +38,28 @@
 
 | Token | 용도 | Tailwind |
 |-------|------|----------|
-| `--ink` | 본문·제목 | `text-ink` |
+| `--ink` | 본문·제목 (green-charcoal `#16211c`) | `text-ink` |
 | `--ink-soft` | 보조·라벨 | `text-ink-soft` |
 | `--ink-faint` | placeholder·메타 | `text-ink-faint` |
 | `--line` | hairline border | `border-line`, `ring-line` |
 
-#### Brand & Action
+#### Brand & Action (레드 포인트)
 
 | Token | Light | 용도 |
 |-------|-------|------|
-| `--brand-primary` | `#22c55e` | 주 CTA, FAB, 내비 active, primary 버튼 |
-| `--brand-primary-hover` | `#16a34a` | hover |
-| `--sunset` | alias → brand green | `bg-sunset`, `text-sunset` (legacy 이름) |
-| `--sunset-wash` | `#dcfce7` | 연한 그린 배경 (배지·힌트) |
+| `--brand-primary` | `#ef4444` | 주 CTA, FAB, 내비 active, primary 버튼 |
+| `--brand-primary-hover` | `#dc2626` | hover |
+| `--brand-primary-pressed` | `#b91c1c` | pressed |
+| `--sunset` | `#dc2626` | `bg-sunset`, `text-sunset` (legacy 이름 → 레드) |
+| `--sunset-ink` | `#b91c1c` | wash 위 텍스트 |
+| `--sunset-wash` | `#fee2e2` | 연한 레드 배경 (배지·힌트) |
+| `--shadow-brand` | `rgba(220, 38, 38, 0.18)` | 레드 CTA glow |
 
-#### Selection (neutral — v1.95+)
+스케일 별칭 `--primary-green-*` 도 **레드 스케일 값**을 담는다 (이름만 legacy).
 
-**필터·정렬·레이아웃 토글 active**에는 브랜드 그린 대신:
+#### Selection (neutral)
+
+**필터·정렬·레이아웃 토글 active**에는 브랜드 레드 대신:
 
 ```
 bg-ink text-paper
@@ -66,7 +71,8 @@ bg-ink text-paper
 
 | Token | 용도 |
 |-------|------|
-| `--success` / `--success-soft` | 완료·긍정 |
+| `--success` / `--success-soft` | 완료·긍정 (**그린 유지** — 브랜드와 역할 분리) |
+| `--leaf` | 성공/자연 보조 그린 |
 | `--warning` / `--warning-soft` | 주의 |
 | `--error` / `--error-soft` | 삭제·위험 (`ActionBottomSheet` danger) |
 | `--info` / `--info-soft` | 정보 |
@@ -123,7 +129,7 @@ Tailwind: `shadow-[var(--shadow-sm)]` 등
 
 - 토글: `<html class="dark">` — **OS 자동 아님** (`ThemeToggle`, localStorage `theme`)
 - Tailwind `dark:`는 `@custom-variant dark (&:where(.dark, .dark *))` — class와 동기화
-- 표면: deep green-charcoal (`--paper: #0e1512`), 브랜드 그린은 동일·밝게 유지
+- 표면: deep green-charcoal (`--paper: #0e1512`), 브랜드 레드는 더 밝게 (`#f87171`)
 
 ---
 
@@ -153,7 +159,7 @@ safe-area: pt-[env(safe-area-inset-top)], pb-[max(16px,env(safe-area-inset-botto
 | 20 | sticky header, filter toolbar |
 | 30 | BottomNav |
 | 40 | 지도 conveyor pane |
-| 50 | SlideDrawer (내 일기) |
+| 50 | SlideDrawer (내 코스) |
 | 60 | SlideDrawer (설정/프로필 overlay) |
 | 70+ | ActionBottomSheet (portal → `#app-shell`) |
 
@@ -228,7 +234,7 @@ safe-area: pt-[env(safe-area-inset-top)], pb-[max(16px,env(safe-area-inset-botto
 
 | 컴포넌트 | 용도 |
 |----------|------|
-| `DiaryDrawerSkeleton` | 내 일기 drawer deferBody |
+| `DiaryDrawerSkeleton` | 내 코스 drawer deferBody |
 | `ProfileDrawerSkeleton` | 설정 drawer |
 | `PanelSkeleton` | SegPager placeholder |
 
@@ -321,7 +327,8 @@ className="overflow-hidden rounded-[var(--radius-card)] bg-card ring-1 ring-line
 ## 8. 하지 말 것
 
 - ❌ 임의 hex — 토큰 없으면 `globals.css`에 추가 후 문서 갱신
-- ❌ 필터 active에 `bg-sunset` — v1.95 이후 **ink neutral**이 표준
+- ❌ 필터 active에 `bg-sunset`(레드) — **ink neutral**이 표준  
+- ❌ 브랜드를 다시 그린으로 하드코딩 — CTA/FAB/내비는 레드 토큰 (`--sunset` / `--brand-primary`)
 - ❌ window scroll 가정 sticky — 탭은 **MobileFrame shell 내부 스크롤**
 - ❌ body에 portal하는 sheet — `#app-shell` portal (`ActionBottomSheet` 패턴)
 - ❌ `tracking-tight` on 한글 large title — `-0.01em` 사용

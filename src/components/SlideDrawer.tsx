@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useSheetTransition } from "@/lib/use-sheet-transition";
 
-/** Shared slide timing for all edge drawers (내 일기, 설정, routed /feed). */
+/** Shared slide timing for all edge drawers (내 코스, 설정, routed /feed). */
 export const SLIDE_DRAWER_MS = 320;
 const SLIDE_DRAWER_ENTER_DELAY_MS = 48;
 const SLIDE_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";

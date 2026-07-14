@@ -9,6 +9,7 @@ import { flushSync } from "react-dom";
 import { ROUTE_ENTER_MORPH_NAME, writePendingRoute } from "@/lib/pending-route";
 import type { RouteSummary } from "@/lib/types";
 import { formatDate } from "@/lib/format";
+import { courseSpecParts } from "@/lib/course-spec";
 import RoutePlanThumbnail from "@/components/RoutePlanThumbnail";
 
 /** Full-bleed image card: cover fills the card, meta overlaid (date first). */
@@ -103,6 +104,20 @@ export default function RouteCard({
         <h3 className="mt-0.5 line-clamp-2 text-[15px] font-bold leading-snug text-white/95 drop-shadow-sm">
           {route.title}
         </h3>
+        {(() => {
+          const parts = courseSpecParts({
+            durationMin: route.totalDurationMin,
+            distanceMeters: route.approxDistanceM,
+            transitLabel: route.transitLabel,
+            difficulty: route.difficulty,
+          });
+          if (!parts.length) return null;
+          return (
+            <p className="mt-1 truncate text-[11px] font-semibold text-white/80 drop-shadow-sm">
+              {parts.join(" · ")}
+            </p>
+          );
+        })()}
 
         {showOwner && (
           <span
@@ -144,8 +159,10 @@ export default function RouteCard({
         )}
 
         <div className="mt-2.5 flex items-center gap-1.5">
-          {route.theme && <Chip>{route.theme}</Chip>}
-          {route.mood && <Chip>{route.mood}</Chip>}
+          {route.recommendedFor?.split(",")[0]?.trim() && (
+            <Chip>{route.recommendedFor.split(",")[0].trim()}</Chip>
+          )}
+          {route.theme && !route.recommendedFor && <Chip>{route.theme}</Chip>}
           <span className="ml-auto flex items-center gap-2 text-[12px] text-white/85">
             <span>스팟 {route.spotCount}</span>
             {route.visibility === "public" && route.copyCount > 0 && (
@@ -158,11 +175,13 @@ export default function RouteCard({
                 <DoneIcon /> {route.completionCount}
               </span>
             )}
-            {route.visibility === "public" && (
-              <span className="flex items-center gap-1">
-                <HeartIcon /> {route.likeCount}
-              </span>
-            )}
+            {route.visibility === "public" &&
+              route.copyCount === 0 &&
+              route.completionCount === 0 && (
+                <span className="flex items-center gap-1 opacity-80">
+                  <HeartIcon /> {route.likeCount}
+                </span>
+              )}
           </span>
         </div>
       </div>

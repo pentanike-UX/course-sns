@@ -45,14 +45,14 @@ export default async function TravelStatsPage() {
       <>
         <AppHeader back="/profile" title="여행 통계" />
         <div className="px-4 py-16 text-center text-[14px] text-ink-faint">
-          아직 기록한 루트가 없어요.
-          <br />첫 하루를 기록하면 통계가 쌓이기 시작해요.
+          아직 기록한 코스가 없어요.
+          <br />첫 코스를 남기면 통계가 쌓이기 시작해요.
           <div className="mt-5">
             <Link
               href="/routes/new"
               className="inline-block rounded-full bg-sunset px-5 py-2.5 text-[14px] font-semibold text-white"
             >
-              새 루트 기록하기
+              새 코스 만들기
             </Link>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default async function TravelStatsPage() {
 
       {/* summary */}
       <section className="mx-4 mt-4 grid grid-cols-3 divide-x divide-line rounded-[var(--radius-card)] border border-line bg-card py-4 text-center">
-        <SummaryStat label="루트" value={stats.routeCount} />
+        <SummaryStat label="코스" value={stats.routeCount} />
         <SummaryStat label="스팟" value={stats.spotCount} />
         <SummaryStat label="지역" value={stats.regions.length} />
       </section>
@@ -195,7 +195,7 @@ export default async function TravelStatsPage() {
         <Section title="받은 반응">
           <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line">
             <Tile label="받은 좋아요" value={`♥ ${stats.likeTotal}`} />
-            <Tile label="내 루트를 담은 사람" value={`${stats.copiesReceived}명`} />
+            <Tile label="내 코스를 따라간 사람" value={`${stats.copiesReceived}명`} />
           </div>
         </Section>
       )}

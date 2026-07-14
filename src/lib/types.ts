@@ -188,4 +188,10 @@ export interface RouteSummary {
   liked?: boolean;
   copyPurpose?: CopyPurpose;
   thumbnailPoints?: RouteThumbnailPoint[];
+  /** summed leg durations (minutes) when legs are present */
+  totalDurationMin?: number;
+  /** approx path distance from geocoded spots (meters) */
+  approxDistanceM?: number;
+  /** short transit label e.g. 도보 코스 / 차량 이동 */
+  transitLabel?: string;
 }

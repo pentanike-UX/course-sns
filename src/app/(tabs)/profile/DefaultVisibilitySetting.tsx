@@ -22,7 +22,7 @@ export default function DefaultVisibilitySetting({ initial }: { initial: Visibil
     <div className="flex items-center justify-between border-b border-line px-4 py-3.5 text-[14px] text-ink last:border-0">
       <div>
         <div>공개 범위 기본값</div>
-        <div className="mt-0.5 text-[11px] text-ink-faint">새 루트를 만들 때 기본값</div>
+        <div className="mt-0.5 text-[11px] text-ink-faint">새 코스를 만들 때 기본값</div>
       </div>
       <div className="flex rounded-full bg-muted p-0.5 text-[12px] font-semibold">
         {(["private", "public"] as const).map((v) => (

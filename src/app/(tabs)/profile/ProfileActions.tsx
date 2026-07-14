@@ -85,7 +85,7 @@ export default function ProfileActions() {
     const url = `${window.location.origin}/`;
     const data = {
       title: "코스",
-      text: "코스를 기록하고 공유하는 코스",
+      text: "좋은 길을 따라가고, 다녀온 팁이 다음 사람을 돕는 코스",
       url,
     };
 

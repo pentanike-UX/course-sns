@@ -1,5 +1,6 @@
 import { getServerClient, getAuthUser } from "@/lib/supabase/auth";
 import { haversineMeters } from "@/lib/geo";
+import { summarizeTransit, sumPathDistanceMeters } from "@/lib/course-spec";
 import { regionPrefixesFor, type FeedFilters } from "@/lib/feed-filters";
 import type {
   Route,
@@ -85,6 +86,7 @@ type RouteRowLite = {
     lng: number | null;
     order_index: number;
   }[];
+  legs?: { transport: string; duration_min: number | null }[];
   // copied_route_id is UNIQUE, so PostgREST infers one-to-one and returns an
   // object — but be lenient in case the cardinality detection ever changes
   copy_source?: { purpose: CopyPurpose } | { purpose: CopyPurpose }[] | null;
@@ -109,6 +111,11 @@ function toSummary(r: RouteRowLite): RouteSummary {
       orderIndex: s.order_index,
     }));
 
+  const legs = r.legs ?? [];
+  const totalDurationMin = legs.reduce((sum, l) => sum + (l.duration_min ?? 0), 0);
+  const approxDistanceM = sumPathDistanceMeters(thumbnailPoints);
+  const transitLabel = summarizeTransit(legs.map((l) => l.transport)) ?? undefined;
+
   return {
     id: r.id,
     author: toAuthor(r.author),
@@ -131,13 +138,16 @@ function toSummary(r: RouteRowLite): RouteSummary {
     ),
     copyPurpose: copySource?.purpose,
     thumbnailPoints,
+    totalDurationMin: totalDurationMin > 0 ? totalDurationMin : undefined,
+    approxDistanceM: approxDistanceM > 0 ? approxDistanceM : undefined,
+    transitLabel,
   };
 }
 
 // `spots` is embedded with an explicit FK hint: legs has FKs to both routes
 // and spots, so PostgREST otherwise sees an ambiguous (junction) relationship.
 const LITE_SELECT =
-  "id, title, region, theme, mood, recommended_for, difficulty, cover_photo_url, visibility, created_at, like_count, copy_count, completion_count, completion_rating_sum, completion_rating_count, author:profiles!routes_author_id_fkey(id, handle, display_name, avatar_url), spots!spots_route_id_fkey(count), thumbnail_spots:spots!spots_route_id_fkey(title, lat, lng, order_index), copy_source:route_copies!route_copies_copied_route_id_fkey(purpose)";
+  "id, title, region, theme, mood, recommended_for, difficulty, cover_photo_url, visibility, created_at, like_count, copy_count, completion_count, completion_rating_sum, completion_rating_count, author:profiles!routes_author_id_fkey(id, handle, display_name, avatar_url), spots!spots_route_id_fkey(count), thumbnail_spots:spots!spots_route_id_fkey(title, lat, lng, order_index), legs!legs_route_id_fkey(transport, duration_min), copy_source:route_copies!route_copies_copied_route_id_fkey(purpose)";
 
 export async function getMyRoutes(): Promise<RouteSummary[]> {
   const supabase = await getServerClient();
@@ -153,14 +163,14 @@ export async function getMyRoutes(): Promise<RouteSummary[]> {
   return ((data as RouteRowLite[] | null) ?? []).map(toSummary);
 }
 
-export type FeedSort = "recent" | "popular";
+export type FeedSort = "recent" | "popular" | "followed" | "completed";
 
 export async function getPublicFeed(opts?: {
   sort?: FeedSort;
   q?: string;
 }): Promise<RouteSummary[]> {
   const supabase = await getServerClient();
-  const sort: FeedSort = opts?.sort === "popular" ? "popular" : "recent";
+  const sort: FeedSort = parseFeedSort(opts?.sort);
   // strip characters that would break PostgREST's or()/ilike filter syntax
   const q = (opts?.q ?? "").replace(/[%,()]/g, "").trim();
 
@@ -168,10 +178,7 @@ export async function getPublicFeed(opts?: {
 
   if (q) query = query.or(`title.ilike.%${q}%,region.ilike.%${q}%`);
 
-  query =
-    sort === "popular"
-      ? query.order("like_count", { ascending: false }).order("created_at", { ascending: false })
-      : query.order("created_at", { ascending: false });
+  query = orderFeedQuery(query, sort);
 
   const { data } = await query;
   return ((data as RouteRowLite[] | null) ?? []).map(toSummary);
@@ -193,7 +200,7 @@ export async function getFollowingFeed(opts?: {
   const ids = (f ?? []).map((r) => r.followee_id);
   if (ids.length === 0) return [];
 
-  const sort: FeedSort = opts?.sort === "popular" ? "popular" : "recent";
+  const sort: FeedSort = parseFeedSort(opts?.sort);
   const q = (opts?.q ?? "").replace(/[%,()]/g, "").trim();
 
   let query = supabase
@@ -202,13 +209,31 @@ export async function getFollowingFeed(opts?: {
     .eq("visibility", "public")
     .in("author_id", ids);
   if (q) query = query.or(`title.ilike.%${q}%,region.ilike.%${q}%`);
-  query =
-    sort === "popular"
-      ? query.order("like_count", { ascending: false }).order("created_at", { ascending: false })
-      : query.order("created_at", { ascending: false });
+  query = orderFeedQuery(query, sort);
 
   const { data } = await query;
   return ((data as RouteRowLite[] | null) ?? []).map(toSummary);
+}
+
+function parseFeedSort(sort?: string): FeedSort {
+  if (sort === "followed" || sort === "completed" || sort === "popular") return sort;
+  return "recent";
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function orderFeedQuery(query: any, sort: FeedSort) {
+  if (sort === "followed") {
+    return query.order("copy_count", { ascending: false }).order("created_at", { ascending: false });
+  }
+  if (sort === "completed") {
+    return query
+      .order("completion_count", { ascending: false })
+      .order("created_at", { ascending: false });
+  }
+  if (sort === "popular") {
+    return query.order("like_count", { ascending: false }).order("created_at", { ascending: false });
+  }
+  return query.order("created_at", { ascending: false });
 }
 
 export type FeedMapPoint = {
@@ -657,6 +682,81 @@ export async function getLikedRoutes(): Promise<RouteSummary[]> {
   return collectedRoutes("likes");
 }
 
+export type FollowedCourseStatus = "tuning" | "ready" | "done";
+
+export type FollowedCourse = RouteSummary & {
+  /** my copy purpose */
+  followPurpose: CopyPurpose;
+  /** original public course id (for 다녀왔어요) */
+  originalRouteId?: string;
+  followStatus: FollowedCourseStatus;
+};
+
+/**
+ * Courses I brought in via "따라가기" — my private drafts, newest copy first.
+ * Status: done (다녀왔어요) · tuning (계획 다듬는 중) · ready (기록/실행 준비).
+ */
+export async function getMyFollowedCourses(): Promise<FollowedCourse[]> {
+  const user = await getAuthUser();
+  if (!user) return [];
+  const supabase = await getServerClient();
+
+  const { data } = await supabase
+    .from("route_copies")
+    .select(
+      `purpose, created_at, original_route_id, copied_route:routes!route_copies_copied_route_id_fkey(${LITE_SELECT})`,
+    )
+    .eq("copier_id", user.id)
+    .order("created_at", { ascending: false });
+
+  type Row = {
+    purpose: CopyPurpose;
+    created_at: string;
+    original_route_id: string | null;
+    copied_route: RouteRowLite | null;
+  };
+
+  const rows = ((data as Row[] | null) ?? []).filter((r) => r.copied_route);
+  const originalIds = rows
+    .map((r) => r.original_route_id)
+    .filter((id): id is string => !!id);
+
+  const completed = new Set<string>();
+  if (originalIds.length) {
+    const { data: comps } = await supabase
+      .from("route_completions")
+      .select("original_route_id")
+      .eq("completer_id", user.id)
+      .in("original_route_id", originalIds);
+    for (const c of comps ?? []) {
+      if (c.original_route_id) completed.add(c.original_route_id);
+    }
+  }
+
+  return rows.map((r) => {
+    const summary = toSummary(r.copied_route as RouteRowLite);
+    const originalId = r.original_route_id ?? undefined;
+    const followStatus: FollowedCourseStatus =
+      originalId && completed.has(originalId)
+        ? "done"
+        : r.purpose === "plan"
+          ? "tuning"
+          : "ready";
+    return {
+      ...summary,
+      followPurpose: r.purpose,
+      originalRouteId: originalId,
+      followStatus,
+      copyPurpose: r.purpose,
+    };
+  });
+}
+
+/** Public courses from people I follow (보관함 팔로잉 코스 스트림). */
+export async function getFollowingCourseStream(): Promise<RouteSummary[]> {
+  return getFollowingFeed({ sort: "recent" });
+}
+
 export type UserProfile = {
   id: string;
   handle: string;
@@ -886,16 +986,29 @@ export async function getNotifications(): Promise<AppNotification[]> {
     .order("created_at", { ascending: false })
     .limit(50);
 
+  // Transfer signals first (completion / follow), then social chatter.
+  const rank: Record<AppNotification["type"], number> = {
+    completion: 0,
+    follow: 1,
+    comment: 2,
+    like: 3,
+  };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return ((data as any[]) ?? []).map((n) => ({
+  const mapped = ((data as any[]) ?? []).map((n) => ({
     id: n.id,
-    type: n.type,
+    type: n.type as AppNotification["type"],
     read: n.read,
     createdAt: n.created_at,
     actor: toAuthor(n.actor),
     routeId: n.route_id ?? undefined,
     routeTitle: n.route?.title ?? undefined,
   }));
+  return mapped.sort((a, b) => {
+    if (a.read !== b.read) return a.read ? 1 : -1;
+    const rd = rank[a.type] - rank[b.type];
+    if (rd !== 0) return rd;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 }
 
 /** Unread notification count for the bell badge. */

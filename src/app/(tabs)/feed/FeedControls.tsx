@@ -48,22 +48,27 @@ export default function FeedControls({
     // container (FeedExplorer), which pins it to the top while the identity row
     // above it auto-hides on scroll — so the filters stay reachable throughout.
     <div className="bg-paper/95 px-4 pb-2 pt-2 backdrop-blur">
-      {/* 필터 · 최신순 · 인기순 · 거리순 — 보기 유형 */}
+      {/* 필터 · 최신 · 따라간 · 다녀온 · 가까운 — 보기 유형 */}
       <div className="flex items-center gap-2">
         <FilterButton count={activeCount} onClick={onOpenFilter} />
         <div className="no-scrollbar flex min-w-0 items-center gap-1.5 overflow-x-auto">
           <SortChip
-            label="최신순"
+            label="최신"
             active={sort === "recent"}
             onClick={() => router.replace(sortUrl("recent"))}
           />
           <SortChip
-            label="인기순"
-            active={sort === "popular"}
-            onClick={() => router.replace(sortUrl("popular"))}
+            label="많이 따라간"
+            active={sort === "followed"}
+            onClick={() => router.replace(sortUrl("followed"))}
           />
           <SortChip
-            label="거리순"
+            label="많이 다녀온"
+            active={sort === "completed"}
+            onClick={() => router.replace(sortUrl("completed"))}
+          />
+          <SortChip
+            label="가까운"
             active={sort === "distance"}
             onClick={() => router.replace(sortUrl("distance"))}
           />
@@ -125,20 +130,20 @@ function ActiveFilterChips({
   onRemove: (kind: keyof FeedFilters, value: string) => void;
 }) {
   const items: { kind: keyof FeedFilters; value: string; label: string }[] = [
-    ...(filters.kinds ?? []).map((v) => ({ kind: "kinds" as const, value: v, label: kindLabel(v) })),
+    ...filters.regions.map((v) => ({ kind: "regions" as const, value: v, label: v })),
     ...(filters.purposes ?? []).map((v) => ({ kind: "purposes" as const, value: v, label: v })),
+    ...(filters.difficulties ?? []).map((v) => ({
+      kind: "difficulties" as const,
+      value: v,
+      label: difficultyByKey(v)?.label ?? v,
+    })),
+    ...(filters.kinds ?? []).map((v) => ({ kind: "kinds" as const, value: v, label: kindLabel(v) })),
     ...filters.themes.map((v) => ({ kind: "themes" as const, value: v, label: v })),
     ...filters.moods.map((v) => ({
       kind: "moods" as const,
       value: v,
       label: `${moodByLabel(v)?.emoji ?? ""} ${v}`.trim(),
     })),
-    ...(filters.difficulties ?? []).map((v) => ({
-      kind: "difficulties" as const,
-      value: v,
-      label: difficultyByKey(v)?.label ?? v,
-    })),
-    ...filters.regions.map((v) => ({ kind: "regions" as const, value: v, label: v })),
   ];
   return (
     <div className="no-scrollbar -mx-4 mt-2.5 flex gap-2 overflow-x-auto px-4">

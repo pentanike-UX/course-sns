@@ -12,7 +12,7 @@ import {
 } from "@/lib/data";
 import type { HomeTab } from "../HomeRoutesTabs";
 
-// 내 일기 — opened as a left drawer from the 둘러보기 header's profile chip.
+// 내 코스 — opened as a left drawer from the 둘러보기 header's profile chip.
 // 설정 stacks the profile screen on top as a live overlay (feed stays mounted).
 export default async function DiaryPage({
   searchParams,

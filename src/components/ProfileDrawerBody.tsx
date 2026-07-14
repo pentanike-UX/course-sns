@@ -8,7 +8,7 @@ import type { RouteAuthor, RouteSummary, Visibility } from "@/lib/types";
 /**
  * The body of the profile drawer (avatar, stats, settings). Extracted so it can
  * be rendered both as the routed /profile drawer AND as a live overlay stacked
- * on top of the 내 일기 drawer (feed → profile) without unmounting feed.
+ * on top of the 내 코스 drawer (feed → profile) without unmounting feed.
  */
 export default function ProfileDrawerBody({
   routes,
@@ -45,7 +45,7 @@ export default function ProfileDrawerBody({
       </section>
 
       <section className="mx-4 mt-4 grid grid-cols-4 divide-x divide-line rounded-[var(--radius-card)] border border-line bg-card py-4 text-center">
-        <Stat label="루트" value={routes.length} />
+        <Stat label="코스" value={routes.length} />
         <Stat label="공개" value={publicCount} />
         <Stat label="저장" value={counts.saved} href="/library?tab=saved" />
         <Stat label="좋아요" value={counts.liked} href="/library?tab=liked" />
@@ -75,7 +75,7 @@ export default function ProfileDrawerBody({
         </ul>
 
         <p className="mt-6 text-center text-[12px] text-ink-faint">
-          코스 · 코스 기록·공유
+          코스 · 따라갈 수 있는 이동 코스
           <br />
           <span className="text-[11px]">{APP_VERSION}</span>
         </p>

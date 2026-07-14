@@ -8,7 +8,7 @@ import GlassCircle from "@/components/GlassCircle";
 import { useOverlayHistory } from "@/lib/use-overlay-history";
 
 /**
- * The 내 일기 (feed) drawer with profile stacked on top as a live overlay —
+ * The 내 코스 (feed) drawer with profile stacked on top as a live overlay —
  * no route change, so feed scroll/state stays mounted beneath.
  */
 export default function FeedProfileStack({

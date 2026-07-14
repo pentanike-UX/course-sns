@@ -401,9 +401,9 @@ export default function BottomNav() {
       {/* record action — same height as the bar, aligned to its right */}
       <button
         type="button"
-        aria-label="새 루트 만들기"
+        aria-label="새 코스 만들기"
         onClick={() => {
-          // 일기 등록·계획 — guests get the login sheet first
+          // 코스 기록·계획 — guests get the login sheet first
           if (!requireAuth({ next: "/routes/new" })) return;
           setCreateIntent("record");
           setCreateOpen(true);
@@ -412,7 +412,7 @@ export default function BottomNav() {
         className={`jelly pointer-events-auto flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-full backdrop-blur-xl backdrop-saturate-150 transition-[background-color,box-shadow,color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ring-1 ${
           navHidden
             ? "bg-white/34 text-ink shadow-[0_10px_24px_rgba(15,23,42,0.18),0_0_0_1px_rgba(255,255,255,0.52),inset_0_1px_0_rgba(255,255,255,0.78)] ring-white/60 dark:bg-black/34 dark:text-white dark:ring-white/15"
-            : "bg-sunset text-white shadow-[0_10px_24px_rgba(22,163,74,0.45),0_0_0_1px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.5)] ring-white/50"
+            : "bg-sunset text-white shadow-[var(--shadow-brand),0_0_0_1px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.5)] ring-white/50"
         }`}
       >
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
@@ -422,9 +422,9 @@ export default function BottomNav() {
 
       <ActionBottomSheet
         open={createOpen}
-        title="무엇을 만들까요?"
-        description="다녀온 하루는 기록으로, 앞으로 갈 곳은 계획으로 시작해요."
-        primaryLabel={createIntent === "plan" ? "계획 시작하기" : "기록 시작하기"}
+        title="어떤 코스를 만들까요?"
+        description="남이 따라갈 수 있게, 동선과 스팟을 먼저 잡아 보세요."
+        primaryLabel={createIntent === "plan" ? "계획 시작하기" : "코스 만들기"}
         secondaryLabel="취소"
         onClose={() => setCreateOpen(false)}
         onPrimary={() => {
@@ -435,15 +435,15 @@ export default function BottomNav() {
         <div className="mt-4 grid gap-2">
           <CreateOption
             selected={createIntent === "record"}
-            title="여행 기록하기"
-            body="사진을 올리고 장소와 감상을 정리해요."
+            title="코스 기록하기"
+            body="다녀온 스팟·이동·팁을 하나의 코스로 남겨요."
             icon={<RecordIcon />}
             onClick={() => setCreateIntent("record")}
           />
           <CreateOption
             selected={createIntent === "plan"}
-            title="여행 계획하기"
-            body="가고 싶은 곳을 모아 지도 위 동선으로 짜요."
+            title="코스 계획하기"
+            body="갈 곳을 모아 지도 위 동선으로 짜요. 따라가기로 시작할 수도 있어요."
             icon={<PlanIcon />}
             onClick={() => setCreateIntent("plan")}
           />

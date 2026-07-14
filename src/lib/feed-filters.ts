@@ -23,7 +23,7 @@ export const EMPTY_FILTERS: FeedFilters = {
   regions: [],
 };
 
-/** 루트 종류 facet — a route is a 계획 when its copy lineage says so, else 루트일기. */
+/** 코스 종류 facet — a route is a 계획 when its copy lineage says so, else 코스 기록. */
 export const KIND_OPTIONS: { value: string; label: string }[] = [
   { value: "record", label: "코스 기록" },
   { value: "plan", label: "계획" },

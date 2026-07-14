@@ -1,45 +1,63 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import CollectionCard from "./CollectionCard";
 import FollowingPanel from "./FollowingPanel";
+import RouteCard from "@/components/RouteCard";
 import SegPager from "@/components/SegPager";
 import PanelSkeleton from "@/components/PanelSkeleton";
 import SlidingSegments from "@/components/SlidingSegments";
 import { useSegTabs } from "@/lib/use-seg-tabs";
+import type { FollowedCourse, PersonSummary } from "@/lib/data";
 import type { RouteSummary } from "@/lib/types";
-import type { PersonSummary } from "@/lib/data";
 
-export type LibraryTab = "saved" | "liked" | "following";
+export type LibraryTab = "following" | "saved" | "followingPeople";
 
-const TAB_ORDER = ["saved", "liked", "following"] as const;
+const TAB_ORDER = ["following", "saved", "followingPeople"] as const;
 
-/** 저장/좋아요/팔로잉 segment + list — instant client switch with swipe. */
+/** 따라가는 중 / 저장 / 팔로잉 — course-community library IA (Phase 2). */
 export default function LibraryTabs({
+  followed,
   saved,
-  liked,
+  followingCourses,
   followingPeople,
   initialTab,
 }: {
+  followed: FollowedCourse[];
   saved: RouteSummary[];
-  liked: RouteSummary[];
+  followingCourses: RouteSummary[];
   followingPeople: PersonSummary[];
   initialTab: LibraryTab;
 }) {
   const { tab, select } = useSegTabs<LibraryTab>(initialTab, (t) =>
-    t === "liked" ? "/library" : `/library?tab=${t}`,
+    t === "following" ? "/library" : `/library?tab=${t === "followingPeople" ? "people" : t}`,
   );
 
   const renderPanel = (t: LibraryTab) => {
-    // 팔로잉 = 팔로우한 회원 관리 + 회원 검색(친구 찾기)
-    if (t === "following") return <FollowingPanel following={followingPeople} />;
-    const routes = t === "liked" ? liked : saved;
-    if (routes.length === 0) return <EmptyState tab={t} />;
+    if (t === "followingPeople") {
+      return (
+        <FollowingCoursesPanel courses={followingCourses} people={followingPeople} />
+      );
+    }
+    if (t === "following") {
+      if (followed.length === 0) return <EmptyFollowed />;
+      return (
+        <ul className="space-y-4 px-4 pb-8 pt-4">
+          {followed.map((r) => (
+            <li key={r.id}>
+              <FollowedCourseCard course={r} />
+            </li>
+          ))}
+        </ul>
+      );
+    }
+    if (saved.length === 0) return <EmptySaved />;
     return (
       <ul className="space-y-4 px-4 pb-8 pt-4">
-        {routes.map((r) => (
+        {saved.map((r) => (
           <li key={r.id}>
-            <CollectionCard route={r} tab={t} />
+            <CollectionCard route={r} tab="saved" />
           </li>
         ))}
       </ul>
@@ -48,14 +66,12 @@ export default function LibraryTabs({
 
   return (
     <>
-      {/* Segment pinned under the collapsing large-title bar so 저장/좋아요/팔로잉
-          stays switchable while the list scrolls (frame's internal scroll). */}
       <div className="sticky top-[calc(env(safe-area-inset-top)+3.5rem)] z-10 bg-paper/95 px-4 pb-2 pt-2 backdrop-blur">
         <SlidingSegments
           options={[
+            { value: "following", label: "따라가는 중" },
             { value: "saved", label: "저장" },
-            { value: "liked", label: "좋아요" },
-            { value: "following", label: "팔로잉" },
+            { value: "followingPeople", label: "팔로잉" },
           ]}
           value={tab}
           onChange={select}
@@ -73,29 +89,137 @@ export default function LibraryTabs({
   );
 }
 
-function EmptyState({ tab }: { tab: "saved" | "liked" }) {
+function FollowedCourseCard({ course }: { course: FollowedCourse }) {
+  const statusLabel =
+    course.followStatus === "done"
+      ? "다녀옴"
+      : course.followStatus === "tuning"
+        ? "다듬는 중"
+        : "기록 중";
+  const statusClass =
+    course.followStatus === "done"
+      ? "bg-success-soft text-[color:var(--success)]"
+      : course.followStatus === "tuning"
+        ? "bg-sunset-wash text-sunset-ink"
+        : "bg-muted text-ink-soft";
+
+  return (
+    <div className="relative">
+      <RouteCard route={course} />
+      <span
+        className={`absolute left-2.5 top-2.5 z-10 rounded-full px-2.5 py-1 text-[11px] font-bold shadow-sm ${statusClass}`}
+      >
+        {statusLabel}
+      </span>
+      {course.followStatus !== "done" && course.originalRouteId && (
+        <Link
+          href={`/routes/${course.originalRouteId}`}
+          className="absolute bottom-3 right-3 z-10 rounded-full bg-card/95 px-3 py-1.5 text-[12px] font-bold text-sunset-ink shadow-sm ring-1 ring-line"
+        >
+          {course.followStatus === "tuning" ? "원본 보기 · 다녀오면 후기" : "원본에서 후기"}
+        </Link>
+      )}
+    </div>
+  );
+}
+
+function FollowingCoursesPanel({
+  courses,
+  people,
+}: {
+  courses: RouteSummary[];
+  people: PersonSummary[];
+}) {
+  const [mode, setMode] = useState<"courses" | "people">("courses");
+
+  return (
+    <div className="pb-8">
+      <div className="flex gap-2 px-4 pt-3">
+        <SubChip active={mode === "courses"} onClick={() => setMode("courses")}>
+          새 코스
+        </SubChip>
+        <SubChip active={mode === "people"} onClick={() => setMode("people")}>
+          사람
+        </SubChip>
+      </div>
+      {mode === "people" ? (
+        <FollowingPanel following={people} />
+      ) : courses.length === 0 ? (
+        <EmptyFollowingCourses />
+      ) : (
+        <ul className="mt-3 space-y-4 px-4">
+          {courses.map((r) => (
+            <li key={r.id}>
+              <RouteCard route={r} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function SubChip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`rounded-full px-3.5 py-1.5 text-[13px] font-bold transition-colors ${
+        active ? "bg-ink text-paper" : "bg-muted text-ink-soft"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function EmptyFollowed() {
   return (
     <div className="flex flex-col items-center px-8 py-16 text-center">
-      <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-sunset-wash">
-        {tab === "saved" ? <BookmarkIcon /> : <HeartIcon />}
-      </div>
-      <p className="text-[14px] font-semibold text-ink">
-        {tab === "saved" ? "저장한 루트가 없어요" : "좋아요한 루트가 없어요"}
-      </p>
+      <p className="text-[14px] font-semibold text-ink">아직 따라가는 코스가 없어요</p>
       <p className="mt-1 text-[13px] leading-relaxed text-ink-faint">
-        {tab === "saved" ? (
-          <>
-            둘러보기에서 마음에 드는 루트를
-            <br />
-            저장해 두면 여기 모여요.
-          </>
-        ) : (
-          <>
-            마음에 든 루트에 좋아요를 누르면
-            <br />
-            여기에서 다시 볼 수 있어요.
-          </>
-        )}
+        둘러보기에서 마음에 드는 코스를
+        <br />
+        따라가면 여기 모여요.
+      </p>
+      <Link
+        href="/"
+        className="mt-5 rounded-full bg-sunset px-5 py-2.5 text-[13px] font-semibold text-white"
+      >
+        코스 둘러보기
+      </Link>
+    </div>
+  );
+}
+
+function EmptyFollowingCourses() {
+  return (
+    <div className="flex flex-col items-center px-8 py-12 text-center">
+      <p className="text-[14px] font-semibold text-ink">팔로우한 사람의 새 코스가 없어요</p>
+      <p className="mt-1 text-[13px] leading-relaxed text-ink-faint">
+        사람 탭에서 취향이 맞는 메이커를 팔로우해 보세요.
+      </p>
+    </div>
+  );
+}
+
+function EmptySaved() {
+  return (
+    <div className="flex flex-col items-center px-8 py-16 text-center">
+      <p className="text-[14px] font-semibold text-ink">저장한 코스가 없어요</p>
+      <p className="mt-1 text-[13px] leading-relaxed text-ink-faint">
+        둘러보기에서 마음에 드는 코스를
+        <br />
+        저장해 두면 여기 모여요.
       </p>
       <Link
         href="/"
@@ -104,21 +228,5 @@ function EmptyState({ tab }: { tab: "saved" | "liked" }) {
         둘러보기로 가기
       </Link>
     </div>
-  );
-}
-
-function BookmarkIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--sunset)" strokeWidth="1.8" strokeLinejoin="round">
-      <path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1Z" />
-    </svg>
-  );
-}
-
-function HeartIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="var(--sunset)">
-      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-    </svg>
   );
 }
