@@ -1176,9 +1176,8 @@ export default function RouteForm({
   const savingOverlay = saving && (
     <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/30">
       <div className="rounded-2xl bg-card px-6 py-5 text-center shadow-xl">
-        <div className="text-2xl">⏳</div>
-        <p className="mt-1 text-[14px] font-semibold text-ink">코스를 저장하는 중…</p>
-        <p className="text-[12px] text-ink-faint">
+        <p className="text-[14px] font-semibold text-ink">코스를 저장하는 중…</p>
+        <p className="mt-1 text-[12px] text-ink-faint">
           {isPlanDraft ? "동선 정보를 저장하고 있어요" : "사진 업로드 중일 수 있어요"}
         </p>
       </div>
