@@ -533,13 +533,14 @@ export async function getViewerCompletionState(
   if (!user) return null;
   const supabase = await getServerClient();
 
-  const [{ data: copy }, { data: completion }] = await Promise.all([
+  const [{ data: copies }, { data: completion }] = await Promise.all([
     supabase
       .from("route_copies")
-      .select("id")
+      .select("id, copied_route_id, created_at")
       .eq("original_route_id", originalRouteId)
       .eq("copier_id", user.id)
-      .maybeSingle(),
+      .order("created_at", { ascending: false })
+      .limit(1),
     supabase
       .from("route_completions")
       .select("id, rating, tip")
@@ -548,11 +549,13 @@ export async function getViewerCompletionState(
       .maybeSingle(),
   ]);
 
+  const copy = copies?.[0];
   if (!copy) return { hasCopied: false };
 
   return {
     hasCopied: true,
     routeCopyId: copy.id,
+    copiedRouteId: copy.copied_route_id,
     completion: completion
       ? {
           id: completion.id,

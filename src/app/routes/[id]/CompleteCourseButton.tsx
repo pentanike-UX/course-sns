@@ -14,9 +14,12 @@ import { submitCompletion } from "./actions";
 export default function CompleteCourseButton({
   routeId,
   state,
+  prominent = false,
 }: {
   routeId: string;
   state: ViewerCompletionState;
+  /** Primary CTA styling when this is the main action after follow. */
+  prominent?: boolean;
 }) {
   const router = useRouter();
   const { requireAuth } = useAuthGate();
@@ -64,7 +67,11 @@ export default function CompleteCourseButton({
         type="button"
         onClick={handleOpen}
         disabled={pending}
-        className="flex w-full items-center justify-center gap-2 rounded-full border border-sunset/30 bg-sunset-wash px-4 py-3 text-[14px] font-bold text-sunset-ink transition-colors disabled:opacity-60"
+        className={
+          prominent
+            ? "flex w-full items-center justify-center gap-2 rounded-full bg-sunset px-4 py-3.5 text-[15px] font-bold text-white shadow-[var(--shadow-sm)] transition-transform active:scale-[0.98] disabled:opacity-60"
+            : "flex w-full items-center justify-center gap-2 rounded-full border border-sunset/30 bg-sunset-wash px-4 py-3 text-[14px] font-bold text-sunset-ink transition-colors disabled:opacity-60"
+        }
       >
         <CheckIcon />
         {label}

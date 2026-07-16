@@ -781,7 +781,7 @@ export default function RouteForm({
   const [initialSnapshot] = useState(formSnapshot);
   const isDirty = formSnapshot !== initialSnapshot;
 
-  const planBackHref = isDirectPlanCreate ? "/feed?tab=plan" : `/routes/${routeId}`;
+  const planBackHref = isDirectPlanCreate ? "/library?tab=following" : `/routes/${routeId}`;
   const leavePlanner = () => {
     setConfirmExit(false);
     if (hasInAppHistory()) router.back();
@@ -1072,7 +1072,7 @@ export default function RouteForm({
     </button>
   );
 
-  const metaSelectors = (
+  const primaryMetaSelectors = (
     <>
       <SelectTrigger
         label="추천 대상"
@@ -1104,6 +1104,11 @@ export default function RouteForm({
           })}
         </div>
       </div>
+    </>
+  );
+
+  const secondaryMetaSelectors = (
+    <>
       <div className="grid grid-cols-2 gap-3">
         <SelectTrigger label="테마" placeholder="테마 선택" value={theme} onClick={() => setSheet("theme")} />
         <SelectTrigger label="감정" placeholder="선택" value={moodDisplay} onClick={() => setSheet("mood")} />
@@ -1122,6 +1127,13 @@ export default function RouteForm({
           inputMode="numeric"
         />
       </div>
+    </>
+  );
+
+  const metaSelectors = (
+    <>
+      {primaryMetaSelectors}
+      {secondaryMetaSelectors}
     </>
   );
 
@@ -1199,15 +1211,16 @@ export default function RouteForm({
         </p>
       )}
       <Field label="지역" value={region} onChange={setRegion} placeholder="예: 제주 구좌·성산" required />
+      {primaryMetaSelectors}
       <button
         type="button"
         onClick={() => setShowMoreMeta((v) => !v)}
         className="mb-3 flex w-full items-center justify-between rounded-xl border border-line bg-card px-3 py-2.5 text-left text-[13px] font-semibold text-ink-soft"
       >
-        {showMoreMeta ? "추가 설정 접기" : "추천·난이도 등 추가 설정"}
+        {showMoreMeta ? "테마·감정 등 접기" : "테마·감정·비용 더 보기"}
         <span className="text-ink-faint">{showMoreMeta ? "−" : "+"}</span>
       </button>
-      {showMoreMeta && metaSelectors}
+      {showMoreMeta && secondaryMetaSelectors}
       <div className="mb-1 mt-2 text-[12px] font-medium text-ink-soft">공개 범위</div>
       {visibilityBox}
       {isDirectPlanCreate ? (
@@ -1220,9 +1233,9 @@ export default function RouteForm({
         </div>
       ) : (
         <div className="mt-3 rounded-[var(--radius-card)] border border-line bg-card p-4">
-          <div className="text-[14px] font-bold text-ink">다녀온 뒤 기록으로 전환</div>
+          <div className="text-[14px] font-bold text-ink">다녀온 뒤 기록으로 바꾸기</div>
           <p className="mt-1 text-[12px] leading-relaxed text-ink-faint">
-            여행을 마쳤다면 사진과 감상을 중심으로 쓰는 기록 화면으로 바꿀 수 있어요.
+            여행을 마쳤다면 사진과 팁을 채울 수 있는 기록 화면으로 바꿀 수 있어요.
           </p>
           {convertError && (
             <p className="mt-2 rounded-lg bg-sunset-wash px-3 py-2 text-[12px] text-sunset-ink">
@@ -1235,7 +1248,7 @@ export default function RouteForm({
             disabled={convertingRecord}
             className="mt-3 w-full rounded-xl bg-ink px-3 py-2.5 text-[13px] font-bold text-paper disabled:opacity-40"
           >
-            {convertingRecord ? "전환 중…" : "코스 기록으로 전환"}
+            {convertingRecord ? "전환 중…" : "기록으로 바꾸기"}
           </button>
         </div>
       )}
@@ -1506,9 +1519,18 @@ export default function RouteForm({
 
         {step === 4 && (
           <>
-            <StepHeading title="이 코스를 한마디로" desc="추천 대상·난이도·테마를 남기면 따라가기 쉬워져요." />
+            <StepHeading title="이 코스를 한마디로" desc="추천 대상·난이도를 먼저 남기면 따라가기 쉬워져요." />
             <Field label="제목" value={title} onChange={setTitle} placeholder="예: 제주 동쪽 바람 코스" required />
-            {metaSelectors}
+            {primaryMetaSelectors}
+            <button
+              type="button"
+              onClick={() => setShowMoreMeta((v) => !v)}
+              className="mb-3 flex w-full items-center justify-between rounded-xl border border-line bg-card px-3 py-2.5 text-left text-[13px] font-semibold text-ink-soft"
+            >
+              {showMoreMeta ? "테마·감정 등 접기" : "테마·감정·비용 더 보기"}
+              <span className="text-ink-faint">{showMoreMeta ? "−" : "+"}</span>
+            </button>
+            {showMoreMeta && secondaryMetaSelectors}
           </>
         )}
 

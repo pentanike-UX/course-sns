@@ -12,8 +12,7 @@ import RoutePlanThumbnail from "@/components/RoutePlanThumbnail";
 import RouteActions from "./RouteActions";
 import RouteDetailChromeTone from "./RouteDetailChromeTone";
 import RouteHeroMeta from "./RouteHeroMeta";
-import CopyRouteButton from "./CopyRouteButton";
-import CompleteCourseButton from "./CompleteCourseButton";
+import CourseFollowActions from "./CourseFollowActions";
 import RouteAuthorCard from "./RouteAuthorCard";
 import RouteMenu from "./RouteMenu";
 import ConvertPlanButton from "./ConvertPlanButton";
@@ -214,12 +213,7 @@ export default function RouteView({
         )}
       </div>
       {route.visibility === "public" && (
-        <div className="mt-3 space-y-2">
-          <CopyRouteButton routeId={route.id} prominent />
-          {viewerCompletion?.hasCopied && (
-            <CompleteCourseButton routeId={route.id} state={viewerCompletion} />
-          )}
-        </div>
+        <CourseFollowActions routeId={route.id} viewerCompletion={viewerCompletion} />
       )}
     </div>
   ) : null;
@@ -436,7 +430,6 @@ export default function RouteView({
 
         {courseSummary}
         {social}
-        {authorCard}
 
         <section className="pt-5">
           <h2 className="px-4 text-[16px] font-bold text-ink">
@@ -460,9 +453,10 @@ export default function RouteView({
           </div>
         </section>
 
+        {mapSlot}
+        {authorCard}
         {bottomInfo}
         {lineageSlot}
-        {mapSlot}
       </>
     );
   }
@@ -499,7 +493,6 @@ export default function RouteView({
 
       {courseSummary}
       {social}
-      {authorCard}
 
       <section className="px-4 pt-7">
         <h2 className="text-[16px] font-bold text-ink">
@@ -530,9 +523,10 @@ export default function RouteView({
         </ol>
       </section>
 
+      {mapSlot}
+      {authorCard}
       {bottomInfo}
       {lineageSlot}
-      {mapSlot}
       {activePhotoIndex != null && (
         <PhotoLightbox
           photos={lightboxPhotos}

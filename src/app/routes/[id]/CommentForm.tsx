@@ -31,22 +31,31 @@ export default function CommentForm({ routeId }: { routeId: string }) {
   };
 
   return (
-    <form onSubmit={submit} className="flex items-end gap-2">
-      <textarea
-        value={body}
-        onChange={(e) => setBody(e.target.value)}
-        placeholder="따뜻한 한마디를 남겨보세요"
-        rows={1}
-        className="min-h-[42px] flex-1 resize-none rounded-2xl border border-line bg-card px-3.5 py-2.5 text-[14px] text-ink outline-none placeholder:text-ink-faint focus:border-sunset"
-      />
-      <button
-        type="submit"
-        disabled={!body.trim() || pending}
-        className="shrink-0 rounded-full bg-sunset px-4 py-2.5 text-[13px] font-semibold text-white disabled:opacity-40"
-      >
-        {pending ? "…" : "등록"}
-      </button>
-      {error && <span className="sr-only">{error}</span>}
+    <form onSubmit={submit} className="space-y-2">
+      <div className="flex items-end gap-2">
+        <textarea
+          value={body}
+          onChange={(e) => {
+            setBody(e.target.value);
+            if (error) setError(null);
+          }}
+          placeholder="따라가기 팁이나 질문을 남겨 보세요"
+          rows={1}
+          className="min-h-[42px] flex-1 resize-none rounded-2xl border border-line bg-card px-3.5 py-2.5 text-[14px] text-ink outline-none placeholder:text-ink-faint focus:border-sunset"
+        />
+        <button
+          type="submit"
+          disabled={!body.trim() || pending}
+          className="shrink-0 rounded-full bg-sunset px-4 py-2.5 text-[13px] font-semibold text-white disabled:opacity-40"
+        >
+          {pending ? "…" : "등록"}
+        </button>
+      </div>
+      {error && (
+        <p className="rounded-xl bg-sunset-wash px-3 py-2 text-[12px] text-sunset-ink" role="alert">
+          {error}
+        </p>
+      )}
     </form>
   );
 }

@@ -48,7 +48,7 @@ export default function ProfileDrawerBody({
         <Stat label="코스" value={routes.length} />
         <Stat label="공개" value={publicCount} />
         <Stat label="저장" value={counts.saved} href="/library?tab=saved" />
-        <Stat label="좋아요" value={counts.liked} href="/library?tab=liked" />
+        <Stat label="좋아요" value={counts.liked} />
       </section>
 
       <Link
@@ -56,10 +56,10 @@ export default function ProfileDrawerBody({
         className="mx-4 mt-3 flex items-center justify-between rounded-[var(--radius-card)] border border-line bg-card px-4 py-3.5 text-[14px] font-semibold text-ink"
       >
         <span className="flex items-center gap-2">
-          <ChartIcon /> 여행 통계
+          <ChartIcon /> 내 코스 통계
         </span>
         <span className="flex items-center gap-1 font-normal text-ink-faint">
-          다녀온 지역 · 월별 기록
+          따라감 · 다녀온 지역
           <ChevronRightIcon />
         </span>
       </Link>
@@ -70,7 +70,7 @@ export default function ProfileDrawerBody({
           <ThemeToggle />
           <SettingLink href="/profile/account" label="계정 정보" />
           <DefaultVisibilitySetting initial={defaultVisibility} />
-          <SettingRow label="알림" badge="준비 중" />
+          <SettingLink href="/notifications" label="알림" />
           <SettingLink href="/profile/help" label="도움말" />
         </ul>
 
