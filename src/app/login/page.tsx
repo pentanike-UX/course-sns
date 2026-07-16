@@ -40,7 +40,7 @@ function LoginInner() {
     <MobileFrame shell>
       <main className="flex flex-1 flex-col justify-center px-7">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-black text-sunset">코스</h1>
+          <h1 className="text-3xl font-black text-ink">코스</h1>
           <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
             다녀온 길과 스팟을
             <br />

@@ -2,15 +2,15 @@
   <!--
     코스 (COS) app icon — refined monogram
     Soft circular C (opens right) + a single red course-stroke inside.
-    Ink charcoal + brand red; round terminals for a friendly finish.
+    C stroke doubled (96) for stronger mark; ink charcoal + brand red.
   -->
   <rect width="512" height="512" fill="#ffffff"/>
 
-  <!-- C: center (244, 256), r=142, opening ±44° on the right -->
+  <!-- C: center (244, 256), r=138, opening widened (±52°) so thick stroke still reads -->
   <path
-    d="M 346 157 A 142 142 0 1 0 346 355"
+    d="M 329 147 A 138 138 0 1 0 329 365"
     stroke="#171717"
-    stroke-width="48"
+    stroke-width="96"
     stroke-linecap="round"
     fill="none"
   />
@@ -19,7 +19,7 @@
   <path
     d="M 198 186 C 236 232, 262 274, 300 318"
     stroke="#dc2626"
-    stroke-width="36"
+    stroke-width="40"
     stroke-linecap="round"
     fill="none"
   />

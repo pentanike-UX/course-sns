@@ -67,7 +67,7 @@ export default function AppSplash() {
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/icons/icon-512.png" alt="" width={84} height={84} className="rounded-[20px]" />
-      <span className="text-[26px] font-black tracking-tight text-sunset">코스</span>
+      <span className="text-[26px] font-black tracking-tight text-ink">코스</span>
       <span className="h-6 w-6 animate-spin rounded-full border-2 border-line border-t-sunset" />
       <span className="absolute bottom-[max(24px,env(safe-area-inset-bottom))] text-[12px] font-medium text-ink-faint">
         {APP_VERSION}

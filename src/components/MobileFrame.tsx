@@ -102,7 +102,7 @@ function BrandRail() {
           height={48}
           className="rounded-[14px]"
         />
-        <span className="text-2xl font-black tracking-tight text-sunset">코스</span>
+        <span className="text-2xl font-black tracking-tight text-ink">코스</span>
       </div>
 
       <h1 className="mt-9 break-keep text-[2.6rem] font-black leading-[1.15] tracking-[-0.01em] text-ink">
