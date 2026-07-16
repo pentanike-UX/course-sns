@@ -42,9 +42,9 @@ function LoginInner() {
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-black text-ink">코스</h1>
           <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
-            다녀온 길과 스팟을
+            좋은 코스 따라가 보고,
             <br />
-            코스로 기록하고 공유하세요
+            다녀온 팁도 남겨 봐요
           </p>
         </div>
 

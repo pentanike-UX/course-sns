@@ -103,6 +103,8 @@ export interface RouteCompletion {
 
 export interface ViewerCompletionState {
   hasCopied: boolean;
+  /** My private draft created from this original (latest if several). */
+  copiedRouteId?: string;
   routeCopyId?: string;
   completion?: {
     id: string;

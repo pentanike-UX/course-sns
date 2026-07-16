@@ -69,10 +69,9 @@ function isCopyPurpose(value: string): value is CopyPurpose {
 }
 
 /**
- * "이 루트 따라가기" — copy a visible route into my diary as a private draft,
- * then land on its edit page. Copies the practical bones (meta, spots'
- * names/addresses/coords, legs' transport/time/caution) but deliberately NOT
- * the original author's photos, diary text (body), or mood.
+ * "이 코스 따라가기" — copy a visible route into my library as a private draft,
+ * then land on its edit page. If I already followed this course, reopen that draft
+ * instead of spawning duplicates.
  */
 export async function copyRoute(routeId: string, purpose: CopyPurpose) {
   if (!isCopyPurpose(purpose)) return { error: "가져올 목적을 선택해 주세요." };
@@ -82,6 +81,20 @@ export async function copyRoute(routeId: string, purpose: CopyPurpose) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "로그인이 필요해요.", needsAuth: true as const };
+
+  // Already followed? Open the latest draft — don't create another copy.
+  const { data: existing } = await supabase
+    .from("route_copies")
+    .select("copied_route_id")
+    .eq("original_route_id", routeId)
+    .eq("copier_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (existing?.copied_route_id) {
+    revalidatePath(`/routes/${routeId}`);
+    redirect(`/routes/${existing.copied_route_id}/edit?followed=1`);
+  }
 
   // RLS already limits this to public-or-mine; FK hints needed (junction ambiguity)
   const { data: src } = await supabase

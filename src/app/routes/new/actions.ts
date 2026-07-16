@@ -314,5 +314,6 @@ export async function deleteRoute(routeId: string) {
 
   revalidatePath("/");
   revalidatePath("/feed");
-  redirect("/feed");
+  revalidatePath("/library");
+  redirect("/");
 }
