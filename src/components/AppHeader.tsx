@@ -52,7 +52,7 @@ export default function AppHeader({
         <span className="flex items-center gap-1.5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/icons/icon-512.png" alt="" width={24} height={24} className="rounded-[7px]" />
-          <span className="text-xl font-black tracking-tight text-sunset">코스</span>
+          <span className="text-xl font-black tracking-tight text-ink">코스</span>
         </span>
       ) : null}
 
