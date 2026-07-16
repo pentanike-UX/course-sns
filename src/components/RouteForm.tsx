@@ -25,6 +25,7 @@ import MobileFrame from "@/components/MobileFrame";
 import AppHeader from "@/components/AppHeader";
 import ActionBottomSheet from "@/components/ActionBottomSheet";
 import GlassCircle from "@/components/GlassCircle";
+import SaveNotice from "@/components/SaveNotice";
 import SpotLocationPicker from "@/components/SpotLocationPicker";
 import RouteMap, { type MapLeg, type MapSpot } from "@/components/RouteMap";
 import RoutePlanThumbnail from "@/components/RoutePlanThumbnail";
@@ -121,6 +122,8 @@ type Props = (
   copyContext?: RouteCopyContext | null;
   /** Landed here right after "이 코스 따라가기" (`?followed=1`). */
   followedFromExplore?: boolean;
+  /** After plan 임시저장 (`?draft=1`) — show a toast and stay in the editor. */
+  draftSaved?: boolean;
 };
 
 const emptyLeg = (): DraftLeg => ({ transport: "walk", durationMin: "", caution: "" });
@@ -226,6 +229,7 @@ export default function RouteForm({
   placeSearchEnabled,
   copyContext,
   followedFromExplore = false,
+  draftSaved = false,
 }: Props) {
   const router = useRouter();
   const isEdit = mode === "edit";
@@ -250,6 +254,13 @@ export default function RouteForm({
   const [visibility, setVisibility] = useState<Visibility>(
     initial?.visibility ?? defaultVisibility ?? "private",
   );
+  // Record create: 완료 requires an explicit tap on 공개/비공개 (not just the default).
+  const [visibilityChosen, setVisibilityChosen] = useState(isEdit || isPlanDraft);
+  const [showMoreMeta, setShowMoreMeta] = useState(false);
+  const [openInfoTick, setOpenInfoTick] = useState(0);
+  const [shareVisited, setShareVisited] = useState(isEdit ? false : true);
+  const [confirmVisibility, setConfirmVisibility] = useState(false);
+  const saveIntentRef = useRef<"draft" | "finish">("finish");
 
   const [spots, setSpots] = useState<DraftSpot[]>(() =>
     isDirectPlanCreate ? [] : initialToSpots(initial),
@@ -287,6 +298,7 @@ export default function RouteForm({
         if (el && el.getBoundingClientRect().top <= line) current = s.id;
       }
       setActiveSection(current);
+      if (current === "share") setShareVisited(true);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -586,9 +598,43 @@ export default function RouteForm({
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (saving) return;
+
+    const submitter = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
+    const fromSubmitter = submitter?.value === "draft" || submitter?.value === "finish"
+      ? (submitter.value as "draft" | "finish")
+      : null;
+    const saveIntent = fromSubmitter ?? saveIntentRef.current;
+    saveIntentRef.current = "finish";
+
+    // Plan "완료" must come from the title/info sheet — header 임시저장 is draft-only.
+    // If somehow finish is requested without a title, open the info sheet instead of leaving.
+    if (isPlanDraft && saveIntent === "finish" && (!title.trim() || !region.trim())) {
+      setSaveError("제목이랑 지역을 먼저 확인해 주세요.");
+      setOpenInfoTick((n) => n + 1);
+      return;
+    }
+
+    // Record create: require an explicit visibility tap on the last step.
+    if (!isEdit && !isPlanDraft && saveIntent === "finish" && !visibilityChosen) {
+      setSaveError("공개할지 비공개할지 골라 주세요.");
+      setStep(5);
+      return;
+    }
+
+    // Record edit: if they never opened 공개 section, confirm before leaving.
+    if (isEdit && !isPlanDraft && saveIntent === "finish" && !shareVisited) {
+      setConfirmVisibility(true);
+      return;
+    }
+
     // Tell the user exactly what's missing instead of silently doing nothing.
     if (!title.trim() || !region.trim()) {
-      setSaveError("제목과 지역을 입력해 주세요. ‘제목과 일정’ 단계에서 채울 수 있어요.");
+      setSaveError(
+        isPlanDraft
+          ? "제목이랑 지역을 ‘제목과 일정’에서 확인해 주세요."
+          : "제목과 지역을 입력해 주세요.",
+      );
+      if (isPlanDraft) setOpenInfoTick((n) => n + 1);
       return;
     }
     if (!spotsValid) {
@@ -650,6 +696,7 @@ export default function RouteForm({
       );
       const coverPath = spotPhotoPaths.flat()[0];
 
+      const afterSave = saveIntent === "draft" ? ("edit" as const) : ("detail" as const);
       const payload = {
         title: title.trim(),
         region: region.trim(),
@@ -662,6 +709,7 @@ export default function RouteForm({
         visibility,
         coverPath,
         copyPurpose: isDirectPlanCreate ? ("plan" as const) : undefined,
+        afterSave,
         spots: spots.map((s, i) => ({
           title: s.title.trim(),
           body: s.body.trim(),
@@ -762,6 +810,8 @@ export default function RouteForm({
     <button
       form="route-form"
       type="submit"
+      name="intent"
+      value="draft"
       disabled={saving}
       className="rounded-full bg-sunset px-4 py-1.5 text-[13px] font-semibold text-white disabled:opacity-40"
     >
@@ -772,7 +822,7 @@ export default function RouteForm({
     <ActionBottomSheet
       open={confirmExit}
       title="저장하지 않고 나가시겠습니까?"
-      description="변경한 내용이 저장되지 않아요. 상단의 ‘임시저장’으로 보관할 수 있어요."
+      description="변경한 내용이 저장되지 않아요. 상단의 ‘임시저장’으로 보관할 수 있어요. 완료는 ‘제목과 일정’에서 하세요."
       primaryLabel="나가기"
       primaryTone="danger"
       onPrimary={leavePlanner}
@@ -780,6 +830,49 @@ export default function RouteForm({
       onClose={() => setConfirmExit(false)}
       ariaLabel="저장하지 않고 나가기 확인"
     />
+  );
+  const visibilityConfirmSheet = (
+    <ActionBottomSheet
+      open={confirmVisibility}
+      title="이 공개 범위로 저장할까요?"
+      description={
+        visibility === "public"
+          ? "지금 공개로 저장돼요. 바꿔야 하면 아래에서 고르세요."
+          : "지금 비공개로 저장돼요. 바꿔야 하면 아래에서 고르세요."
+      }
+      primaryLabel="이대로 저장"
+      onPrimary={() => {
+        setConfirmVisibility(false);
+        setShareVisited(true);
+        saveIntentRef.current = "finish";
+        const form = document.getElementById("route-form") as HTMLFormElement | null;
+        form?.requestSubmit();
+      }}
+      secondaryLabel="닫기"
+      onClose={() => setConfirmVisibility(false)}
+      ariaLabel="공개 범위 확인"
+    >
+      <div className="mt-3 space-y-2">
+        <VisibilityPicker
+          value={visibility}
+          chosen
+          onChoose={(v) => {
+            setVisibility(v);
+            setVisibilityChosen(true);
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => {
+            setConfirmVisibility(false);
+            jumpToSection("share");
+          }}
+          className="w-full rounded-xl border border-line bg-card px-3 py-2.5 text-[13px] font-semibold text-ink-soft"
+        >
+          공개 섹션으로 가서 다시 고르기
+        </button>
+      </div>
+    </ActionBottomSheet>
   );
 
   // ── shared render pieces ──────────────────────────────────────────────
@@ -1033,29 +1126,15 @@ export default function RouteForm({
   );
 
   const visibilityBox = (
-    <div className="flex items-center justify-between rounded-xl border border-line bg-card px-4 py-3.5">
-      <div>
-        <div className="text-[14px] font-semibold text-ink">
-          {visibility === "private" ? "비공개 코스" : "공개 코스"}
-        </div>
-        <div className="text-[12px] text-ink-faint">
-          {visibility === "private"
-            ? "나만 볼 수 있어요"
-            : "둘러보기에 공유돼 다른 사람이 따라갈 수 있어요"}
-        </div>
-      </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={visibility === "public"}
-        onClick={() => setVisibility((v) => (v === "private" ? "public" : "private"))}
-        className={`relative h-7 w-12 rounded-full transition-colors ${visibility === "public" ? "bg-sunset" : "bg-line"}`}
-      >
-        <span
-          className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-all ${visibility === "public" ? "left-[22px]" : "left-0.5"}`}
-        />
-      </button>
-    </div>
+    <VisibilityPicker
+      value={visibility}
+      chosen={visibilityChosen}
+      onChoose={(v) => {
+        setVisibility(v);
+        setVisibilityChosen(true);
+        setShareVisited(true);
+      }}
+    />
   );
 
   const sheets = (
@@ -1097,9 +1176,8 @@ export default function RouteForm({
   const savingOverlay = saving && (
     <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/30">
       <div className="rounded-2xl bg-card px-6 py-5 text-center shadow-xl">
-        <div className="text-2xl">⏳</div>
-        <p className="mt-1 text-[14px] font-semibold text-ink">코스를 저장하는 중…</p>
-        <p className="text-[12px] text-ink-faint">
+        <p className="text-[14px] font-semibold text-ink">코스를 저장하는 중…</p>
+        <p className="mt-1 text-[12px] text-ink-faint">
           {isPlanDraft ? "동선 정보를 저장하고 있어요" : "사진 업로드 중일 수 있어요"}
         </p>
       </div>
@@ -1108,19 +1186,40 @@ export default function RouteForm({
 
   const planInfoPanel = (
     <div className="space-y-1">
-      <Field label="계획 제목" value={title} onChange={setTitle} placeholder="예: 제주 동쪽 바람 코스" required />
+      <Field
+        label="계획 제목"
+        value={title}
+        onChange={setTitle}
+        placeholder="예: 제주 동쪽 바람 코스"
+        required
+      />
+      {title.trim() && (
+        <p className="-mt-1 mb-3 text-[12px] leading-snug text-ink-faint">
+          장소 기준으로 제목을 넣어 둔 거예요. 맘에 안 들면 바꿔 주세요.
+        </p>
+      )}
       <Field label="지역" value={region} onChange={setRegion} placeholder="예: 제주 구좌·성산" required />
-      {metaSelectors}
+      <button
+        type="button"
+        onClick={() => setShowMoreMeta((v) => !v)}
+        className="mb-3 flex w-full items-center justify-between rounded-xl border border-line bg-card px-3 py-2.5 text-left text-[13px] font-semibold text-ink-soft"
+      >
+        {showMoreMeta ? "추가 설정 접기" : "추천·난이도 등 추가 설정"}
+        <span className="text-ink-faint">{showMoreMeta ? "−" : "+"}</span>
+      </button>
+      {showMoreMeta && metaSelectors}
+      <div className="mb-1 mt-2 text-[12px] font-medium text-ink-soft">공개 범위</div>
       {visibilityBox}
       {isDirectPlanCreate ? (
-        <div className="rounded-[var(--radius-card)] border border-line bg-card p-4">
-          <div className="text-[14px] font-bold text-ink">어디로 갈지 먼저 정해요</div>
+        <div className="mt-3 rounded-[var(--radius-card)] border border-line bg-card p-4">
+          <div className="text-[14px] font-bold text-ink">임시저장과 완료</div>
           <p className="mt-1 text-[12px] leading-relaxed text-ink-faint">
-            제목과 지역을 잡아두면 스팟을 추가하면서 계획의 기준점이 흐려지지 않아요.
+            위 제목을 확인한 뒤 아래에서 완료하세요. 상단 임시저장은 초안만 보관하고 편집을
+            이어가요.
           </p>
         </div>
       ) : (
-        <div className="rounded-[var(--radius-card)] border border-line bg-card p-4">
+        <div className="mt-3 rounded-[var(--radius-card)] border border-line bg-card p-4">
           <div className="text-[14px] font-bold text-ink">다녀온 뒤 기록으로 전환</div>
           <p className="mt-1 text-[12px] leading-relaxed text-ink-faint">
             여행을 마쳤다면 사진과 감상을 중심으로 쓰는 기록 화면으로 바꿀 수 있어요.
@@ -1148,6 +1247,7 @@ export default function RouteForm({
       <PlannerFrame
         header={<AppHeader left={plannerCloseButton} right={tempSaveButton} title="새 코스 계획" />}
       >
+        <SaveNotice kind={draftSaved ? "draft" : null} />
         <form
           id="route-form"
           onSubmit={handleSave}
@@ -1159,6 +1259,7 @@ export default function RouteForm({
             copyContext={null}
             planInfoPanel={planInfoPanel}
             initialSheet={{ type: "summary" }}
+            openInfoRequest={openInfoTick}
             saving={saving}
             onUpdateSpot={updateSpot}
             onUpdateLeg={updateLeg}
@@ -1186,6 +1287,7 @@ export default function RouteForm({
       <PlannerFrame
         header={<AppHeader left={plannerCloseButton} right={tempSaveButton} title="지도 플래너" />}
       >
+        <SaveNotice kind={draftSaved ? "draft" : null} />
         <form
           id="route-form"
           onSubmit={handleSave}
@@ -1196,6 +1298,7 @@ export default function RouteForm({
             placeSearchEnabled={placeSearchEnabled}
             copyContext={copyContext}
             planInfoPanel={planInfoPanel}
+            openInfoRequest={openInfoTick}
             saving={saving}
             onUpdateSpot={updateSpot}
             onUpdateLeg={updateLeg}
@@ -1235,6 +1338,8 @@ export default function RouteForm({
             <button
               form="route-form"
               type="submit"
+              name="intent"
+              value="finish"
               disabled={!canSave || saving}
               className="rounded-full bg-sunset px-4 py-1.5 text-[13px] font-semibold text-white disabled:opacity-40"
             >
@@ -1306,7 +1411,13 @@ export default function RouteForm({
             {metaSelectors}
           </section>
 
-          <section data-section="share" ref={(el) => { sectionEls.current.share = el; }} className="mt-9 scroll-mt-16 border-t border-line pt-6">
+          <section
+            data-section="share"
+            ref={(el) => { sectionEls.current.share = el; }}
+            className="mt-9 scroll-mt-16 border-t border-line pt-6"
+            onFocusCapture={() => setShareVisited(true)}
+            onClick={() => setShareVisited(true)}
+          >
             <StepHeading
               title="공개 범위"
               desc={isPlanDraft ? "계획 단계에서는 비공개로 다듬고, 준비가 되면 공개로 바꿀 수 있어요." : "나만 쓸 코스로 둘지, 다른 사람이 따라가게 공개할지 선택하세요."}
@@ -1320,6 +1431,7 @@ export default function RouteForm({
         </form>
         {savingOverlay}
         {sheets}
+        {visibilityConfirmSheet}
       </MobileFrame>
     );
   }
@@ -1402,7 +1514,10 @@ export default function RouteForm({
 
         {step === 5 && (
           <>
-            <StepHeading title="마지막! 공개 범위를 정해요" desc="나만 쓸 코스로 둘지, 다른 사람이 따라가게 공개할지 선택하세요." />
+            <StepHeading
+              title="마지막! 공개할지 골라 주세요"
+              desc="둘 중 하나를 꼭 고른 뒤에 완료할 수 있어요."
+            />
             <div className="mb-4 rounded-[var(--radius-card)] border border-line bg-card p-4">
               <div className="text-[12px] text-ink-faint">{region} · {bestSeason || "날짜 미정"}</div>
               <div className="mt-0.5 text-[17px] font-black text-ink">{title || "제목 없음"}</div>
@@ -1413,6 +1528,11 @@ export default function RouteForm({
               </div>
             </div>
             {visibilityBox}
+            {!visibilityChosen && (
+              <p className="mt-3 text-center text-[12px] text-ink-faint">
+                비공개 / 공개 중 하나를 눌러 주세요
+              </p>
+            )}
             {saveError && (
               <p className="mt-4 rounded-lg bg-sunset-wash px-3 py-2 text-center text-[13px] text-sunset-ink">{saveError}</p>
             )}
@@ -1444,7 +1564,9 @@ export default function RouteForm({
           <button
             form="route-form"
             type="submit"
-            disabled={!canSave || saving}
+            name="intent"
+            value="finish"
+            disabled={!canSave || saving || !visibilityChosen}
             className="flex-1 rounded-xl bg-sunset py-3 text-[15px] font-semibold text-white disabled:opacity-40"
           >
             {saving ? "저장 중…" : "완료"}
@@ -1476,6 +1598,7 @@ function PlanRoutePlanner({
   copyContext,
   planInfoPanel,
   initialSheet = { type: "summary" },
+  openInfoRequest = 0,
   saving,
   onUpdateSpot,
   onUpdateLeg,
@@ -1490,6 +1613,8 @@ function PlanRoutePlanner({
   copyContext?: RouteCopyContext | null;
   planInfoPanel: React.ReactNode;
   initialSheet?: PlannerSheet;
+  /** Increment to force-open the title/info sheet (e.g. after a failed save). */
+  openInfoRequest?: number;
   saving?: boolean;
   onUpdateSpot: (key: string, patch: Partial<DraftSpot>) => void;
   onUpdateLeg: (key: string, patch: Partial<DraftLeg>) => void;
@@ -1532,11 +1657,15 @@ function PlanRoutePlanner({
   const contentRef = useRef<HTMLDivElement>(null);
   const sheetDrag = useRef<{ pointerId: number; startY: number; startH: number } | null>(null);
 
-  // Open a sheet at the comfortable middle detent (also lifts a tucked-away sheet).
+  // Open a sheet at mid by default; title/info opens full so the title isn't buried.
   const openSheet = useCallback((next: PlannerSheet) => {
     setSheet(next);
-    setDetent("mid");
+    setDetent(next.type === "info" ? "full" : "mid");
   }, []);
+
+  useEffect(() => {
+    if (openInfoRequest > 0) openSheet({ type: "info" });
+  }, [openInfoRequest, openSheet]);
 
   const bottomOffset = kbInset > 0 ? kbInset + 12 : 46;
   const availH = Math.max(frameH - bottomOffset - 8, 140);
@@ -2080,10 +2209,12 @@ function PlannerSheetContent({
         <button
           form="route-form"
           type="submit"
+          name="intent"
+          value="finish"
           disabled={saving}
           className="mt-4 flex w-full items-center justify-center rounded-xl bg-sunset px-3 py-3.5 text-[15px] font-bold text-white disabled:opacity-50"
         >
-          {saving ? "저장 중…" : "완료"}
+          {saving ? "저장 중…" : "완료 · 저장하기"}
         </button>
       </div>
     );
@@ -3315,11 +3446,56 @@ function Field({
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          // Prevent Enter from submitting the parent form mid-step (skips settings).
+          if (e.key === "Enter") e.preventDefault();
+        }}
         placeholder={placeholder}
         inputMode={inputMode}
         className="w-full rounded-xl border border-line bg-card px-3 py-2.5 text-[14px] text-ink outline-none placeholder:text-ink-faint focus:border-sunset"
       />
     </label>
+  );
+}
+
+/** Explicit 비공개 / 공개 choice — no silent default rubber-stamp. */
+function VisibilityPicker({
+  value,
+  chosen,
+  onChoose,
+}: {
+  value: Visibility;
+  chosen: boolean;
+  onChoose: (v: Visibility) => void;
+}) {
+  const opts: { id: Visibility; title: string; desc: string }[] = [
+    { id: "private", title: "비공개", desc: "나만 봐요" },
+    { id: "public", title: "공개", desc: "남이 따라갈 수 있어요" },
+  ];
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      {opts.map((o) => {
+        const active = chosen && value === o.id;
+        return (
+          <button
+            key={o.id}
+            type="button"
+            aria-pressed={active}
+            onClick={() => onChoose(o.id)}
+            className={`rounded-xl border px-3 py-3 text-left transition-colors ${
+              active
+                ? "border-sunset bg-sunset-wash text-sunset-ink"
+                : "border-line bg-card text-ink"
+            }`}
+          >
+            <span className="block text-[14px] font-bold">{o.title}</span>
+            <span className={`mt-0.5 block text-[11px] ${active ? "text-sunset-ink/80" : "text-ink-faint"}`}>
+              {o.desc}
+            </span>
+          </button>
+        );
+      })}
+    </div>
   );
 }
 

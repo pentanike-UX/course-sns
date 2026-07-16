@@ -423,7 +423,7 @@ export default function BottomNav() {
       <ActionBottomSheet
         open={createOpen}
         title="어떤 코스를 만들까요?"
-        description="남이 따라갈 수 있게, 동선과 스팟을 먼저 잡아 보세요."
+        description="동선과 스팟부터 잡고, 마지막에 제목·공개를 확인해요."
         primaryLabel={createIntent === "plan" ? "계획 시작하기" : "코스 만들기"}
         secondaryLabel="취소"
         onClose={() => setCreateOpen(false)}

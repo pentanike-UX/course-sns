@@ -9,7 +9,7 @@ export default async function EditRoutePage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ followed?: string }>;
+  searchParams: Promise<{ followed?: string; draft?: string }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
@@ -66,6 +66,7 @@ export default async function EditRoutePage({
       copyContext={copyContext}
       placeSearchEnabled={isPlaceSearchEnabled()}
       followedFromExplore={sp.followed === "1"}
+      draftSaved={sp.draft === "1"}
     />
   );
 }
