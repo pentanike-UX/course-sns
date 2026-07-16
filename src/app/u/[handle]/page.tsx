@@ -72,8 +72,8 @@ export default async function UserProfilePage({
         </section>
 
         <section className="px-4 pt-6">
-          <h3 className="mb-1 text-[14px] font-bold text-ink">코스 책장</h3>
-          <p className="mb-3 text-[12px] text-ink-faint">따라갈 수 있는 공개 코스 {profile.routes.length}</p>
+          <h3 className="mb-1 text-[14px] font-bold text-ink">공개 코스</h3>
+          <p className="mb-3 text-[12px] text-ink-faint">따라갈 수 있는 코스 {profile.routes.length}</p>
           {profile.routes.length === 0 ? (
             <div className="py-12 text-center text-[13px] text-ink-faint">
               아직 공개한 코스가 없어요.

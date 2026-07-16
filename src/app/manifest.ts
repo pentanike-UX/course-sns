@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "코스 — 코스 기록·공유",
     short_name: "COS",
     description:
-      "다녀온 길과 스팟을 코스로 기록하고 공유하세요. 사진, 이동, 감정과 테마까지 — 나만의 코스.",
+      "갔다 온 길과 스팟을 코스로 남겨 나눠 봐요. 사진, 이동, 기분과 테마까지.",
     lang: "ko",
     start_url: "/",
     display: "standalone",

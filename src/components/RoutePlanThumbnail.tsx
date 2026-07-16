@@ -69,7 +69,7 @@ export default function RoutePlanThumbnail({
           <polyline
             points={plotted.map((p) => `${p.x},${p.y}`).join(" ")}
             fill="none"
-            stroke="#f07a4a"
+            stroke="#dc2626"
             strokeWidth={showBase ? "2.8" : "3.6"}
             strokeLinecap="round"
             strokeLinejoin="round"

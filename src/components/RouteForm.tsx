@@ -1819,7 +1819,7 @@ function PlanRoutePlanner({
       }
       const selected = selectedLegIndex === index;
       const dimmed = hasFocusedLeg && !selected;
-      const color = selected ? "#f07a4a" : "#64748b";
+      const color = selected ? "#dc2626" : "#64748b";
       const line = new naver.maps.Polyline({
         map,
         path: [
@@ -2677,7 +2677,7 @@ function plannerMarkerHtml(index: number, focused: boolean, dimmed: boolean, col
   const size = focused ? 36 : 30;
   const font = focused ? 15 : 13;
   const opacity = dimmed ? 0.32 : 1;
-  const bg = color ?? (focused ? "#f07a4a" : "#dc2626");
+  const bg = color ?? (focused ? "#ef4444" : "#dc2626");
   return `<div class="rd-mk" style="display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:999px;background:${bg};color:#fff;font-size:${font}px;font-weight:800;box-shadow:0 2px 10px rgba(0,0,0,.32);opacity:${opacity};border:2px solid rgba(255,255,255,.92)">${index}</div>`;
 }
 
@@ -2685,7 +2685,7 @@ const TIME_BANDS = [
   { label: "오전", color: "#2563eb" },
   { label: "점심", color: "#f59e0b" },
   { label: "오후", color: "#dc2626" },
-  { label: "저녁", color: "#7c3aed" },
+  { label: "저녁", color: "#ea580c" },
 ] as const;
 
 function timeBandForIndex(index: number, total: number) {

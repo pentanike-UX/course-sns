@@ -1,7 +1,7 @@
 # 코스 Design System
 
 > UI·인터페이스 일관성을 위한 정본 가이드. **코드 토큰 = 스펙** — 값을 바꿀 때는 `src/app/globals.css`를 먼저 수정하고, 이 문서와 `docs/HANDOFF.md` §7에 변경 이유를 남긴다.  
-> 최종 업데이트: 2026-07-16 · course-sns MVP · **브랜드 포인트 컬러 = 레드** (`globals.css` 정본) · 표면/잉크 뉴트럴 (녹회·그린 tint 제거)
+> 최종 업데이트: 2026-07-16 · course-sns MVP · **브랜드 = 레드 + 뉴트럴** · PC 레일 구어체 · AI 전형 색체 배제
 
 ---
 
@@ -9,7 +9,7 @@
 
 | 원칙 | 설명 |
 |------|------|
-| **Fresh / Light / Trust / Followable** | 밝고 가벼운 **따라갈 수 있는 코스**. 과장된 장식보다 사진·지도·동선이 주인공 |
+| **Red / Neutral / Followable** | 브랜드 레드 포인트 + 뉴트럴 표면. 과장된 장식보다 사진·지도·동선이 주인공 |
 | **모바일 우선 (~430px)** | 모든 화면은 폰 프레임 안에서 설계. 데스크톱은 같은 UI + 좌측 레일 |
 | **iOS 멘탈모델** | large title, edge drawer, bottom sheet, 44pt 터치, 슬라이드 전환 |
 | **토큰 우선** | 하드코딩 hex 대신 CSS 변수 / Tailwind semantic (`bg-paper`, `text-ink`) |
@@ -77,7 +77,7 @@ bg-ink text-paper
 | `--error` / `--error-soft` | 삭제·위험 (`ActionBottomSheet` danger) |
 | `--info` / `--info-soft` | 정보 |
 | `--sky` | 링크·지도·대중교통 |
-| `--accent-*` | 테마/감정 칩 등 메타 (`--accent-mint`는 soft coral `#fca5a5`, sky, sunshine, coral, lavender) |
+| `--accent-*` | 테마/감정 칩 등 메타 (`--accent-mint`·`--accent-lavender`는 soft rose/coral — 퍼플·민트 그린 아님) |
 
 #### Map / Route
 
@@ -104,7 +104,7 @@ bg-ink text-paper
 |-------|------|
 | `--shadow-card` | 카드 elevation (기본) |
 | `--shadow-sm` / `--shadow-md` | 시트·플로ating |
-| `--shadow-brand` | 레드 CTA glow |
+| `--shadow-brand` | 레드 CTA elevation (과한 glow 지양) |
 
 Tailwind: `shadow-[var(--shadow-sm)]` 등
 
@@ -330,6 +330,8 @@ className="overflow-hidden rounded-[var(--radius-card)] bg-card ring-1 ring-line
 - ❌ 임의 hex — 토큰 없으면 `globals.css`에 추가 후 문서 갱신
 - ❌ 필터 active에 `bg-sunset`(레드) — **ink neutral**이 표준  
 - ❌ 브랜드를 다시 그린으로 하드코딩 — CTA/FAB/내비는 레드 토큰 (`--sunset` / `--brand-primary`)
+- ❌ AI 전형 색체 — 퍼플/라벤더 브랜드, 녹회색 표면, cream+terracotta, 다층 glow
+- ❌ PC 레일·메타 카피를 슬로건·마케팅 문장체로 — 구어체 유지 (`MobileFrame` BrandRail)
 - ❌ window scroll 가정 sticky — 탭은 **MobileFrame shell 내부 스크롤**
 - ❌ body에 portal하는 sheet — `#app-shell` portal (`ActionBottomSheet` 패턴)
 - ❌ `tracking-tight` on 한글 large title — `-0.01em` 사용

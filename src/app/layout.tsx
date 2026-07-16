@@ -20,7 +20,7 @@ const notoKr = Noto_Sans_KR({
 });
 
 const SITE_DESCRIPTION =
-  "다녀온 길과 스팟을 코스로 기록하고 공유하세요. 사진, 이동, 감정과 테마까지 — 나만의 코스.";
+  "갔다 온 길과 스팟을 코스로 남겨 나눠 봐요. 사진, 이동, 기분과 테마까지.";
 
 export const metadata: Metadata = {
   // absolute base for OG/Twitter image URLs (set NEXT_PUBLIC_SITE_URL in prod)
