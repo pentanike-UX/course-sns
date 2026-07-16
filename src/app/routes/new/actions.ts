@@ -87,6 +87,12 @@ export type CreateRouteInput = {
   copyPurpose?: CopyPurpose;
   spots: SpotInput[];
   legs: LegInput[];
+  /**
+   * Where to land after a successful save.
+   * - `detail` (default): route detail — used by "완료"
+   * - `edit`: stay in the editor — used by plan "임시저장" so title/meta aren't skipped
+   */
+  afterSave?: "detail" | "edit";
 };
 
 export async function createRoute(input: CreateRouteInput) {
@@ -137,7 +143,10 @@ export async function createRoute(input: CreateRouteInput) {
 
   revalidatePath("/");
   revalidatePath("/feed");
-  redirect(`/routes/${route.id}`, RedirectType.replace);
+  if (input.afterSave === "edit") {
+    redirect(`/routes/${route.id}/edit?draft=1`, RedirectType.replace);
+  }
+  redirect(`/routes/${route.id}?created=1`, RedirectType.replace);
 }
 
 /** Insert a route's spots, photos and legs. Returns an error message or null. */
@@ -262,7 +271,10 @@ export async function updateRoute(input: UpdateRouteInput) {
   revalidatePath("/");
   revalidatePath("/feed");
   revalidatePath(`/routes/${input.id}`);
-  redirect(`/routes/${input.id}`, RedirectType.replace);
+  if (input.afterSave === "edit") {
+    redirect(`/routes/${input.id}/edit?draft=1`, RedirectType.replace);
+  }
+  redirect(`/routes/${input.id}?saved=1`, RedirectType.replace);
 }
 
 /** Delete a route and its photos (owner only). */

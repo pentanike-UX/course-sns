@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import MobileFrame from "@/components/MobileFrame";
+import SaveNotice from "@/components/SaveNotice";
 import type { Metadata, Viewport } from "next";
 import {
   getRoute,
@@ -52,10 +53,14 @@ export async function generateMetadata({
 
 export default async function RouteDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ created?: string; saved?: string }>;
 }) {
   const { id } = await params;
+  const sp = await searchParams;
+  const noticeKind = sp.created === "1" ? "created" : sp.saved === "1" ? "saved" : null;
   const [route, me, copyContext, viewerCompletion] = await Promise.all([
     getRoute(id),
     getCurrentProfile(),
@@ -67,6 +72,7 @@ export default async function RouteDetailPage({
 
   return (
     <MobileFrame shell immersive>
+      <SaveNotice kind={noticeKind} />
       <main className="no-scrollbar min-h-0 flex-1 overflow-y-auto pb-10">
         <RouteView
           route={route}
