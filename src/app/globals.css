@@ -8,10 +8,10 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ──────────────────────────────────────────────────────────────
-   코스 design tokens — "Fresh / Light / Trust / Followable"
-   Red point-color brand (course-sns). Legacy semantic names (--paper,
-   --ink, --sunset, --primary-green-* …) are kept so components re-skin
-   without renames; VALUES are the red + neutral system (no green tint).
+   코스 design tokens — red point + neutral surfaces.
+   Legacy semantic names (--paper, --ink, --sunset, --primary-green-* …)
+   are kept so components re-skin without renames; VALUES are red + neutral
+   (no green tint, no lavender/purple brand accents).
    ────────────────────────────────────────────────────────────── */
 :root {
   /* === Primary accent scale ===
@@ -34,12 +34,12 @@
   --brand-primary-soft: rgba(239, 68, 68, 0.12);
   --brand-primary-soft-2: rgba(239, 68, 68, 0.18);
 
-  /* === Secondary accents (mint → soft brand coral; no green) === */
+  /* === Secondary accents (no purple/lavender brand tint) === */
   --accent-mint: #fca5a5;
   --accent-sky: #38bdf8;
   --accent-sunshine: #facc15;
   --accent-coral: #fb7185;
-  --accent-lavender: #a78bfa;
+  --accent-lavender: #fda4af; /* legacy name → soft rose, not purple */
 
   /* === Surfaces (neutral gray — no green-gray) === */
   --stage: #f0f0f0; /* desktop backdrop behind the mobile frame */
@@ -106,9 +106,8 @@
   /* === Shadow === */
   --shadow-sm: 0 1px 2px rgba(23, 23, 23, 0.05), 0 4px 12px rgba(23, 23, 23, 0.04);
   --shadow-md: 0 8px 24px rgba(23, 23, 23, 0.08);
-  --shadow-brand: 0 8px 20px rgba(220, 38, 38, 0.18);
-  --shadow-card: 0 1px 2px rgba(17, 24, 28, 0.04), 0 2px 8px -2px rgba(17, 24, 28, 0.05),
-    0 10px 26px -8px rgba(17, 24, 28, 0.1);
+  --shadow-brand: 0 6px 16px rgba(220, 38, 38, 0.22);
+  --shadow-card: 0 1px 3px rgba(23, 23, 23, 0.06), 0 8px 20px -6px rgba(23, 23, 23, 0.08);
 }
 
 /* ── Dark mode (toggled by `.dark` on <html>) ──

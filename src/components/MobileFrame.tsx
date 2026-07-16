@@ -86,9 +86,8 @@ export default function MobileFrame({
 }
 
 /**
- * Desktop-only marketing rail. Hidden below lg so mobile is untouched.
- * Mental model: 코스 turns the path you walked into a course record, and a person's
- * profile into a "bookshelf" of their routes you can subscribe to.
+ * Desktop-only brand rail. Hidden below lg so mobile is untouched.
+ * Spoken Korean — not slogan / pillar marketing speak.
  */
 function BrandRail() {
   return (
@@ -106,23 +105,23 @@ function BrandRail() {
       </div>
 
       <h1 className="mt-9 break-keep text-[2.6rem] font-black leading-[1.15] tracking-[-0.01em] text-ink">
-        좋은 길을
+        갔다 온 길,
         <br />
-        따라갈 수 있게
+        그대로 남겨 봐요
       </h1>
       <p className="mt-5 max-w-[34ch] break-keep text-[15px] leading-relaxed text-ink-soft">
-        스팟 · 이동 · 시간 · 팁까지, 다녀온 동선을 지도 위 하나의 코스로 남기세요. 마음에 든
-        코스를 따라가고, 다녀온 후기가 다음 사람을 돕습니다.
+        스팟이랑 이동, 시간, 팁까지 — 다녀온 걸 지도에 코스로 남겨 두세요. 맘에 들면 따라가
+        보고, 다녀온 얘기가 다음 사람한테도 도움이 돼요.
       </p>
 
       <ul className="mt-9 space-y-4">
-        <Pillar title="코스 발견" desc="지역·누구와·난이도로 따라갈 동선을 고르세요" />
-        <Pillar title="따라가기" desc="장소와 이동을 내 초안으로 가져와 다듬어요" />
-        <Pillar title="다녀온 영향" desc="후기와 팔로우가 다음 코스를 열어요" />
+        <Pillar title="둘러보기" desc="지역·누구랑·난이도로 골라 봐요" />
+        <Pillar title="따라가기" desc="장소랑 이동을 내 걸로 가져온 뒤 손봐요" />
+        <Pillar title="다녀왔어요" desc="후기 남기면 다음 코스로 이어져요" />
       </ul>
 
       <p className="mt-11 inline-flex items-center gap-2 text-[13px] font-medium text-ink-faint">
-        오른쪽에서 바로 둘러보세요
+        오른쪽에 앱 있어요
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
           <path
             d="M5 12h14M13 6l6 6-6 6"

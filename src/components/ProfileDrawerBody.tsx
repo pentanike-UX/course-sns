@@ -75,7 +75,7 @@ export default function ProfileDrawerBody({
         </ul>
 
         <p className="mt-6 text-center text-[12px] text-ink-faint">
-          코스 · 따라갈 수 있는 이동 코스
+          코스 · 갔다 온 길을 따라갈 수 있게
           <br />
           <span className="text-[11px]">{APP_VERSION}</span>
         </p>

@@ -31,9 +31,9 @@ export default function DiaryDrawerContent({
       <section className="px-4 pb-5 pt-1">
         <p className="text-[13px] font-medium text-ink-soft">{displayName}님의 코스</p>
         <h2 className="mt-0.5 text-[22px] font-black leading-tight text-ink">
-          따라갈 코스를
+          내 코스,
           <br />
-          만들고 다듬어요
+          만들고 손봐요
         </h2>
       </section>
       <HomeRoutesTabs routes={routes} initialTab={initialTab} urlFor={urlFor} />

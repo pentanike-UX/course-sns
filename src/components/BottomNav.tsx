@@ -332,7 +332,7 @@ export default function BottomNav() {
       <ul
         ref={barRef}
         aria-hidden={navHidden || mapMode}
-        className={`relative flex h-[60px] flex-1 items-center overflow-hidden rounded-full bg-gradient-to-b from-[rgba(244,246,245,0.5)] to-[rgba(230,234,232,0.42)] shadow-[0_10px_30px_rgba(0,0,0,0.22),0_0_0_1px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-lg backdrop-saturate-150 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform dark:from-[rgba(34,45,40,0.62)] dark:to-[rgba(16,23,20,0.55)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.06),inset_0_1px_0_rgba(255,255,255,0.12)] ${
+        className={`relative flex h-[60px] flex-1 items-center overflow-hidden rounded-full bg-gradient-to-b from-[rgba(255,255,255,0.55)] to-[rgba(245,245,245,0.42)] shadow-[0_8px_24px_rgba(0,0,0,0.18),0_0_0_1px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-lg backdrop-saturate-150 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform dark:from-[rgba(38,38,38,0.62)] dark:to-[rgba(18,18,18,0.55)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.06),inset_0_1px_0_rgba(255,255,255,0.12)] ${
           navHidden ? "translate-y-[calc(100%+max(env(safe-area-inset-bottom),16px)+28px)]" : "translate-y-0"
         } ${navHidden || mapMode ? "pointer-events-none" : "pointer-events-auto"}`}
       >
@@ -412,7 +412,7 @@ export default function BottomNav() {
         className={`jelly pointer-events-auto flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-full backdrop-blur-xl backdrop-saturate-150 transition-[background-color,box-shadow,color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ring-1 ${
           navHidden
             ? "bg-white/34 text-ink shadow-[0_10px_24px_rgba(15,23,42,0.18),0_0_0_1px_rgba(255,255,255,0.52),inset_0_1px_0_rgba(255,255,255,0.78)] ring-white/60 dark:bg-black/34 dark:text-white dark:ring-white/15"
-            : "bg-sunset text-white shadow-[var(--shadow-brand),0_0_0_1px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.5)] ring-white/50"
+            : "bg-sunset text-white shadow-[var(--shadow-brand)] ring-black/5"
         }`}
       >
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
@@ -423,7 +423,7 @@ export default function BottomNav() {
       <ActionBottomSheet
         open={createOpen}
         title="어떤 코스를 만들까요?"
-        description="남이 따라갈 수 있게, 동선과 스팟을 먼저 잡아 보세요."
+        description="남이 따라갈 수 있게, 동선이랑 스팟부터 잡아 봐요."
         primaryLabel={createIntent === "plan" ? "계획 시작하기" : "코스 만들기"}
         secondaryLabel="취소"
         onClose={() => setCreateOpen(false)}
