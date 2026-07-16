@@ -123,19 +123,6 @@ function ChevronRightIcon() {
   );
 }
 
-function SettingRow({ label, badge }: { label: string; badge?: string }) {
-  return (
-    <div className="flex items-center justify-between border-b border-line px-4 py-3.5 text-[14px] text-ink-faint last:border-0">
-      {label}
-      {badge && (
-        <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-ink-faint">
-          {badge}
-        </span>
-      )}
-    </div>
-  );
-}
-
 function Stat({ label, value, href }: { label: string; value: number; href?: string }) {
   const inner = (
     <>
