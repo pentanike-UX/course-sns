@@ -728,7 +728,7 @@ function LegMotion({ mode }: { mode: TransportMode }) {
         style={{ backgroundImage: "repeating-linear-gradient(var(--plan-ink) 0 4px, transparent 4px 9px)" }}
       />
       {/* keep the designed (fixed-palette) leg icons on a light chip so their
-          navy/green stays legible in dark mode */}
+          navy/brand-red stays legible in dark mode */}
       <span className="leg-travel absolute inset-x-0 flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.18)] ring-1 ring-black/[0.05]">
         <LegMarker mode={mode} />
       </span>

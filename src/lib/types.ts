@@ -36,8 +36,8 @@ export const TRANSPORT_LABEL: Record<TransportMode, string> = {
 
 /** Per-mode accent color, shared by the route map lines and the timeline icons. */
 export const TRANSPORT_COLOR: Record<TransportMode, string> = {
-  walk: "#2f9e57",
-  bike: "#0f9b8e",
+  walk: "#dc2626",
+  bike: "#f97316",
   car: "#e8662a",
   taxi: "#eab308",
   bus: "#3b82f6",

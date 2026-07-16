@@ -5,7 +5,7 @@ import { loadNaverMaps, NAVER_MAP_KEY } from "@/lib/naver";
 
 type Props = { points: { lat: number; lng: number }[] };
 
-/** All of my geocoded spots as small green dots — the "내 여행 지도". */
+/** All of my geocoded spots as small brand-red dots — the "내 여행 지도". */
 export default function StatsMap({ points }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

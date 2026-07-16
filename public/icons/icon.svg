@@ -9,7 +9,7 @@
   <!-- C: center (244, 256), r=142, opening ±44° on the right -->
   <path
     d="M 346 157 A 142 142 0 1 0 346 355"
-    stroke="#16211c"
+    stroke="#171717"
     stroke-width="48"
     stroke-linecap="round"
     fill="none"
