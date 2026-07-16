@@ -133,7 +133,7 @@ function LoadingHeaderControls({ isPlan }: { isPlan: boolean }) {
     <div className="flex items-center gap-1" aria-hidden>
       {!isPlan && (
         <div className="flex h-9 items-center rounded-full bg-white/45 p-1 text-ink-soft shadow-sm ring-1 ring-white/50 backdrop-blur-md dark:bg-black/35 dark:ring-white/20">
-          <span className="flex h-7 min-w-[34px] items-center justify-center rounded-full bg-white px-2.5 text-[13px] font-bold text-[#16211c] shadow-sm dark:bg-white/20 dark:text-white">
+          <span className="flex h-7 min-w-[34px] items-center justify-center rounded-full bg-white px-2.5 text-[13px] font-bold text-ink shadow-sm dark:bg-white/20 dark:text-white">
             A
           </span>
           <span className="flex h-7 min-w-[34px] items-center justify-center rounded-full px-2.5 text-[13px] font-bold">
@@ -142,7 +142,7 @@ function LoadingHeaderControls({ isPlan }: { isPlan: boolean }) {
         </div>
       )}
       <div className="flex h-11 w-11 items-center justify-center">
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/45 text-[#16211c] shadow-sm ring-1 ring-white/50 backdrop-blur-md dark:bg-black/35 dark:text-white dark:ring-white/20">
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/45 text-ink shadow-sm ring-1 ring-white/50 backdrop-blur-md dark:bg-black/35 dark:text-white dark:ring-white/20">
           <DotsIcon />
         </span>
       </div>

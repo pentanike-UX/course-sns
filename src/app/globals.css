@@ -11,7 +11,7 @@
    코스 design tokens — "Fresh / Light / Trust / Followable"
    Red point-color brand (course-sns). Legacy semantic names (--paper,
    --ink, --sunset, --primary-green-* …) are kept so components re-skin
-   without renames; VALUES are the red system. Success/leaf stay green.
+   without renames; VALUES are the red + neutral system (no green tint).
    ────────────────────────────────────────────────────────────── */
 :root {
   /* === Primary accent scale ===
@@ -34,38 +34,38 @@
   --brand-primary-soft: rgba(239, 68, 68, 0.12);
   --brand-primary-soft-2: rgba(239, 68, 68, 0.18);
 
-  /* === Secondary accents === */
-  --accent-mint: #86efac;
+  /* === Secondary accents (mint → soft brand coral; no green) === */
+  --accent-mint: #fca5a5;
   --accent-sky: #38bdf8;
   --accent-sunshine: #facc15;
   --accent-coral: #fb7185;
   --accent-lavender: #a78bfa;
 
-  /* === Surfaces === */
-  --stage: #e6ebe8; /* desktop backdrop behind the mobile frame */
+  /* === Surfaces (neutral gray — no green-gray) === */
+  --stage: #f0f0f0; /* desktop backdrop behind the mobile frame */
   --paper: #ffffff; /* app background (light mode: pure white) */
   --card: #ffffff; /* card surface */
-  --bg-sunken: #eef2f0; /* sunken box / chip background */
+  --bg-sunken: #f3f3f3; /* sunken box / chip background */
 
   /* === Ink (text) === */
-  --ink: #16211c; /* primary text (green-charcoal) */
-  --ink-soft: #5b6b63; /* secondary text */
-  --ink-faint: #9aa8a0; /* tertiary / placeholder */
-  --line: #e3eae6; /* hairline borders */
+  --ink: #171717; /* primary text (neutral charcoal) */
+  --ink-soft: #5c5c5c; /* secondary text */
+  --ink-faint: #9a9a9a; /* tertiary / placeholder */
+  --line: #e5e5e5; /* hairline borders */
   --plan-ink: #323d50; /* navy used by the designed route/leg line work */
 
-  /* === routdiary brand alias (now the red point color) ===
+  /* === routdiary brand alias (red point color) ===
      Kept under the old names so existing utilities (bg-sunset, text-sunset-ink,
      bg-sunset-wash) re-skin without touching components. */
   --sunset: #dc2626; /* primary action / accent */
   --sunset-ink: #b91c1c; /* text on soft wash */
   --sunset-wash: #fee2e2; /* tinted background */
   --sky: #3b87e8; /* links / map / transit */
-  --leaf: #15803d; /* success / nature (stays green) */
+  --leaf: #dc2626; /* success / positive → brand red */
 
-  /* === Status === */
-  --success: #16a34a;
-  --success-soft: #dcfce7;
+  /* === Status (success aligned to brand red family) === */
+  --success: #b91c1c;
+  --success-soft: #fee2e2;
   --warning: #d97706;
   --warning-soft: #fef3c7;
   --error: #ef4444;
@@ -104,27 +104,27 @@
   --radius-card: 18px;
 
   /* === Shadow === */
-  --shadow-sm: 0 1px 2px rgba(15, 61, 46, 0.05), 0 4px 12px rgba(15, 61, 46, 0.04);
-  --shadow-md: 0 8px 24px rgba(15, 61, 46, 0.08);
+  --shadow-sm: 0 1px 2px rgba(23, 23, 23, 0.05), 0 4px 12px rgba(23, 23, 23, 0.04);
+  --shadow-md: 0 8px 24px rgba(23, 23, 23, 0.08);
   --shadow-brand: 0 8px 20px rgba(220, 38, 38, 0.18);
   --shadow-card: 0 1px 2px rgba(17, 24, 28, 0.04), 0 2px 8px -2px rgba(17, 24, 28, 0.05),
     0 10px 26px -8px rgba(17, 24, 28, 0.1);
 }
 
 /* ── Dark mode (toggled by `.dark` on <html>) ──
-   Red brand on deep green-charcoal surfaces. */
+   Red brand on neutral charcoal surfaces (no green tint). */
 .dark {
   /* surfaces */
-  --stage: #070f0c;
-  --paper: #0e1512;
-  --card: #18211d;
-  --bg-sunken: #1f2a25;
+  --stage: #0a0a0a;
+  --paper: #121212;
+  --card: #1c1c1c;
+  --bg-sunken: #262626;
 
   /* ink */
-  --ink: #f1f5f3;
-  --ink-soft: #a8b3ad;
-  --ink-faint: #6b766f;
-  --line: #2c3a33;
+  --ink: #f5f5f5;
+  --ink-soft: #a3a3a3;
+  --ink-faint: #737373;
+  --line: #333333;
   /* lighten the navy line work so it reads on the dark timeline */
   --plan-ink: #aeb9c4;
 
@@ -140,11 +140,11 @@
   --sunset-ink: #fca5a5;
   --sunset-wash: rgba(248, 113, 113, 0.16);
   --sky: #60a5fa;
-  --leaf: #4ade80;
+  --leaf: #f87171;
 
   /* status */
-  --success: #22c55e;
-  --success-soft: rgba(34, 197, 94, 0.16);
+  --success: #f87171;
+  --success-soft: rgba(248, 113, 113, 0.16);
   --warning: #fbbf24;
   --warning-soft: rgba(217, 119, 6, 0.2);
   --error: #f87171;
@@ -159,7 +159,7 @@
   --popover: var(--card);
   --popover-foreground: var(--ink);
   --primary: var(--brand-primary);
-  --primary-foreground: #06140d;
+  --primary-foreground: #171717;
   --secondary: var(--brand-primary-soft);
   --secondary-foreground: var(--primary-green-300);
   --muted: var(--bg-sunken);
@@ -193,7 +193,7 @@
   --color-sky: var(--sky);
   --color-leaf: var(--leaf);
 
-  /* green brand scale + accents */
+  /* brand red scale + accents */
   --color-brand-primary: var(--brand-primary);
   --color-brand-primary-soft: var(--brand-primary-soft);
   --color-primary-green-700: var(--primary-green-700);

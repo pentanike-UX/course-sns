@@ -18,10 +18,10 @@ const startIndex = (label?: string) => {
   return i >= 0 ? i : Math.floor(N / 2);
 };
 
-// per-cell color, green (top, happiest) → blue (bottom)
+// per-cell color, brand red (top, happiest) → blue (bottom)
 function cellColor(i: number) {
   const t = N > 1 ? i / (N - 1) : 0;
-  const a = [22, 163, 74]; // sunset green
+  const a = [220, 38, 38]; // brand red
   const b = [59, 135, 232]; // sky blue
   const c = a.map((v, k) => Math.round(v + (b[k] - v) * t));
   return `rgb(${c[0]}, ${c[1]}, ${c[2]})`;

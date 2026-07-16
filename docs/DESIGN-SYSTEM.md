@@ -1,7 +1,7 @@
 # 코스 Design System
 
 > UI·인터페이스 일관성을 위한 정본 가이드. **코드 토큰 = 스펙** — 값을 바꿀 때는 `src/app/globals.css`를 먼저 수정하고, 이 문서와 `docs/HANDOFF.md` §7에 변경 이유를 남긴다.  
-> 최종 업데이트: 2026-07-14 · course-sns MVP · **브랜드 포인트 컬러 = 레드** (`globals.css` 정본)
+> 최종 업데이트: 2026-07-16 · course-sns MVP · **브랜드 포인트 컬러 = 레드** (`globals.css` 정본) · 표면/잉크 뉴트럴 (녹회·그린 tint 제거)
 
 ---
 
@@ -31,14 +31,14 @@
 |-------|-------|------|----------|
 | `--paper` | `#ffffff` | 앱 배경 | `bg-paper` |
 | `--card` | `#ffffff` | 카드·시트 | `bg-card` |
-| `--bg-sunken` / `--muted` | `#eef2f0` | 칩·세그먼트 트랙 | `bg-muted` |
-| `--stage` | `#e6ebe8` | 데스크톱 프레임 바깥 | (body only) |
+| `--bg-sunken` / `--muted` | `#f3f3f3` | 칩·세그먼트 트랙 | `bg-muted` |
+| `--stage` | `#f0f0f0` | 데스크톱 프레임 바깥 | (body only) |
 
 #### Text (Ink)
 
 | Token | 용도 | Tailwind |
 |-------|------|----------|
-| `--ink` | 본문·제목 (green-charcoal `#16211c`) | `text-ink` |
+| `--ink` | 본문·제목 (neutral charcoal `#171717`) | `text-ink` |
 | `--ink-soft` | 보조·라벨 | `text-ink-soft` |
 | `--ink-faint` | placeholder·메타 | `text-ink-faint` |
 | `--line` | hairline border | `border-line`, `ring-line` |
@@ -71,13 +71,13 @@ bg-ink text-paper
 
 | Token | 용도 |
 |-------|------|
-| `--success` / `--success-soft` | 완료·긍정 (**그린 유지** — 브랜드와 역할 분리) |
-| `--leaf` | 성공/자연 보조 그린 |
+| `--success` / `--success-soft` | 완료·긍정 (브랜드 레드 계열) |
+| `--leaf` | 성공/긍정 보조 (= 브랜드 레드) |
 | `--warning` / `--warning-soft` | 주의 |
 | `--error` / `--error-soft` | 삭제·위험 (`ActionBottomSheet` danger) |
 | `--info` / `--info-soft` | 정보 |
 | `--sky` | 링크·지도·대중교통 |
-| `--accent-*` | 테마/감정 칩 등 메타 (mint, sky, sunshine, coral, lavender) |
+| `--accent-*` | 테마/감정 칩 등 메타 (`--accent-mint`는 soft coral `#fca5a5`, sky, sunshine, coral, lavender) |
 
 #### Map / Route
 
@@ -104,7 +104,7 @@ bg-ink text-paper
 |-------|------|
 | `--shadow-card` | 카드 elevation (기본) |
 | `--shadow-sm` / `--shadow-md` | 시트·플로ating |
-| `--shadow-brand` | 그린 CTA glow |
+| `--shadow-brand` | 레드 CTA glow |
 
 Tailwind: `shadow-[var(--shadow-sm)]` 등
 
@@ -129,7 +129,8 @@ Tailwind: `shadow-[var(--shadow-sm)]` 등
 
 - 토글: `<html class="dark">` — **OS 자동 아님** (`ThemeToggle`, localStorage `theme`)
 - Tailwind `dark:`는 `@custom-variant dark (&:where(.dark, .dark *))` — class와 동기화
-- 표면: deep green-charcoal (`--paper: #0e1512`), 브랜드 레드는 더 밝게 (`#f87171`)
+- 표면: neutral charcoal (`--paper: #121212`), 브랜드 레드는 더 밝게 (`#f87171`)
+- 녹회색·그린 tint 없음 — 표면·잉크·success/leaf 모두 뉴트럴 + 브랜드 레드 계열
 
 ---
 

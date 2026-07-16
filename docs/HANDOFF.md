@@ -527,7 +527,7 @@ pnpm test:e2e     # Playwright 스모크
 
 ### 하단 회색 띠(콘텐츠 잘림) 수정 (Cursor, 2026-06-17 · v1.97)
 - **증상**: 폰 4개 화면(프로필/피드/스플래시/새 계획) 하단에 회색 띠가 보이고 콘텐츠가 잘려 보임.
-- **원인**: `globals.css`의 `body { background: var(--stage) }`(데스크톱 프레임 양옆 배경용 회색 `#e6ebe8`)가, `html,body{height:100%}`(≈large viewport)와 프레임 `min-h-dvh`(dynamic viewport)의 차이만큼 **프레임 하단 아래로 새어** 보임. `BottomNav`는 `fixed bottom-0`라 도크와 흰 영역 사이에 회색 띠가 생김. (실제 클리핑 아님)
+- **원인**: `globals.css`의 `body { background: var(--stage) }`(데스크톱 프레임 양옆 배경용 뉴트럴 `#f0f0f0`)가, `html,body{height:100%}`(≈large viewport)와 프레임 `min-h-dvh`(dynamic viewport)의 차이만큼 **프레임 하단 아래로 새어** 보임. `BottomNav`는 `fixed bottom-0`라 도크와 흰 영역 사이에 회색 띠가 생김. (실제 클리핑 아님)
 - **수정**: `@media (max-width:430px)`에서 `body { background: var(--paper) }`로 폰에서는 프레임과 동일한 흰 배경 적용 → 새던 회색이 흰색이 되어 봉합. 프레임이 화면보다 좁아지는 >430px(데스크톱/태블릿)에서는 stage 배경 그대로 유지. CSS 1곳, 저위험.
 - **검증**: `pnpm build` ✅.
 
