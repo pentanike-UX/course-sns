@@ -1238,7 +1238,7 @@ export default function RouteForm({
             여행을 마쳤다면 사진과 팁을 채울 수 있는 기록 화면으로 바꿀 수 있어요.
           </p>
           {convertError && (
-            <p className="mt-2 rounded-lg bg-sunset-wash px-3 py-2 text-[12px] text-sunset-ink">
+            <p className="mt-2 rounded-lg bg-error-soft px-3 py-2 text-[12px] text-error" role="alert">
               {convertError}
             </p>
           )}
@@ -1283,7 +1283,7 @@ export default function RouteForm({
             onFillEstimatedDurations={fillEstimatedDurations}
           />
           {saveError && (
-            <p className="absolute left-4 right-4 top-3 z-20 rounded-xl bg-sunset-wash px-3 py-2 text-center text-[13px] text-sunset-ink shadow">
+            <p className="absolute left-4 right-4 top-3 z-20 rounded-xl bg-error-soft px-3 py-2 text-center text-[13px] text-error shadow" role="alert">
               {saveError}
             </p>
           )}
@@ -1327,7 +1327,7 @@ export default function RouteForm({
             </div>
           )}
           {saveError && (
-            <p className="absolute left-4 right-4 top-3 z-20 rounded-xl bg-sunset-wash px-3 py-2 text-center text-[13px] text-sunset-ink shadow">
+            <p className="absolute left-4 right-4 top-3 z-20 rounded-xl bg-error-soft px-3 py-2 text-center text-[13px] text-error shadow" role="alert">
               {saveError}
             </p>
           )}
@@ -1439,7 +1439,7 @@ export default function RouteForm({
           </section>
 
           {saveError && (
-            <p className="mt-4 rounded-lg bg-sunset-wash px-3 py-2 text-center text-[13px] text-sunset-ink">{saveError}</p>
+            <p className="mt-4 rounded-lg bg-error-soft px-3 py-2 text-center text-[13px] text-error" role="alert">{saveError}</p>
           )}
         </form>
         {savingOverlay}
@@ -1556,7 +1556,7 @@ export default function RouteForm({
               </p>
             )}
             {saveError && (
-              <p className="mt-4 rounded-lg bg-sunset-wash px-3 py-2 text-center text-[13px] text-sunset-ink">{saveError}</p>
+              <p className="mt-4 rounded-lg bg-error-soft px-3 py-2 text-center text-[13px] text-error" role="alert">{saveError}</p>
             )}
           </>
         )}

@@ -52,18 +52,23 @@ const mapIcon = (a: boolean) =>
     </svg>
   );
 
-// 보관함 → heart (shares the path used by the library "좋아요" empty state).
-const HEART_PATH =
-  "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
-
+// 보관함 → stacked courses (실행함·구독함). Heart would read as "likes".
 const libraryIcon = (a: boolean) =>
   a ? (
     <svg width="24" height="24" viewBox="0 0 24 24" fill={ACTIVE}>
-      <path d={HEART_PATH} />
+      <path d="M5 7.5A2.5 2.5 0 0 1 7.5 5h9A2.5 2.5 0 0 1 19 7.5V9H5V7.5Z" />
+      <path d="M4 10.5A2.5 2.5 0 0 1 6.5 8h11A2.5 2.5 0 0 1 20 10.5v1.2H4v-1.2Z" />
+      <path d="M3 14a2.5 2.5 0 0 1 2.5-2.5h13A2.5 2.5 0 0 1 21 14v3.5A2.5 2.5 0 0 1 18.5 20h-13A2.5 2.5 0 0 1 3 17.5V14Z" />
     </svg>
   ) : (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <path d={HEART_PATH} stroke={IDLE} strokeWidth="1.8" strokeLinejoin="round" />
+      <path
+        d="M7.5 5.5h9A2 2 0 0 1 18.5 7.5V9M6.5 9.5h11A2 2 0 0 1 19.5 11.5v1M5.5 13h13A2 2 0 0 1 20.5 15v2.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2V15a2 2 0 0 1 2-2Z"
+        stroke={IDLE}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 

@@ -86,7 +86,7 @@ function LoginInner() {
           />
 
           {state?.error && (
-            <p className="rounded-lg bg-sunset-wash px-3 py-2 text-[13px] text-sunset-ink">
+            <p className="rounded-lg bg-error-soft px-3 py-2 text-[13px] text-error" role="alert">
               {state.error}
             </p>
           )}

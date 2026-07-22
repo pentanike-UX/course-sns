@@ -320,7 +320,8 @@ export default function RouteDetailSheet({
 
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-5 pt-3 text-[12px] text-ink-faint">
                 <span>스팟 {route.spots.length}</span>
-                <span>♥ {route.likeCount}</span>
+                {(route.copyCount ?? 0) > 0 && <span>{route.copyCount} 따라감</span>}
+                {(route.completionCount ?? 0) > 0 && <span>{route.completionCount} 다녀옴</span>}
                 <span>댓글 {route.commentCount}</span>
                 {typeof route.estCostKrw === "number" && route.estCostKrw > 0 && (
                   <span>{formatKrw(route.estCostKrw)}</span>

@@ -41,6 +41,14 @@ const CAMERA_KEY = COURSE_STORAGE.feedMapCamera;
 /** idle → viewport fetch debounce */
 const FETCH_DEBOUNCE_MS = 400;
 
+/** Map peek meta: region · spots · transfer proof (never likes). */
+function mapPointMeta(p: FeedMapPoint): string {
+  const bits = [p.region, `스팟 ${p.spotCount}`];
+  if (p.copyCount > 0) bits.push(`${p.copyCount} 따라감`);
+  else if (p.completionCount > 0) bits.push(`${p.completionCount} 다녀옴`);
+  return bits.join(" · ");
+}
+
 type Cluster = { lat: number; lng: number; points: FeedMapPoint[] };
 type Camera = { lat: number; lng: number; zoom: number };
 type Bounds = { south: number; west: number; north: number; east: number };
@@ -752,7 +760,7 @@ export default function FeedMap({
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-[14px] font-bold text-ink">{p.title}</span>
                         <span className="mt-0.5 block truncate text-[12px] text-ink-faint">
-                          {p.region} · 스팟 {p.spotCount} · ♥ {p.likeCount}
+                          {mapPointMeta(p)}
                         </span>
                       </span>
                       <span className="text-[13px] font-semibold text-sunset">보기</span>
@@ -795,7 +803,7 @@ function SheetSelectedCard({
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[15px] font-bold text-ink">{point.title}</span>
           <span className="mt-0.5 block truncate text-[12px] text-ink-faint">
-            {point.region} · 스팟 {point.spotCount} · ♥ {point.likeCount}
+            {mapPointMeta(point)}
           </span>
         </span>
         <JellyButton
@@ -876,7 +884,7 @@ function SheetRow({
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[14px] font-bold text-ink">{point.title}</span>
           <span className="mt-0.5 block truncate text-[12px] text-ink-faint">
-            {point.region} · 스팟 {point.spotCount} · ♥ {point.likeCount}
+            {mapPointMeta(point)}
           </span>
         </span>
       </button>
@@ -981,7 +989,7 @@ function TourCard({
       <span className="min-w-0 flex-1">
         <span className="block truncate text-[14px] font-bold text-ink">{point.title}</span>
         <span className="mt-0.5 block truncate text-[12px] text-ink-faint">
-          {point.region} · 스팟 {point.spotCount} · ♥ {point.likeCount}
+          {mapPointMeta(point)}
         </span>
       </span>
       <span className="flex flex-col items-end gap-1">

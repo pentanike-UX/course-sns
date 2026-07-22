@@ -37,6 +37,7 @@ pnpm test:e2e    # Playwright 스모크 (데모 계정, 읽기 전용)
 | [`docs/MVP-SETUP.md`](docs/MVP-SETUP.md) | Supabase migration, Vercel env, 네이버 Maps URL 등록 |
 | [`docs/HANDOFF.md`](docs/HANDOFF.md) | 제품 IA, Supabase/OAuth, 완료·TODO, 함정 |
 | [`docs/COURSE-UX-DESIGN.md`](docs/COURSE-UX-DESIGN.md) | 코스 포지션·페르소나 UX 적용 설계 (Phase 0–3) |
+| [`docs/UX-PERSONA-PAINPOINTS.md`](docs/UX-PERSONA-PAINPOINTS.md) | 브랜드 컬러·페르소나 페인포인트·UX 개선 방향 |
 | [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md) | UI 스타일 가이드 |
 | [`.env.example`](.env.example) | 환경변수 템플릿 |
 

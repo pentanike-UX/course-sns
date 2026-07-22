@@ -242,6 +242,9 @@ export type FeedMapPoint = {
   region: string;
   coverPhotoUrl?: string;
   likeCount: number;
+  /** transfer social proof — preferred over likes on map peeks */
+  copyCount: number;
+  completionCount: number;
   spotCount: number;
   lat: number;
   lng: number;
@@ -255,6 +258,8 @@ type MapPointRow = {
   region: string;
   cover_photo_url: string | null;
   like_count: number;
+  copy_count: number | null;
+  completion_count: number | null;
   spots: { lat: number | null; lng: number | null; order_index: number }[];
 };
 
@@ -306,7 +311,7 @@ export async function getFeedMapPoints(opts?: {
   let query = supabase
     .from("routes")
     .select(
-      "id, title, region, cover_photo_url, like_count, spots!spots_route_id_fkey(lat, lng, order_index)",
+      "id, title, region, cover_photo_url, like_count, copy_count, completion_count, spots!spots_route_id_fkey(lat, lng, order_index)",
     )
     .eq("visibility", "public")
     .order("created_at", { ascending: false })
@@ -346,6 +351,8 @@ export async function getFeedMapPoints(opts?: {
       region: r.region,
       coverPhotoUrl: r.cover_photo_url ?? undefined,
       likeCount: r.like_count,
+      copyCount: r.copy_count ?? 0,
+      completionCount: r.completion_count ?? 0,
       spotCount: spots.length,
       lat: path[0].lat,
       lng: path[0].lng,

@@ -52,7 +52,7 @@ export default function CommentForm({ routeId }: { routeId: string }) {
         </button>
       </div>
       {error && (
-        <p className="rounded-xl bg-sunset-wash px-3 py-2 text-[12px] text-sunset-ink" role="alert">
+        <p className="rounded-xl bg-error-soft px-3 py-2 text-[12px] text-error" role="alert">
           {error}
         </p>
       )}

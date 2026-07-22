@@ -71,13 +71,15 @@ bg-ink text-paper
 
 | Token | 용도 |
 |-------|------|
-| `--success` / `--success-soft` | 완료·긍정 (브랜드 레드 계열) |
-| `--leaf` | 성공/긍정 보조 (= 브랜드 레드) |
+| `--success` / `--success-soft` | 완료·긍정 (브랜드 레드 계열 — Wave C에서 brand 분리 예정) |
+| `--leaf` | 성공/긍정 보조 (= 브랜드 레드, legacy) |
 | `--warning` / `--warning-soft` | 주의 |
-| `--error` / `--error-soft` | 삭제·위험 (`ActionBottomSheet` danger) |
+| `--error` / `--error-soft` | 삭제·위험·**폼/시트 에러 배너** (`bg-error-soft text-error`) — sunset-wash에 넣지 말 것 |
 | `--info` / `--info-soft` | 정보 |
 | `--sky` | 링크·지도·대중교통 |
 | `--accent-*` | 테마/감정 칩 등 메타 (`--accent-mint`는 soft coral `#fca5a5`, sky, sunshine, coral, lavender) |
+
+**상태 뱃지 (보관함「따라가는 중」):** `다녀옴` = `bg-muted text-ink ring-line` · `다듬는 중` = sunset-wash · `기록 중` = muted. 완료에 brand/success 레드를 쓰지 않는다.
 
 #### Map / Route
 
@@ -329,6 +331,8 @@ className="overflow-hidden rounded-[var(--radius-card)] bg-card ring-1 ring-line
 
 - ❌ 임의 hex — 토큰 없으면 `globals.css`에 추가 후 문서 갱신
 - ❌ 필터 active에 `bg-sunset`(레드) — **ink neutral**이 표준  
+- ❌ 에러 메시지를 `bg-sunset-wash`로 — **`bg-error-soft text-error`**
+- ❌ 카드·지도 peek에서 전이 프루프 없을 때 ♥ 폴백 — 슬롯을 비우거나 추천/난이도만
 - ❌ 브랜드를 다시 그린으로 하드코딩 — CTA/FAB/내비는 레드 토큰 (`--sunset` / `--brand-primary`)
 - ❌ window scroll 가정 sticky — 탭은 **MobileFrame shell 내부 스크롤**
 - ❌ body에 portal하는 sheet — `#app-shell` portal (`ActionBottomSheet` 패턴)
