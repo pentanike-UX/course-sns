@@ -383,9 +383,10 @@ export type TravelStats = {
   moods: { name: string; count: number }[];
   /** per-day record counts (only days with records) for the activity heatmap */
   daily: { date: string; count: number }[];
-  /** total likes + copies my routes received */
+  /** total likes + copies + completions my routes received */
   likeTotal: number;
   copiesReceived: number;
+  completionsReceived: number;
   /** all geocoded spot coordinates across my routes */
   points: { lat: number; lng: number }[];
 };
@@ -645,17 +646,23 @@ export async function getMyTravelStats(): Promise<TravelStats | null> {
     }
   }
 
-  // copies my routes received (reactions)
+  // transfer reactions my routes received
   let copiesReceived = 0;
+  let completionsReceived = 0;
   if (rows.length) {
-    const { count } = await supabase
-      .from("route_copies")
-      .select("id", { count: "exact", head: true })
-      .in(
-        "original_route_id",
-        rows.map((r) => r.id),
-      );
-    copiesReceived = count ?? 0;
+    const ids = rows.map((r) => r.id);
+    const [copies, completions] = await Promise.all([
+      supabase
+        .from("route_copies")
+        .select("id", { count: "exact", head: true })
+        .in("original_route_id", ids),
+      supabase
+        .from("route_completions")
+        .select("id", { count: "exact", head: true })
+        .in("original_route_id", ids),
+    ]);
+    copiesReceived = copies.count ?? 0;
+    completionsReceived = completions.count ?? 0;
   }
 
   const ranked = (m: Map<string, number>) =>
@@ -678,6 +685,7 @@ export async function getMyTravelStats(): Promise<TravelStats | null> {
     daily: [...dayCount.entries()].map(([date, count]) => ({ date, count })),
     likeTotal,
     copiesReceived,
+    completionsReceived,
     points,
   };
 }

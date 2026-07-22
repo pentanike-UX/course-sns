@@ -1435,6 +1435,12 @@ export default function RouteForm({
               title="공개 범위"
               desc={isPlanDraft ? "계획 단계에서는 비공개로 다듬고, 준비가 되면 공개로 바꿀 수 있어요." : "나만 쓸 코스로 둘지, 다른 사람이 따라가게 공개할지 선택하세요."}
             />
+            <FollowReadyHint
+              region={region}
+              recommendedFor={recommendedFor}
+              difficulty={difficulty}
+              spotCount={spots.length}
+            />
             {visibilityBox}
           </section>
 
@@ -1549,6 +1555,12 @@ export default function RouteForm({
                 <span className="ml-auto text-[12px] text-ink-faint">스팟 {spots.length}곳</span>
               </div>
             </div>
+            <FollowReadyHint
+              region={region}
+              recommendedFor={recommendedFor}
+              difficulty={difficulty}
+              spotCount={spots.length}
+            />
             {visibilityBox}
             {!visibilityChosen && (
               <p className="mt-3 text-center text-[12px] text-ink-faint">
@@ -3185,6 +3197,49 @@ function StepHeading({ title, desc }: { title: string; desc: string }) {
     <div className="pb-4 pt-5">
       <h2 className="text-[19px] font-black leading-snug text-ink">{title}</h2>
       <p className="mt-1 text-[13px] leading-relaxed text-ink-soft">{desc}</p>
+    </div>
+  );
+}
+
+/** Soft checklist before publish — does not block save (Wave D). */
+function FollowReadyHint({
+  region,
+  recommendedFor,
+  difficulty,
+  spotCount,
+}: {
+  region: string;
+  recommendedFor: string;
+  difficulty: string;
+  spotCount: number;
+}) {
+  const checks = [
+    { ok: !!region.trim(), label: "지역" },
+    { ok: !!recommendedFor.trim(), label: "추천 대상" },
+    { ok: !!difficulty, label: "난이도" },
+    { ok: spotCount >= 2, label: "스팟 2곳+" },
+  ];
+  const missing = checks.filter((c) => !c.ok);
+  if (missing.length === 0) {
+    return (
+      <p className="mb-3 rounded-xl bg-success-soft px-3 py-2 text-[12px] font-medium text-success">
+        따라가기 준비됨 · 지역·추천·난이도·스팟이 채워졌어요
+      </p>
+    );
+  }
+  return (
+    <div className="mb-3 rounded-xl bg-muted px-3 py-2.5 ring-1 ring-line/60">
+      <p className="text-[12px] font-bold text-ink">따라가기 준비도</p>
+      <ul className="mt-1.5 flex flex-wrap gap-x-2 gap-y-1 text-[11px] font-semibold">
+        {checks.map((c) => (
+          <li key={c.label} className={c.ok ? "text-ink" : "text-ink-faint"}>
+            {c.ok ? "✓" : "○"} {c.label}
+          </li>
+        ))}
+      </ul>
+      <p className="mt-1.5 text-[11px] leading-relaxed text-ink-soft">
+        비워 둔 항목을 채우면 남이 따라가기 쉬워져요. 필수는 아니에요.
+      </p>
     </div>
   );
 }
