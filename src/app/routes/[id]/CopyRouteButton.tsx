@@ -12,18 +12,28 @@ import type { CopyPurpose } from "@/lib/types";
  * hero action of the 코스 mental model, so it can render as a full-width primary
  * CTA (`prominent`) or the compact inline pill (default).
  */
+const FOLLOW_AUTH = {
+  title: "따라가려면 로그인이 필요해요",
+  description:
+    "로그인하면 이 코스를 비공개 초안으로 가져올 수 있어요. 둘러보기는 로그인 없이도 계속할 수 있어요.",
+} as const;
+
 export default function CopyRouteButton({
   routeId,
   prominent = false,
+  /** Shorter label for tight surfaces (e.g. library saved cards). */
+  short = false,
 }: {
   routeId: string;
   prominent?: boolean;
+  short?: boolean;
 }) {
   const { requireAuth } = useAuthGate();
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [purpose, setPurpose] = useState<CopyPurpose | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const idleLabel = short ? "따라가기" : "이 코스 따라가기";
 
   const startCopy = () => {
     if (!purpose) {
@@ -37,7 +47,7 @@ export default function CopyRouteButton({
       // on success the action redirects, so we only land here on failure
       if (res?.needsAuth) {
         setOpen(false);
-        requireAuth({ next: `/routes/${routeId}` });
+        requireAuth({ next: `/routes/${routeId}`, ...FOLLOW_AUTH });
         return;
       }
       if (res?.error) setError(res.error);
@@ -50,19 +60,19 @@ export default function CopyRouteButton({
         type="button"
         onClick={() => {
           // guests: prompt login instead of opening the 따라가기 sheet
-          if (!requireAuth({ next: `/routes/${routeId}` })) return;
+          if (!requireAuth({ next: `/routes/${routeId}`, ...FOLLOW_AUTH })) return;
           setError(null);
           setOpen(true);
         }}
         disabled={pending}
         className={
           prominent
-            ? "flex w-full items-center justify-center gap-2 rounded-full bg-sunset px-4 py-3.5 text-[15px] font-bold text-white shadow-[var(--shadow-sm)] transition-transform active:scale-[0.98] disabled:opacity-60"
-            : "flex items-center gap-1.5 rounded-full border border-line bg-card px-3.5 py-2 text-[14px] font-semibold text-ink transition-colors disabled:opacity-60"
+            ? "flex w-full items-center justify-center gap-2 rounded-full bg-sunset px-4 py-3.5 text-[15px] font-bold text-white shadow-[var(--shadow-brand)] transition-transform active:scale-[0.98] disabled:opacity-60"
+            : "flex items-center gap-1.5 rounded-full border border-line bg-card/95 px-3.5 py-2 text-[13px] font-bold text-ink shadow-sm backdrop-blur transition-colors disabled:opacity-60"
         }
       >
         <RouteIcon />
-        {pending ? "가져오는 중…" : "이 코스 따라가기"}
+        {pending ? "가져오는 중…" : idleLabel}
       </button>
       {open && (
         <div className="fixed inset-0 z-40 flex items-end bg-black/35" role="presentation">

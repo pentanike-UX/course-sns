@@ -163,7 +163,8 @@ export async function getMyRoutes(): Promise<RouteSummary[]> {
   return ((data as RouteRowLite[] | null) ?? []).map(toSummary);
 }
 
-export type FeedSort = "recent" | "popular" | "followed" | "completed";
+/** `popular` (like_count) is retired from UI — parsed as `followed` for old links. */
+export type FeedSort = "recent" | "followed" | "completed";
 
 export async function getPublicFeed(opts?: {
   sort?: FeedSort;
@@ -216,7 +217,9 @@ export async function getFollowingFeed(opts?: {
 }
 
 function parseFeedSort(sort?: string): FeedSort {
-  if (sort === "followed" || sort === "completed" || sort === "popular") return sort;
+  // Legacy ?sort=popular (likes) → transfer-first "많이 따라간"
+  if (sort === "popular" || sort === "followed") return "followed";
+  if (sort === "completed") return "completed";
   return "recent";
 }
 
@@ -229,9 +232,6 @@ function orderFeedQuery(query: any, sort: FeedSort) {
     return query
       .order("completion_count", { ascending: false })
       .order("created_at", { ascending: false });
-  }
-  if (sort === "popular") {
-    return query.order("like_count", { ascending: false }).order("created_at", { ascending: false });
   }
   return query.order("created_at", { ascending: false });
 }
