@@ -91,7 +91,7 @@ function LoginInner() {
             </p>
           )}
           {state?.notice && (
-            <p className="rounded-lg bg-success-soft px-3 py-2 text-[13px] text-leaf">
+            <p className="rounded-lg bg-success-soft px-3 py-2 text-[13px] text-success">
               {state.notice}
             </p>
           )}

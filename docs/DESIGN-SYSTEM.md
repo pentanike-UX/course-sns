@@ -71,15 +71,17 @@ bg-ink text-paper
 
 | Token | 용도 |
 |-------|------|
-| `--success` / `--success-soft` | 완료·긍정 (브랜드 레드 계열 — Wave C에서 brand 분리 예정) |
-| `--leaf` | 성공/긍정 보조 (= 브랜드 레드, legacy) |
+| `--success` / `--success-soft` | 완료·긍정 (**teal**, brand 레드와 분리 — Wave C) |
+| `--leaf` | **DEPRECATED** → `--success` 별칭 (신규는 `text-success`) |
 | `--warning` / `--warning-soft` | 주의 |
 | `--error` / `--error-soft` | 삭제·위험·**폼/시트 에러 배너** (`bg-error-soft text-error`) — sunset-wash에 넣지 말 것 |
 | `--info` / `--info-soft` | 정보 |
 | `--sky` | 링크·지도·대중교통 |
 | `--accent-*` | 테마/감정 칩 등 메타 (`--accent-mint`는 soft coral `#fca5a5`, sky, sunshine, coral, lavender) |
 
-**상태 뱃지 (보관함「따라가는 중」):** `다녀옴` = `bg-muted text-ink ring-line` · `다듬는 중` = sunset-wash · `기록 중` = muted. 완료에 brand/success 레드를 쓰지 않는다.
+**상태 뱃지 (보관함「따라가는 중」):** `다녀옴` = `bg-muted text-ink ring-line` · `다듬는 중` = sunset-wash · `기록 중` = muted. 완료에 brand 레드를 쓰지 않는다.
+
+**플래너 레드 예산:** 주 CTA(완료·따라가기 계열)만 `bg-sunset`. 섹션 칩·맵 모드·스텝퍼·시트 핸들·임시저장은 **ink/muted**. 지도 도보 라인은 brand가 아닌 slate (`TRANSPORT_COLOR.walk`).
 
 #### Map / Route
 
