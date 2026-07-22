@@ -163,7 +163,8 @@ export async function getMyRoutes(): Promise<RouteSummary[]> {
   return ((data as RouteRowLite[] | null) ?? []).map(toSummary);
 }
 
-export type FeedSort = "recent" | "popular" | "followed" | "completed";
+/** `popular` (like_count) is retired from UI — parsed as `followed` for old links. */
+export type FeedSort = "recent" | "followed" | "completed";
 
 export async function getPublicFeed(opts?: {
   sort?: FeedSort;
@@ -216,7 +217,9 @@ export async function getFollowingFeed(opts?: {
 }
 
 function parseFeedSort(sort?: string): FeedSort {
-  if (sort === "followed" || sort === "completed" || sort === "popular") return sort;
+  // Legacy ?sort=popular (likes) → transfer-first "많이 따라간"
+  if (sort === "popular" || sort === "followed") return "followed";
+  if (sort === "completed") return "completed";
   return "recent";
 }
 
@@ -229,9 +232,6 @@ function orderFeedQuery(query: any, sort: FeedSort) {
     return query
       .order("completion_count", { ascending: false })
       .order("created_at", { ascending: false });
-  }
-  if (sort === "popular") {
-    return query.order("like_count", { ascending: false }).order("created_at", { ascending: false });
   }
   return query.order("created_at", { ascending: false });
 }
@@ -383,9 +383,10 @@ export type TravelStats = {
   moods: { name: string; count: number }[];
   /** per-day record counts (only days with records) for the activity heatmap */
   daily: { date: string; count: number }[];
-  /** total likes + copies my routes received */
+  /** total likes + copies + completions my routes received */
   likeTotal: number;
   copiesReceived: number;
+  completionsReceived: number;
   /** all geocoded spot coordinates across my routes */
   points: { lat: number; lng: number }[];
 };
@@ -645,17 +646,23 @@ export async function getMyTravelStats(): Promise<TravelStats | null> {
     }
   }
 
-  // copies my routes received (reactions)
+  // transfer reactions my routes received
   let copiesReceived = 0;
+  let completionsReceived = 0;
   if (rows.length) {
-    const { count } = await supabase
-      .from("route_copies")
-      .select("id", { count: "exact", head: true })
-      .in(
-        "original_route_id",
-        rows.map((r) => r.id),
-      );
-    copiesReceived = count ?? 0;
+    const ids = rows.map((r) => r.id);
+    const [copies, completions] = await Promise.all([
+      supabase
+        .from("route_copies")
+        .select("id", { count: "exact", head: true })
+        .in("original_route_id", ids),
+      supabase
+        .from("route_completions")
+        .select("id", { count: "exact", head: true })
+        .in("original_route_id", ids),
+    ]);
+    copiesReceived = copies.count ?? 0;
+    completionsReceived = completions.count ?? 0;
   }
 
   const ranked = (m: Map<string, number>) =>
@@ -678,6 +685,7 @@ export async function getMyTravelStats(): Promise<TravelStats | null> {
     daily: [...dayCount.entries()].map(([date, count]) => ({ date, count })),
     likeTotal,
     copiesReceived,
+    completionsReceived,
     points,
   };
 }

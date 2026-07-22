@@ -104,22 +104,86 @@ function FollowedCourseCard({ course }: { course: FollowedCourse }) {
         ? "bg-sunset-wash text-sunset-ink"
         : "bg-muted text-ink-soft";
 
+  const editHref = `/routes/${course.id}/edit`;
+  const originalHref = course.originalRouteId
+    ? `/routes/${course.originalRouteId}`
+    : editHref;
+
   return (
-    <div className="relative">
-      <RouteCard route={course} />
-      <span
-        className={`absolute left-2.5 top-2.5 z-10 rounded-full px-2.5 py-1 text-[11px] font-bold shadow-sm ${statusClass}`}
-      >
-        {statusLabel}
-      </span>
-      {course.followStatus !== "done" && course.originalRouteId && (
-        <Link
-          href={`/routes/${course.originalRouteId}`}
-          className="absolute bottom-3 right-3 z-10 rounded-full bg-card/95 px-3 py-1.5 text-[12px] font-bold text-sunset-ink shadow-sm ring-1 ring-line"
+    <div className="space-y-2">
+      <div className="relative">
+        <RouteCard route={course} />
+        <span
+          className={`absolute left-2.5 top-2.5 z-10 rounded-full px-2.5 py-1 text-[11px] font-bold shadow-sm ${statusClass}`}
         >
-          {course.followStatus === "tuning" ? "원본 보기 · 다녀오면 후기" : "원본에서 후기"}
-        </Link>
-      )}
+          {statusLabel}
+        </span>
+      </div>
+      <FollowProgressBar
+        status={course.followStatus}
+        editHref={editHref}
+        originalHref={originalHref}
+        hasOriginal={!!course.originalRouteId}
+      />
+    </div>
+  );
+}
+
+/** Persistent next-step checklist for P2 — always visible after re-entry. */
+function FollowProgressBar({
+  status,
+  editHref,
+  originalHref,
+  hasOriginal,
+}: {
+  status: FollowedCourse["followStatus"];
+  editHref: string;
+  originalHref: string;
+  hasOriginal: boolean;
+}) {
+  const steps = [
+    { label: "스팟 확인", done: true },
+    { label: "이동 확인", done: status !== "tuning" },
+    { label: "다녀왔어요", done: status === "done" },
+  ];
+  const nextHref =
+    status === "done" ? editHref : hasOriginal ? originalHref : editHref;
+  const nextLabel =
+    status === "done"
+      ? "내 초안 보기"
+      : status === "tuning"
+        ? "다듬기 · 원본에서 후기"
+        : "원본에서 후기 남기기";
+
+  const nextIdx = steps.findIndex((s) => !s.done);
+
+  return (
+    <div className="rounded-2xl bg-muted/70 px-3 py-2.5 ring-1 ring-line/50">
+      <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[11px] font-semibold">
+        {steps.map((step, i) => (
+          <li key={step.label} className="flex items-center gap-1.5">
+            {i > 0 && (
+              <span className="text-ink-faint" aria-hidden>
+                ·
+              </span>
+            )}
+            <span
+              className={
+                step.done ? "text-ink" : i === nextIdx ? "text-sunset-ink" : "text-ink-faint"
+              }
+            >
+              {step.done ? "✓ " : ""}
+              {step.label}
+            </span>
+          </li>
+        ))}
+      </ol>
+      <Link
+        href={nextHref}
+        className="mt-1.5 inline-flex text-[12px] font-bold text-sunset-ink underline-offset-2 hover:underline"
+      >
+        {nextLabel}
+      </Link>
     </div>
   );
 }

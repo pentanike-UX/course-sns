@@ -33,9 +33,24 @@ export default function CompleteCourseButton({
 
   const hasCompletion = !!state.completion;
   const label = hasCompletion ? "후기 수정" : "다녀왔어요";
+  // Tone ladder (Wave B): brand solid = 따라가기 only;
+  // not-done = brand outline; done = neutral ink.
+  const buttonClass = hasCompletion
+    ? "flex w-full items-center justify-center gap-2 rounded-full border border-line bg-card px-4 py-3.5 text-[15px] font-bold text-ink transition-colors active:scale-[0.98] disabled:opacity-60"
+    : prominent
+      ? "flex w-full items-center justify-center gap-2 rounded-full border-2 border-sunset bg-paper px-4 py-3.5 text-[15px] font-bold text-sunset-ink shadow-[var(--shadow-sm)] transition-transform active:scale-[0.98] disabled:opacity-60"
+      : "flex w-full items-center justify-center gap-2 rounded-full border border-sunset/30 bg-sunset-wash px-4 py-3 text-[14px] font-bold text-sunset-ink transition-colors disabled:opacity-60";
 
   const handleOpen = () => {
-    if (!requireAuth({ next: `/routes/${routeId}` })) return;
+    if (
+      !requireAuth({
+        next: `/routes/${routeId}`,
+        title: "다녀온 후기를 남기려면 로그인이 필요해요",
+        description:
+          "로그인하면 별점과 한 줄 팁을 남길 수 있어요. 다음 사람의 따라가기에 도움이 됩니다.",
+      })
+    )
+      return;
     setRating(state.completion?.rating ?? null);
     setTip(state.completion?.tip ?? "");
     setError(null);
@@ -63,16 +78,7 @@ export default function CompleteCourseButton({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={handleOpen}
-        disabled={pending}
-        className={
-          prominent
-            ? "flex w-full items-center justify-center gap-2 rounded-full bg-sunset px-4 py-3.5 text-[15px] font-bold text-white shadow-[var(--shadow-sm)] transition-transform active:scale-[0.98] disabled:opacity-60"
-            : "flex w-full items-center justify-center gap-2 rounded-full border border-sunset/30 bg-sunset-wash px-4 py-3 text-[14px] font-bold text-sunset-ink transition-colors disabled:opacity-60"
-        }
-      >
+      <button type="button" onClick={handleOpen} disabled={pending} className={buttonClass}>
         <CheckIcon />
         {label}
       </button>

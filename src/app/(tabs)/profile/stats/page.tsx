@@ -62,7 +62,8 @@ export default async function TravelStatsPage() {
 
   const weeks = buildHeatmap(stats.daily);
   const moveTotal = stats.transportMix.reduce((s, t) => s + t.count, 0);
-  const reactionTotal = stats.likeTotal + stats.copiesReceived;
+  const transferTotal = stats.copiesReceived + stats.completionsReceived;
+  const reactionTotal = transferTotal + stats.likeTotal;
 
   return (
     <>
@@ -190,12 +191,15 @@ export default async function TravelStatsPage() {
         </div>
       </Section>
 
-      {/* reactions received */}
+      {/* transfer influence first, likes last */}
       {reactionTotal > 0 && (
-        <Section title="받은 반응">
+        <Section title="전이 · 영향력" subtitle="남이 내 코스를 따라가고 다녀온 기록">
           <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line">
-            <Tile label="받은 좋아요" value={`♥ ${stats.likeTotal}`} />
-            <Tile label="내 코스를 따라간 사람" value={`${stats.copiesReceived}명`} />
+            <Tile label="따라간 사람" value={`${stats.copiesReceived}명`} />
+            <Tile label="다녀온 사람" value={`${stats.completionsReceived}명`} />
+            {stats.likeTotal > 0 && (
+              <Tile label="받은 좋아요" value={`${stats.likeTotal}`} />
+            )}
           </div>
         </Section>
       )}

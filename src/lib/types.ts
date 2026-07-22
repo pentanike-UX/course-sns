@@ -35,8 +35,9 @@ export const TRANSPORT_LABEL: Record<TransportMode, string> = {
 };
 
 /** Per-mode accent color, shared by the route map lines and the timeline icons. */
+/** Map leg colors — walk must NOT equal brand red (CTA collision). */
 export const TRANSPORT_COLOR: Record<TransportMode, string> = {
-  walk: "#dc2626",
+  walk: "#475569", // slate — distinct from brand CTA
   bike: "#f97316",
   car: "#e8662a",
   taxi: "#eab308",

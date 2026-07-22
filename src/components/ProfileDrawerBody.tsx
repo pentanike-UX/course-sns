@@ -22,6 +22,8 @@ export default function ProfileDrawerBody({
   defaultVisibility: Visibility;
 }) {
   const publicCount = routes.filter((r) => r.visibility === "public").length;
+  const copyTotal = routes.reduce((sum, r) => sum + (r.copyCount ?? 0), 0);
+  const completionTotal = routes.reduce((sum, r) => sum + (r.completionCount ?? 0), 0);
   const displayName = profile?.displayName ?? "여행자";
 
   return (
@@ -36,6 +38,11 @@ export default function ProfileDrawerBody({
         </div>
         <h2 className="mt-3 text-lg font-bold text-ink">{displayName}</h2>
         {profile?.handle && <p className="text-[13px] text-ink-faint">@{profile.handle}</p>}
+        {copyTotal > 0 && (
+          <p className="mt-2 text-center text-[12px] font-medium text-ink-soft">
+            내 코스를 {copyTotal}명이 따라갔어요
+          </p>
+        )}
         <Link
           href="/profile/edit"
           className="mt-3 rounded-full border border-line px-4 py-1.5 text-[13px] font-semibold text-ink-soft"
@@ -44,11 +51,12 @@ export default function ProfileDrawerBody({
         </Link>
       </section>
 
+      {/* Transfer metrics first — likes live under 통계, not the front row */}
       <section className="mx-4 mt-4 grid grid-cols-4 divide-x divide-line rounded-[var(--radius-card)] border border-line bg-card py-4 text-center">
-        <Stat label="코스" value={routes.length} />
+        <Stat label="따라감" value={copyTotal} />
+        <Stat label="다녀옴" value={completionTotal} />
         <Stat label="공개" value={publicCount} />
         <Stat label="저장" value={counts.saved} href="/library?tab=saved" />
-        <Stat label="좋아요" value={counts.liked} />
       </section>
 
       <Link
@@ -59,7 +67,7 @@ export default function ProfileDrawerBody({
           <ChartIcon /> 내 코스 통계
         </span>
         <span className="flex items-center gap-1 font-normal text-ink-faint">
-          따라감 · 다녀온 지역
+          따라감 · 다녀옴 · 지역
           <ChevronRightIcon />
         </span>
       </Link>

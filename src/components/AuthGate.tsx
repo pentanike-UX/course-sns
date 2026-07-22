@@ -74,7 +74,7 @@ export default function AuthGateProvider({
         title={opts.title ?? "로그인이 필요해요"}
         description={
           opts.description ??
-          "이 기능은 로그인 후 이용할 수 있어요. 둘러보기는 로그인 없이도 계속할 수 있어요."
+          "로그인하면 코스를 따라가고, 저장·후기를 남길 수 있어요. 둘러보기는 로그인 없이도 계속할 수 있어요."
         }
         primaryLabel="로그인 / 회원가입"
         secondaryLabel="계속 둘러보기"

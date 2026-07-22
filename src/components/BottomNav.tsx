@@ -385,7 +385,15 @@ export default function BottomNav() {
                 onPointerCancel={releaseIcon}
                 onClick={(e) => {
                   // 보관함 is personal — guests get the login sheet, not a redirect
-                  if (t.href === "/library" && !requireAuth({ next: "/library" })) {
+                  if (
+                    t.href === "/library" &&
+                    !requireAuth({
+                      next: "/library",
+                      title: "보관함을 보려면 로그인이 필요해요",
+                      description:
+                        "따라가는 중·저장한 코스와 팔로잉 스트림은 로그인 후 이용할 수 있어요.",
+                    })
+                  ) {
                     e.preventDefault();
                   }
                 }}
@@ -409,7 +417,15 @@ export default function BottomNav() {
         aria-label="새 코스 만들기"
         onClick={() => {
           // 코스 기록·계획 — guests get the login sheet first
-          if (!requireAuth({ next: "/routes/new" })) return;
+          if (
+            !requireAuth({
+              next: "/routes/new",
+              title: "코스를 만들려면 로그인이 필요해요",
+              description:
+                "로그인하면 남이 따라갈 수 있는 동선 코스를 만들 수 있어요. 둘러보기는 계속해도 돼요.",
+            })
+          )
+            return;
           setCreateIntent("record");
           setCreateOpen(true);
         }}

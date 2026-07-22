@@ -76,7 +76,7 @@ export default function RouteActions({
         aria-label={bookmarked ? "즐겨찾기 해제" : "즐겨찾기"}
         className={`flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-[14px] font-semibold transition-colors ${
           bookmarked
-            ? "border-transparent bg-success-soft text-leaf"
+            ? "border-transparent bg-success-soft text-success"
             : "border-line bg-card text-ink-soft"
         }`}
       >

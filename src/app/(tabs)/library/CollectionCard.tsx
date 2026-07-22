@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import RouteCard from "@/components/RouteCard";
+import CopyRouteButton from "@/app/routes/[id]/CopyRouteButton";
 import { toggleBookmark, toggleLike } from "@/app/routes/[id]/actions";
 import type { RouteSummary } from "@/lib/types";
 
@@ -40,6 +41,11 @@ export default function CollectionCard({ route, tab }: Props) {
       >
         {tab === "saved" ? <BookmarkFilled /> : <HeartFilled />}
       </button>
+      {tab === "saved" && (
+        <div className="absolute bottom-3 left-3 z-10">
+          <CopyRouteButton routeId={route.id} short />
+        </div>
+      )}
     </div>
   );
 }

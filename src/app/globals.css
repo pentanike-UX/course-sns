@@ -15,7 +15,8 @@
    ────────────────────────────────────────────────────────────── */
 :root {
   /* === Primary accent scale ===
-     Names kept as --primary-green-* (legacy); VALUES = red point color. */
+     DEPRECATED names (--primary-green-*): VALUES = brand red.
+     Prefer --brand-primary / --sunset in new code. Do not assume "green". */
   --primary-green-900: #7f1d1d;
   --primary-green-800: #991b1b;
   --primary-green-700: #b91c1c;
@@ -61,11 +62,12 @@
   --sunset-ink: #b91c1c; /* text on soft wash */
   --sunset-wash: #fee2e2; /* tinted background */
   --sky: #3b87e8; /* links / map / transit */
-  --leaf: #dc2626; /* success / positive → brand red */
+  /* DEPRECATED: --leaf → use --success. Kept as success alias (not brand). */
+  --leaf: #0f766e;
 
-  /* === Status (success aligned to brand red family) === */
-  --success: #b91c1c;
-  --success-soft: #fee2e2;
+  /* === Status (Wave C: success ≠ brand red) === */
+  --success: #0f766e; /* teal — completed / positive, distinct from CTA */
+  --success-soft: #ccfbf1;
   --warning: #d97706;
   --warning-soft: #fef3c7;
   --error: #ef4444;
@@ -140,11 +142,11 @@
   --sunset-ink: #fca5a5;
   --sunset-wash: rgba(248, 113, 113, 0.16);
   --sky: #60a5fa;
-  --leaf: #f87171;
+  --leaf: #2dd4bf; /* deprecated alias → success */
 
   /* status */
-  --success: #f87171;
-  --success-soft: rgba(248, 113, 113, 0.16);
+  --success: #2dd4bf;
+  --success-soft: rgba(45, 212, 191, 0.16);
   --warning: #fbbf24;
   --warning-soft: rgba(217, 119, 6, 0.2);
   --error: #f87171;

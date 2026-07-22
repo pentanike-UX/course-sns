@@ -50,16 +50,17 @@ export default async function HomePage({
     dtab,
   } = await searchParams;
   // 거리순 is a client-only sort; the DB query just uses recent order for it.
+  // Legacy ?sort=popular maps to followed (likes sort retired).
   const clientSort: FeedSortClient =
-    sortParam === "followed" || sortParam === "completed" || sortParam === "popular"
-      ? sortParam
-      : sortParam === "distance"
-        ? "distance"
-        : "recent";
+    sortParam === "followed" || sortParam === "popular"
+      ? "followed"
+      : sortParam === "completed"
+        ? "completed"
+        : sortParam === "distance"
+          ? "distance"
+          : "recent";
   const sort: FeedSort =
-    clientSort === "followed" || clientSort === "completed" || clientSort === "popular"
-      ? clientSort
-      : "recent";
+    clientSort === "followed" || clientSort === "completed" ? clientSort : "recent";
   const mode: FeedMode = modeParam === "map" ? "map" : "list";
   const filters = parseFilters({ kind, purpose, theme, mood, difficulty, region });
   const diaryTab: HomeTab = dtab === "record" || dtab === "plan" ? dtab : "all";
