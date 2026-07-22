@@ -129,7 +129,7 @@ export default function ProfileEditForm({ initial }: Props) {
         </div>
 
         {error && (
-          <p className="mt-4 rounded-lg bg-sunset-wash px-3 py-2 text-center text-[13px] text-sunset-ink">
+          <p className="mt-4 rounded-lg bg-error-soft px-3 py-2 text-center text-[13px] text-error" role="alert">
             {error}
           </p>
         )}

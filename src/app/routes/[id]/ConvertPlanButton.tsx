@@ -53,7 +53,7 @@ export default function ConvertPlanButton({ routeId }: { routeId: string }) {
         ariaLabel="코스 기록으로 바꾸기"
       >
         {error && (
-          <p className="mt-3 rounded-lg bg-sunset-wash px-3 py-2 text-center text-[12px] text-sunset-ink">
+          <p className="mt-3 rounded-lg bg-error-soft px-3 py-2 text-center text-[12px] text-error" role="alert">
             {error}
           </p>
         )}

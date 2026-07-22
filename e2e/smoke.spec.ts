@@ -69,10 +69,10 @@ test("이 루트 따라가기: 안내 시트와 목적 선택이 렌더된다", 
   await expect(start).toBeEnabled();
 });
 
-test("보관함: 저장/좋아요/팔로잉 탭이 렌더된다", async ({ page }) => {
+test("보관함: 따라가는 중/저장/팔로잉 탭이 렌더된다", async ({ page }) => {
   await page.goto("/library", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("button", { name: "따라가는 중" })).toBeVisible();
   await expect(page.getByRole("button", { name: "저장" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "좋아요" })).toBeVisible();
   await expect(page.getByRole("button", { name: "팔로잉" })).toBeVisible();
 });
 

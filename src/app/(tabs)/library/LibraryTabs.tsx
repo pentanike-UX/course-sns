@@ -96,9 +96,10 @@ function FollowedCourseCard({ course }: { course: FollowedCourse }) {
       : course.followStatus === "tuning"
         ? "다듬는 중"
         : "기록 중";
+  // done = ink soft (not brand/success red); tuning = brand wash; recording = muted
   const statusClass =
     course.followStatus === "done"
-      ? "bg-success-soft text-[color:var(--success)]"
+      ? "bg-muted text-ink ring-1 ring-line"
       : course.followStatus === "tuning"
         ? "bg-sunset-wash text-sunset-ink"
         : "bg-muted text-ink-soft";
