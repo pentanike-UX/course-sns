@@ -4,19 +4,29 @@ type Props = {
   points?: RouteThumbnailPoint[];
   className?: string;
   showBase?: boolean;
+  /** small corner label so the schematic reads as a route map, not a blank tile */
+  showLabel?: boolean;
   onPointClick?: (point: RouteThumbnailPoint) => void;
 };
 
+/**
+ * SVG route schematic for cards / plan heroes — NOT Naver Maps tiles.
+ * The home map tab uses the real Maps JS API; cards stay lightweight.
+ */
 export default function RoutePlanThumbnail({
   points = [],
   className = "",
   showBase = true,
+  showLabel = true,
   onPointClick,
 }: Props) {
   const plotted = plotPoints(points);
+  const empty = plotted.length === 0;
 
   return (
-    <div className={`overflow-hidden ${showBase ? "bg-[#edf2ed]" : "bg-transparent"} ${className}`}>
+    <div
+      className={`relative overflow-hidden ${showBase ? "bg-[#f4f4f5]" : "bg-transparent"} ${className}`}
+    >
       {/*
         "slice" covers the container while scaling UNIFORMLY — the old "none"
         stretched this portrait artboard into wide layouts (16/10 큰 이미지) and
@@ -31,9 +41,15 @@ export default function RoutePlanThumbnail({
       >
         {showBase && (
           <>
-            <rect width="100" height="125" fill="#edf2ed" />
-            <path d="M-10 23H110M-10 52H110M-10 82H110M-10 111H110" stroke="#d6ded6" strokeWidth="0.7" />
-            <path d="M15 -10V135M43 -10V135M72 -10V135" stroke="#d6ded6" strokeWidth="0.7" />
+            <rect width="100" height="125" fill="#f4f4f5" />
+            {/* subtle grid — neutral (course), not diary green */}
+            <path
+              d="M-10 23H110M-10 52H110M-10 82H110M-10 111H110"
+              stroke="#e4e4e7"
+              strokeWidth="0.7"
+            />
+            <path d="M15 -10V135M43 -10V135M72 -10V135" stroke="#e4e4e7" strokeWidth="0.7" />
+            {/* soft “road” ribbons */}
             <path
               d="M-8 32 C18 18 34 42 52 32 S82 18 108 38"
               fill="none"
@@ -44,7 +60,7 @@ export default function RoutePlanThumbnail({
             <path
               d="M-8 32 C18 18 34 42 52 32 S82 18 108 38"
               fill="none"
-              stroke="#c8d4ce"
+              stroke="#d4d4d8"
               strokeWidth="1.3"
               strokeDasharray="3 4"
               strokeLinecap="round"
@@ -59,7 +75,7 @@ export default function RoutePlanThumbnail({
             <path
               d="M10 128 C24 100 37 94 54 78 S79 47 106 56"
               fill="none"
-              stroke="#c8d4ce"
+              stroke="#d4d4d8"
               strokeWidth="1.4"
               strokeLinecap="round"
             />
@@ -69,7 +85,7 @@ export default function RoutePlanThumbnail({
           <polyline
             points={plotted.map((p) => `${p.x},${p.y}`).join(" ")}
             fill="none"
-            stroke="#f07a4a"
+            stroke="#dc2626"
             strokeWidth={showBase ? "2.8" : "3.6"}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -89,7 +105,9 @@ export default function RoutePlanThumbnail({
                 : undefined
             }
             role={onPointClick ? "button" : undefined}
-            aria-label={onPointClick ? `${p.point.orderIndex + 1}번 스팟 ${p.point.title}` : undefined}
+            aria-label={
+              onPointClick ? `${p.point.orderIndex + 1}번 스팟 ${p.point.title}` : undefined
+            }
             tabIndex={onPointClick ? 0 : undefined}
             style={{
               cursor: onPointClick ? "pointer" : undefined,
@@ -111,7 +129,34 @@ export default function RoutePlanThumbnail({
           </g>
         ))}
       </svg>
+
+      {showLabel && !empty && (
+        <span className="pointer-events-none absolute left-2 top-2 rounded-full bg-black/45 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm">
+          동선 {plotted.length}
+        </span>
+      )}
+
+      {showBase && empty && (
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1.5 px-4 text-center">
+          <MapGlyph />
+          <span className="text-[11px] font-semibold text-ink-faint">위치가 없어 동선을 그릴 수 없어요</span>
+        </div>
+      )}
     </div>
+  );
+}
+
+function MapGlyph() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden className="text-ink-faint">
+      <path
+        d="M9 4.5 3.5 6.5v13l5.5-2 6 2 5.5-2v-13L15 6.5l-6-2Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path d="M9 4.5v13M15 6.5v13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
   );
 }
 
@@ -140,4 +185,17 @@ function plotPoints(points: RouteThumbnailPoint[]) {
     x: 22 + ((point.lng - minLng) / lngRange) * 56,
     y: 88 - ((point.lat - minLat) / latRange) * 52,
   }));
+}
+
+/** Prefer schematic route map over photo for plans / cover-less courses. */
+export function shouldUseRouteMapCover(route: {
+  coverPhotoUrl?: string;
+  copyPurpose?: "plan" | "record";
+  thumbnailPoints?: RouteThumbnailPoint[];
+}): boolean {
+  const geocoded =
+    route.thumbnailPoints?.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng)) ??
+    [];
+  if (route.copyPurpose === "plan" && geocoded.length > 0) return true;
+  return !route.coverPhotoUrl;
 }
