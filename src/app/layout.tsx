@@ -43,13 +43,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "코스",
-    title: "코스 — 코스 기록·공유",
+    title: "코스 — 따라갈 수 있는 이동 코스",
     description: SITE_DESCRIPTION,
     locale: "ko_KR",
   },
   twitter: {
     card: "summary_large_image",
-    title: "코스 — 코스 기록·공유",
+    title: "코스 — 따라갈 수 있는 이동 코스",
     description: SITE_DESCRIPTION,
   },
   appleWebApp: {

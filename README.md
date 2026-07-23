@@ -6,8 +6,9 @@
 - **프로덕션**: https://course-sns.vercel.app
 - **Supabase**: `pbyxnvtgsrwmsvxnynif` (routdiary와 분리)
 - **현재 버전**: `v0.3.0-mvp` (`src/lib/version.ts`)
+- **개발·운영 가이드**: https://course-sns.vercel.app/deliverables (로컬 `/deliverables`)
 - **배포·인프라 체크리스트**: [`docs/MVP-SETUP.md`](docs/MVP-SETUP.md)
-- **상세 인수인계·IA·함정**: [`docs/HANDOFF.md`](docs/HANDOFF.md) (routdiary 기준 문서, MVP 맥락은 상단 참고)
+- **상세 인수인계·IA·함정**: [`docs/HANDOFF.md`](docs/HANDOFF.md)
 
 ## 기술 스택
 
@@ -32,13 +33,16 @@ pnpm test:e2e    # Playwright 스모크 (데모 계정, 읽기 전용)
 
 ## 문서
 
-| 파일 | 내용 |
+| 위치 | 내용 |
 |------|------|
+| [`/deliverables`](https://course-sns.vercel.app/deliverables) | **공식 개발·운영 가이드** (기획·화면·DB·API·현황·이력) |
 | [`docs/MVP-SETUP.md`](docs/MVP-SETUP.md) | Supabase migration, Vercel env, 네이버 Maps URL 등록 |
 | [`docs/HANDOFF.md`](docs/HANDOFF.md) | 제품 IA, Supabase/OAuth, 완료·TODO, 함정 |
-| [`docs/COURSE-UX-DESIGN.md`](docs/COURSE-UX-DESIGN.md) | 코스 포지션·페르소나 UX 적용 설계 (Phase 0–3) |
-| [`docs/UX-PERSONA-PAINPOINTS.md`](docs/UX-PERSONA-PAINPOINTS.md) | Wave A–D 이후 페르소나 10점 재채점·잔여 페인포인트·Wave E |
+| [`docs/COURSE-UX-DESIGN.md`](docs/COURSE-UX-DESIGN.md) | 코스 포지션·페르소나 UX 적용 설계 |
+| [`docs/UX-PERSONA-PAINPOINTS.md`](docs/UX-PERSONA-PAINPOINTS.md) | 페르소나 재채점·Wave E |
 | [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md) | UI 스타일 가이드 |
+
+**브랜드 아이콘:** `public/icons/icon.svg` (정본) → PNG/apple-touch · `src/app/favicon.ico` · OG/Twitter `src/app/opengraph-image.png`
 | [`.env.example`](.env.example) | 환경변수 템플릿 |
 
 ## 원본

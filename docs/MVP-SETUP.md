@@ -69,7 +69,8 @@ pnpm test:e2e   # .env.local + 데모 계정·공개 루트 시드 필요
 
 - Vercel 프로젝트 → **Deployments** → Production URL
 - 또는 `vercel ls` / GitHub Actions 배포 상태
-- 앱 스플래시·로그인 화면에 **코스** 브랜드, 버전 `v0.1.0-mvp` 표시 확인
+- 앱 스플래시·로그인·파비콘·OG에 **코스 C 아이콘**, 버전 `v0.3.0-mvp` 표시 확인
+- 개발 가이드: `https://course-sns.vercel.app/deliverables`
 
 ## routdiary와 공유하지 않는 것
 

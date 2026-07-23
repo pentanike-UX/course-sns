@@ -40,7 +40,15 @@ function LoginInner() {
     <MobileFrame shell>
       <main className="flex flex-1 flex-col justify-center px-7">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-black text-ink">코스</h1>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/icons/icon-512.png"
+            alt=""
+            width={72}
+            height={72}
+            className="mx-auto rounded-[18px] shadow-sm ring-1 ring-black/5"
+          />
+          <h1 className="mt-4 text-3xl font-black text-ink">코스</h1>
           <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
             좋은 코스 따라가 보고,
             <br />
