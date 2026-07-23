@@ -185,8 +185,32 @@ export default function RouteView({
 
   const followCount = route.copyCount ?? 0;
   const completionCount = route.completionCount ?? 0;
+  const transferProof =
+    route.visibility === "public" && (followCount > 0 || completionCount > 0) ? (
+      <div className="flex flex-wrap items-center gap-2">
+        {followCount > 0 && (
+          <span className="flex items-center gap-1.5 text-[13px] font-semibold text-sunset-ink">
+            <FollowIcon />
+            {followCount}명이 따라갔어요
+          </span>
+        )}
+        {completionCount > 0 && (
+          <span className="flex items-center gap-1 text-[13px] font-semibold text-sunset-ink">
+            <CheckBadgeIcon />
+            {completionCount}명이 다녀왔어요
+            {route.completionRatingAvg ? ` · ${route.completionRatingAvg}점` : ""}
+          </span>
+        )}
+      </div>
+    ) : null;
+
+  // Wave E1: transfer CTAs first; like/save are secondary below.
   const social = !isOwner ? (
-    <div className="px-4 pt-4">
+    <div className="space-y-3 px-4 pt-4">
+      {route.visibility === "public" && (
+        <CourseFollowActions routeId={route.id} viewerCompletion={viewerCompletion} />
+      )}
+      {transferProof}
       <div className="flex flex-wrap items-center gap-2">
         <RouteActions
           routeId={route.id}
@@ -194,26 +218,14 @@ export default function RouteView({
           initialLikeCount={route.likeCount}
           initialBookmarked={route.bookmarked ?? false}
         />
-        {route.visibility === "public" && (followCount > 0 || completionCount > 0) && (
-          <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
-            {followCount > 0 && (
-              <span className="flex items-center gap-1.5 text-[13px] font-semibold text-sunset-ink">
-                <FollowIcon />
-                {followCount}명이 따라갔어요
-              </span>
-            )}
-            {completionCount > 0 && (
-              <span className="flex items-center gap-1 text-[13px] font-semibold text-sunset-ink">
-                <CheckBadgeIcon />
-                {completionCount}명이 다녀왔어요
-                {route.completionRatingAvg ? ` · ${route.completionRatingAvg}점` : ""}
-              </span>
-            )}
-          </div>
-        )}
       </div>
-      {route.visibility === "public" && (
-        <CourseFollowActions routeId={route.id} viewerCompletion={viewerCompletion} />
+    </div>
+  ) : route.visibility === "public" ? (
+    <div className="space-y-1.5 px-4 pt-4">
+      {transferProof ?? (
+        <p className="text-[13px] font-medium text-ink-soft">
+          아직 따라간 사람이 없어요. 추천 대상·난이도를 채우면 따라가기 쉬워져요.
+        </p>
       )}
     </div>
   ) : null;

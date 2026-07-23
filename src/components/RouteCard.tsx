@@ -9,7 +9,7 @@ import { flushSync } from "react-dom";
 import { ROUTE_ENTER_MORPH_NAME, writePendingRoute } from "@/lib/pending-route";
 import type { RouteSummary } from "@/lib/types";
 import { formatDate } from "@/lib/format";
-import { courseSpecParts } from "@/lib/course-spec";
+import { courseSpecLine } from "@/lib/course-spec";
 import RoutePlanThumbnail from "@/components/RoutePlanThumbnail";
 
 /** Full-bleed image card: cover fills the card, meta overlaid (date first). */
@@ -104,20 +104,16 @@ export default function RouteCard({
         <h3 className="mt-0.5 line-clamp-2 text-[15px] font-bold leading-snug text-white/95 drop-shadow-sm">
           {route.title}
         </h3>
-        {(() => {
-          const parts = courseSpecParts({
+        <p className="mt-1 truncate text-[11px] font-semibold text-white/80 drop-shadow-sm">
+          {courseSpecLine({
             durationMin: route.totalDurationMin,
             distanceMeters: route.approxDistanceM,
             transitLabel: route.transitLabel,
             difficulty: route.difficulty,
-          });
-          if (!parts.length) return null;
-          return (
-            <p className="mt-1 truncate text-[11px] font-semibold text-white/80 drop-shadow-sm">
-              {parts.join(" · ")}
-            </p>
-          );
-        })()}
+            region: route.region,
+            spotCount: route.spotCount,
+          })}
+        </p>
 
         {showOwner && (
           <span

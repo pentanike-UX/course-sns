@@ -47,3 +47,25 @@ export function courseSpecParts(input: {
   if (diff) parts.push(diff.label);
   return parts;
 }
+
+/**
+ * Spec line that never collapses to empty (Wave E2).
+ * Uses time/distance/transit/difficulty when present; otherwise region · 스팟 N · "동선 확인".
+ */
+export function courseSpecLine(input: {
+  durationMin?: number;
+  distanceMeters?: number;
+  transitLabel?: string | null;
+  difficulty?: string;
+  region?: string;
+  spotCount?: number;
+}): string {
+  const parts = courseSpecParts(input);
+  if (parts.length) return parts.join(" · ");
+  const fallback: string[] = [];
+  if (input.region?.trim()) fallback.push(input.region.trim());
+  if (typeof input.spotCount === "number" && input.spotCount > 0) {
+    fallback.push(`스팟 ${input.spotCount}`);
+  }
+  return fallback.length ? fallback.join(" · ") : "동선 확인";
+}

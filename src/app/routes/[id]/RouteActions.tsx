@@ -23,8 +23,15 @@ export default function RouteActions({
   const [bookmarked, setBookmarked] = useState(initialBookmarked);
   const [, startTransition] = useTransition();
 
+  const SAVE_AUTH = {
+    next: `/routes/${routeId}`,
+    title: "저장·반응하려면 로그인이 필요해요",
+    description:
+      "로그인하면 코스를 저장해 두고 나중에 따라갈 수 있어요. 이 앱의 핵심은 좋아요보다 따라가기예요.",
+  } as const;
+
   const onLike = () => {
-    if (!requireAuth({ next: `/routes/${routeId}` })) return; // guest → login sheet
+    if (!requireAuth(SAVE_AUTH)) return;
     const next = !liked;
     // optimistic
     setLiked(next);
@@ -35,20 +42,20 @@ export default function RouteActions({
         // revert
         setLiked(!next);
         setLikeCount((c) => c + (next ? -1 : 1));
-        if (res.needsAuth) requireAuth({ next: `/routes/${routeId}` });
+        if (res.needsAuth) requireAuth(SAVE_AUTH);
       }
     });
   };
 
   const onBookmark = () => {
-    if (!requireAuth({ next: `/routes/${routeId}` })) return; // guest → login sheet
+    if (!requireAuth(SAVE_AUTH)) return;
     const next = !bookmarked;
     setBookmarked(next);
     startTransition(async () => {
       const res = await toggleBookmark(routeId, next);
       if (res?.error) {
         setBookmarked(!next);
-        if (res.needsAuth) requireAuth({ next: `/routes/${routeId}` });
+        if (res.needsAuth) requireAuth(SAVE_AUTH);
       }
     });
   };

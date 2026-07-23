@@ -551,7 +551,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      notification_type: "like" | "comment" | "follow" | "completion"
+      notification_type:
+        | "like"
+        | "comment"
+        | "follow"
+        | "completion"
+        | "copy"
+        | "course_publish"
       route_copy_purpose: "plan" | "record"
       transport_mode:
         | "walk"
@@ -690,7 +696,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      notification_type: ["like", "comment", "follow"],
+      notification_type: [
+        "like",
+        "comment",
+        "follow",
+        "completion",
+        "copy",
+        "course_publish",
+      ],
       transport_mode: [
         "walk",
         "bus",

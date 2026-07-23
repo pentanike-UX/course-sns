@@ -10,6 +10,7 @@ import FeedControls, {
 } from "./FeedControls";
 import FeedMap from "./FeedMap";
 import FeedRouteCard from "./FeedRouteCard";
+import FollowingRail from "./FollowingRail";
 import FeedSearchOverlay from "./FeedSearchOverlay";
 import FeedFilterSheet from "@/components/FeedFilterSheet";
 import GlassCircle from "@/components/GlassCircle";
@@ -140,6 +141,7 @@ export default function FeedExplorer({
   initialFilters,
   allRoutes,
   allPoints,
+  followingCourses = [],
   myRoutes,
   diaryTab = "all",
   notificationBell,
@@ -153,6 +155,8 @@ export default function FeedExplorer({
   initialFilters: FeedFilters;
   allRoutes?: RouteSummary[];
   allPoints?: FeedMapPoint[];
+  /** P4 home rail — empty when guest or no following publishes */
+  followingCourses?: RouteSummary[];
   myRoutes: RouteSummary[];
   diaryTab?: HomeTab;
   notificationBell: ReactNode;
@@ -505,6 +509,9 @@ export default function FeedExplorer({
             onRemoveFilter={removeFilter}
           />
         </div>
+        {profile && followingCourses.length > 0 && (
+          <FollowingRail courses={followingCourses} />
+        )}
         {renderPanel()}
       </div>
 

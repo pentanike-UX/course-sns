@@ -10,6 +10,7 @@ import { loadNaverMaps, NAVER_MAP_KEY } from "@/lib/naver";
 import type { FeedMapPoint } from "@/lib/data";
 import { appendFilterParams, type FeedFilters } from "@/lib/feed-filters";
 import { COURSE_STORAGE, readSession, writeSession } from "@/lib/course-storage";
+import { courseSpecLine } from "@/lib/course-spec";
 
 type Props = {
   points: FeedMapPoint[];
@@ -41,12 +42,23 @@ const CAMERA_KEY = COURSE_STORAGE.feedMapCamera;
 /** idle → viewport fetch debounce */
 const FETCH_DEBOUNCE_MS = 400;
 
-/** Map peek meta: region · spots · transfer proof (never likes). */
+/** Map peek meta: spec parity with list cards + transfer proof (never likes). */
 function mapPointMeta(p: FeedMapPoint): string {
-  const bits = [p.region, `스팟 ${p.spotCount}`];
-  if (p.copyCount > 0) bits.push(`${p.copyCount} 따라감`);
-  else if (p.completionCount > 0) bits.push(`${p.completionCount} 다녀옴`);
-  return bits.join(" · ");
+  const spec = courseSpecLine({
+    durationMin: p.totalDurationMin,
+    distanceMeters: p.approxDistanceM,
+    transitLabel: p.transitLabel,
+    difficulty: p.difficulty,
+    region: p.region,
+    spotCount: p.spotCount,
+  });
+  const transfer =
+    p.copyCount > 0
+      ? `${p.copyCount} 따라감`
+      : p.completionCount > 0
+        ? `${p.completionCount} 다녀옴`
+        : "첫 따라가기";
+  return `${spec} · ${transfer}`;
 }
 
 type Cluster = { lat: number; lng: number; points: FeedMapPoint[] };

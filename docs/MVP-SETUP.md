@@ -7,6 +7,7 @@
 
 - 프로젝트: **course-sns** · ref `pbyxnvtgsrwmsvxnynif` · 리전 `ap-northeast-2`
 - migration `0001`–`0009` 적용 완료 (`supabase db push`)
+- ⚠️ **`0014_transfer_notifications.sql`** (Wave E): `copy`·`course_publish` 알림 타입 — 프로덕션에 `supabase db push` 또는 SQL 에디터로 적용 필요
 - 데모 계정: `demo@course-sns.app` / `demo1234` (공개 시드 루트 1건 포함)
 
 **수동 확인 (대시보드)** — Auth URL은 `supabase config push`로 적용 완료 ✅

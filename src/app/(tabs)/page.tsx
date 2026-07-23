@@ -13,6 +13,7 @@ import {
   getUnreadNotificationCount,
   getMyCollectionCounts,
   getMyDefaultVisibility,
+  getFollowingCourseStream,
   type FeedSort,
 } from "@/lib/data";
 import type { HomeTab } from "./HomeRoutesTabs";
@@ -76,6 +77,8 @@ export default async function HomePage({
       getMyDefaultVisibility(),
     ]);
 
+  const followingCourses = profile ? await getFollowingCourseStream() : [];
+
   // the explore header (a profile chip + search/settings) lives inside FeedExplorer
   return (
     <>
@@ -87,6 +90,7 @@ export default async function HomePage({
         initialFilters={filters}
         allRoutes={allRoutes}
         allPoints={allPoints}
+        followingCourses={followingCourses}
         myRoutes={myRoutes}
         diaryTab={diaryTab}
         notificationBell={<NotificationBell count={unread} />}

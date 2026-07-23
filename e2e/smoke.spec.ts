@@ -79,13 +79,13 @@ test("보관함: 따라가는 중/저장/팔로잉 탭이 렌더된다", async (
 test("프로필: 내 정보가 렌더된다", async ({ page }) => {
   await page.goto("/profile", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("link", { name: "프로필 편집" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /여행 통계/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /코스 통계/ })).toBeVisible();
 
   await page.goto("/profile/account", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("button", { name: "로그아웃" })).toBeVisible();
 });
 
-test("여행 통계: 요약·월별 차트·지역이 렌더된다", async ({ page }) => {
+test("코스 통계: 요약·월별 차트·지역이 렌더된다", async ({ page }) => {
   await page.goto("/profile/stats");
   await expect(page.getByRole("heading", { name: "활동 기록" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "다녀온 지역" })).toBeVisible();

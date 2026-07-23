@@ -10,7 +10,12 @@ import type { AppNotification } from "@/lib/types";
 import MarkRead from "./MarkRead";
 
 function isTransfer(type: AppNotification["type"]) {
-  return type === "completion" || type === "follow";
+  return (
+    type === "completion" ||
+    type === "follow" ||
+    type === "copy" ||
+    type === "course_publish"
+  );
 }
 
 export default async function NotificationsPage() {
@@ -33,7 +38,7 @@ export default async function NotificationsPage() {
             <div className="px-8 py-20 text-center text-[14px] text-ink-faint">
               아직 알림이 없어요.
               <br />
-              완주 후기·팔로우가 생기면 여기 모여요.
+              새 코스·따라가기·완주 후기가 생기면 여기 모여요.
             </div>
           ) : (
             <>
@@ -92,6 +97,15 @@ function NotificationRow({ n }: { n: AppNotification }) {
       <>
         회원님의 코스 <b className="font-semibold text-ink">{n.routeTitle ?? ""}</b>를 다녀왔어요
       </>
+    ) : n.type === "copy" ? (
+      <>
+        회원님의 코스 <b className="font-semibold text-ink">{n.routeTitle ?? ""}</b>를 따라가기
+        시작했어요
+      </>
+    ) : n.type === "course_publish" ? (
+      <>
+        새 코스 <b className="font-semibold text-ink">{n.routeTitle ?? ""}</b>를 올렸어요
+      </>
     ) : (
       <>
         회원님의 코스 <b className="font-semibold text-ink">{n.routeTitle ?? ""}</b>에 댓글을 남겼어요
@@ -139,6 +153,8 @@ function NotificationRow({ n }: { n: AppNotification }) {
 }
 
 const TYPE_LABEL: Record<AppNotification["type"], string> = {
+  course_publish: "새코스",
+  copy: "따라",
   completion: "완주",
   follow: "팔로",
   comment: "댓글",

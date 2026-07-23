@@ -1,8 +1,7 @@
 # 코스 Design System
 
 > UI·인터페이스 일관성을 위한 정본 가이드. **코드 토큰 = 스펙** — 값을 바꿀 때는 `src/app/globals.css`를 먼저 수정하고, 이 문서와 `docs/HANDOFF.md` §7에 변경 이유를 남긴다.  
-> 최종 업데이트: 2026-07-23 · course-sns MVP `v0.2.0-mvp` · **브랜드 포인트 컬러 = 레드** (`globals.css` 정본) · 표면/잉크 뉴트럴 · success=teal (Wave C)  
-> ⚠️ `--error`와 brand가 동일 `#ef4444` — Wave E5에서 분리 예정 ([`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md))
+> 최종 업데이트: 2026-07-23 · course-sns MVP `v0.3.0-mvp` · **브랜드 포인트 컬러 = 레드** (`globals.css` 정본) · 표면/잉크 뉴트럴 · success=teal · **error≠brand** (Wave E5)
 
 ---
 
@@ -75,7 +74,7 @@ bg-ink text-paper
 | `--success` / `--success-soft` | 완료·긍정 (**teal**, brand 레드와 분리 — Wave C) |
 | `--leaf` | **DEPRECATED** → `--success` 별칭 (신규는 `text-success`) |
 | `--warning` / `--warning-soft` | 주의 |
-| `--error` / `--error-soft` | 삭제·위험·**폼/시트 에러 배너** (`bg-error-soft text-error`) — sunset-wash에 넣지 말 것 |
+| `--error` / `--error-soft` | 삭제·위험·**폼/시트 에러 배너** — light `#b91c1c` (brand `#ef4444`와 분리). `bg-error-soft text-error` — sunset-wash에 넣지 말 것 |
 | `--info` / `--info-soft` | 정보 |
 | `--sky` | 링크·지도·대중교통 |
 | `--accent-*` | 테마/감정 칩 등 메타 (`--accent-mint`는 soft coral `#fca5a5`, sky, sunshine, coral, lavender) |

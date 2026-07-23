@@ -13,7 +13,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.2.0-mvp)
+### 현재 화면·내비 (v0.3.0-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -565,3 +565,14 @@ pnpm test:e2e     # Playwright 스모크
 - **문서**: §1을 코스 IA로 재작성; [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md) Wave 이후 **10점 시나리오 재채점** + Wave E 개선안.
 - **검증**: `pnpm lint` / `pnpm build` / (가능 시) `pnpm test:e2e`.
 - **정본 동기화 순서**: `globals.css` → DESIGN-SYSTEM → HANDOFF §7 → (비표준 시) JSDoc.
+
+### Wave E — 잔여 페인포인트 해소 (Cursor, 2026-07-23 · v0.3.0-mvp)
+
+- **버전**: **`v0.3.0-mvp`**.
+- **E1**: 상세 `CourseFollowActions`를 ♥/저장(`RouteActions`)보다 위. 소유자 공개 코스에 전이 프루프/빈 상태 힌트. like·bookmark·FollowToggle AuthGate 전이 카피.
+- **E2**: `courseSpecLine` null 금지; TransferPill/MetaRow `첫 따라가기` 고정; 지도 peek 스펙 패리티(`getFeedMapPoints` legs/difficulty).
+- **E4**: `FollowProgressBar` 스팟/이동을 실데이터로; 저장 카드 `저장함 · 아직 안 따라감`.
+- **E3**: migration `0014` — 알림 `copy`·`course_publish` 트리거; 알림 UI·정렬; 홈 `FollowingRail`.
+- **E5**: `--error` `#b91c1c` (brand와 분리); 통계 타이틀 `코스 통계`.
+- **검증**: `pnpm lint` / `pnpm build` / `pnpm test:e2e`.
+- **운영**: Supabase에 `0014_transfer_notifications.sql` push 필요(미적용 시 홈 레일·기존 알림은 동작, 신규 타입 트리거만 대기).

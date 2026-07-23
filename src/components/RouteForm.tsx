@@ -1716,7 +1716,10 @@ function PlanRoutePlanner({
   }, []);
 
   useEffect(() => {
-    if (openInfoRequest > 0) openSheet({ type: "info" });
+    if (openInfoRequest <= 0) return;
+    // Defer setState out of the effect body (react-hooks/set-state-in-effect).
+    const t = window.setTimeout(() => openSheet({ type: "info" }), 0);
+    return () => window.clearTimeout(t);
   }, [openInfoRequest, openSheet]);
 
   const bottomOffset = kbInset > 0 ? kbInset + 12 : 46;
