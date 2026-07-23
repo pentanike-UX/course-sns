@@ -5,7 +5,8 @@
 ## 1. 제품 개요
 
 **course-sns (코스)** — 따라갈 수 있는 **이동 코스**를 발견·복제·완주·구독하는 커뮤니티.  
-정본 UX: [`COURSE-UX-DESIGN.md`](COURSE-UX-DESIGN.md) · 토큰: [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) · 페인포인트: [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md).
+정본 UX: [`COURSE-UX-DESIGN.md`](COURSE-UX-DESIGN.md) · 토큰: [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) · 페인포인트: [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md).  
+**공식 가이드(웹):** [`/deliverables`](https://course-sns.vercel.app/deliverables) — 기획·화면·아키텍처·DB·API·개발·현황·이력.
 
 - 한 **Route**(코드/DB명 유지) = 순서 있는 **Spot** + 스팟 간 **Leg**(수단/시간/주의)
 - 메타: 지역·추천 대상·난이도·테마·감정(보조)·공개여부
@@ -565,6 +566,12 @@ pnpm test:e2e     # Playwright 스모크
 - **문서**: §1을 코스 IA로 재작성; [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md) Wave 이후 **10점 시나리오 재채점** + Wave E 개선안.
 - **검증**: `pnpm lint` / `pnpm build` / (가능 시) `pnpm test:e2e`.
 - **정본 동기화 순서**: `globals.css` → DESIGN-SYSTEM → HANDOFF §7 → (비표준 시) JSDoc.
+
+### 개발 가이드 `/deliverables` · 브랜드 아이콘 통일 (Cursor, 2026-07-23 · v0.3.0-mvp)
+
+- **웹 가이드**: routdiary `/deliverables`와 同구조 — `시작하기·기획·화면·아키텍처·DB·API·개발·현황·이력`. `noindex`, 코스 C 아이콘 헤더.
+- **아이콘**: 구 favicon 그린 잔상 제거. `icon.svg`에서 `icon-192/512`·apple-touch·`favicon.ico`·`opengraph-image.png`·`twitter-image.png` 재생성 (마크 + 「코스」워드마크 OG).
+- **검증**: `pnpm lint` / `pnpm build`. 로컬 `http://localhost:3000/deliverables`.
 
 ### Wave E — 잔여 페인포인트 해소 (Cursor, 2026-07-23 · v0.3.0-mvp)
 
