@@ -10,7 +10,9 @@ import { ROUTE_ENTER_MORPH_NAME, writePendingRoute } from "@/lib/pending-route";
 import type { RouteSummary } from "@/lib/types";
 import { formatDate } from "@/lib/format";
 import { courseSpecLine } from "@/lib/course-spec";
-import RoutePlanThumbnail from "@/components/RoutePlanThumbnail";
+import RoutePlanThumbnail, {
+  shouldUseRouteMapCover,
+} from "@/components/RoutePlanThumbnail";
 
 /** Full-bleed image card: cover fills the card, meta overlaid (date first). */
 export default function RouteCard({
@@ -62,7 +64,7 @@ export default function RouteCard({
       onClick={activateEntryMorph}
       className="group relative block aspect-[4/5] overflow-hidden rounded-[var(--radius-card)] bg-line"
     >
-      {route.coverPhotoUrl ? (
+      {!shouldUseRouteMapCover(route) && route.coverPhotoUrl ? (
         <ViewTransition name={morphName} share="route-cover-morph">
           <span className="absolute inset-0 block overflow-hidden rounded-[inherit]">
             <Image

@@ -6,7 +6,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import RoutePlanThumbnail from "@/components/RoutePlanThumbnail";
+import RoutePlanThumbnail, {
+  shouldUseRouteMapCover,
+} from "@/components/RoutePlanThumbnail";
 import { formatDate } from "@/lib/format";
 import { ROUTE_ENTER_MORPH_NAME, writePendingRoute } from "@/lib/pending-route";
 import type { RouteSummary } from "@/lib/types";
@@ -154,21 +156,26 @@ function Cover({
   priority: boolean;
   sizes: string;
 }) {
-  return route.coverPhotoUrl ? (
-    <ViewTransition name={morphName} share="route-cover-morph">
-      <span className="absolute inset-0 block overflow-hidden rounded-[inherit]">
-        <Image
-          src={route.coverPhotoUrl}
-          alt={route.title}
-          fill
-          sizes={sizes}
-          loading={priority ? "eager" : undefined}
-          fetchPriority={priority ? "high" : undefined}
-          className="object-cover transition-transform duration-500 group-active:scale-[1.04]"
-        />
-      </span>
-    </ViewTransition>
-  ) : (
+  // Cards never mount Naver Maps (too heavy). Photo OR SVG route schematic.
+  // Plans with geocoded spots always prefer the schematic so the path is visible.
+  if (!shouldUseRouteMapCover(route) && route.coverPhotoUrl) {
+    return (
+      <ViewTransition name={morphName} share="route-cover-morph">
+        <span className="absolute inset-0 block overflow-hidden rounded-[inherit]">
+          <Image
+            src={route.coverPhotoUrl}
+            alt={route.title}
+            fill
+            sizes={sizes}
+            loading={priority ? "eager" : undefined}
+            fetchPriority={priority ? "high" : undefined}
+            className="object-cover transition-transform duration-500 group-active:scale-[1.04]"
+          />
+        </span>
+      </ViewTransition>
+    );
+  }
+  return (
     <RoutePlanThumbnail points={route.thumbnailPoints} className="absolute inset-0" />
   );
 }
