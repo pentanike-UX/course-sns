@@ -254,11 +254,11 @@ export default function RouteForm({
   const [visibility, setVisibility] = useState<Visibility>(
     initial?.visibility ?? defaultVisibility ?? "private",
   );
-  // Record create: 완료 requires an explicit tap on 공개/비공개 (not just the default).
-  const [visibilityChosen, setVisibilityChosen] = useState(isEdit || isPlanDraft);
+  // 완료(→상세) requires an explicit tap on 공개/비공개 — never infer from default
+  // or from merely scrolling to the share section.
+  const [visibilityChosen, setVisibilityChosen] = useState(false);
   const [showMoreMeta, setShowMoreMeta] = useState(false);
   const [openInfoTick, setOpenInfoTick] = useState(0);
-  const [shareVisited, setShareVisited] = useState(isEdit ? false : true);
   const [confirmVisibility, setConfirmVisibility] = useState(false);
   const saveIntentRef = useRef<"draft" | "finish">("finish");
 
@@ -298,7 +298,6 @@ export default function RouteForm({
         if (el && el.getBoundingClientRect().top <= line) current = s.id;
       }
       setActiveSection(current);
-      if (current === "share") setShareVisited(true);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -614,16 +613,16 @@ export default function RouteForm({
       return;
     }
 
-    // Record create: require an explicit visibility tap on the last step.
-    if (!isEdit && !isPlanDraft && saveIntent === "finish" && !visibilityChosen) {
+    // Finish → detail: must explicitly pick 공개/비공개 (draft 임시저장 may skip).
+    if (saveIntent === "finish" && !visibilityChosen) {
+      if (isEdit) {
+        // Soft confirm with picker — do not silently keep the previous default.
+        setConfirmVisibility(true);
+        return;
+      }
       setSaveError("공개할지 비공개할지 골라 주세요.");
-      setStep(5);
-      return;
-    }
-
-    // Record edit: if they never opened 공개 section, confirm before leaving.
-    if (isEdit && !isPlanDraft && saveIntent === "finish" && !shareVisited) {
-      setConfirmVisibility(true);
+      if (isPlanDraft) setOpenInfoTick((n) => n + 1);
+      else setStep(5);
       return;
     }
 
@@ -841,36 +840,45 @@ export default function RouteForm({
           : "지금 비공개로 저장돼요. 바꿔야 하면 아래에서 고르세요."
       }
       primaryLabel="이대로 저장"
+      primaryDisabled={!visibilityChosen}
       onPrimary={() => {
+        if (!visibilityChosen) return;
         setConfirmVisibility(false);
-        setShareVisited(true);
         saveIntentRef.current = "finish";
         const form = document.getElementById("route-form") as HTMLFormElement | null;
-        form?.requestSubmit();
+        // Submit with finish intent even if the last click wasn't the header button.
+        const finishBtn = form?.querySelector<HTMLButtonElement>(
+          'button[type="submit"][name="intent"][value="finish"]',
+        );
+        if (finishBtn) form?.requestSubmit(finishBtn);
+        else form?.requestSubmit();
       }}
       secondaryLabel="닫기"
       onClose={() => setConfirmVisibility(false)}
       ariaLabel="공개 범위 확인"
     >
       <div className="mt-3 space-y-2">
+        <p className="text-[12px] text-ink-soft">아래에서 공개 범위를 한 번 골라 주세요.</p>
         <VisibilityPicker
           value={visibility}
-          chosen
+          chosen={visibilityChosen}
           onChoose={(v) => {
             setVisibility(v);
             setVisibilityChosen(true);
           }}
         />
-        <button
-          type="button"
-          onClick={() => {
-            setConfirmVisibility(false);
-            jumpToSection("share");
-          }}
-          className="w-full rounded-xl border border-line bg-card px-3 py-2.5 text-[13px] font-semibold text-ink-soft"
-        >
-          공개 섹션으로 가서 다시 고르기
-        </button>
+        {isEdit && !isPlanDraft && (
+          <button
+            type="button"
+            onClick={() => {
+              setConfirmVisibility(false);
+              jumpToSection("share");
+            }}
+            className="w-full rounded-xl border border-line bg-card px-3 py-2.5 text-[13px] font-semibold text-ink-soft"
+          >
+            공개 섹션으로 가서 다시 고르기
+          </button>
+        )}
       </div>
     </ActionBottomSheet>
   );
@@ -1144,7 +1152,7 @@ export default function RouteForm({
       onChoose={(v) => {
         setVisibility(v);
         setVisibilityChosen(true);
-        setShareVisited(true);
+        setSaveError(null);
       }}
     />
   );
@@ -1223,6 +1231,11 @@ export default function RouteForm({
       {showMoreMeta && secondaryMetaSelectors}
       <div className="mb-1 mt-2 text-[12px] font-medium text-ink-soft">공개 범위</div>
       {visibilityBox}
+      {!visibilityChosen && (
+        <p className="mb-2 text-[12px] text-ink-faint">
+          비공개 / 공개 중 하나를 눌러야 완료할 수 있어요
+        </p>
+      )}
       {isDirectPlanCreate ? (
         <div className="mt-3 rounded-[var(--radius-card)] border border-line bg-card p-4">
           <div className="text-[14px] font-bold text-ink">임시저장과 완료</div>
@@ -1291,6 +1304,7 @@ export default function RouteForm({
         {savingOverlay}
         {sheets}
         {exitConfirmSheet}
+        {visibilityConfirmSheet}
       </PlannerFrame>
     );
   }
@@ -1335,6 +1349,7 @@ export default function RouteForm({
         {savingOverlay}
         {sheets}
         {exitConfirmSheet}
+        {visibilityConfirmSheet}
       </PlannerFrame>
     );
   }
@@ -1428,8 +1443,6 @@ export default function RouteForm({
             data-section="share"
             ref={(el) => { sectionEls.current.share = el; }}
             className="mt-9 scroll-mt-16 border-t border-line pt-6"
-            onFocusCapture={() => setShareVisited(true)}
-            onClick={() => setShareVisited(true)}
           >
             <StepHeading
               title="공개 범위"
@@ -1442,6 +1455,11 @@ export default function RouteForm({
               spotCount={spots.length}
             />
             {visibilityBox}
+            {!visibilityChosen && (
+              <p className="mt-2 text-[12px] text-ink-faint">
+                비공개 / 공개 중 하나를 눌러야 완료할 수 있어요
+              </p>
+            )}
           </section>
 
           {saveError && (
@@ -1698,7 +1716,10 @@ function PlanRoutePlanner({
   }, []);
 
   useEffect(() => {
-    if (openInfoRequest > 0) openSheet({ type: "info" });
+    if (openInfoRequest <= 0) return;
+    // Defer setState out of the effect body (react-hooks/set-state-in-effect).
+    const t = window.setTimeout(() => openSheet({ type: "info" }), 0);
+    return () => window.clearTimeout(t);
   }, [openInfoRequest, openSheet]);
 
   const bottomOffset = kbInset > 0 ? kbInset + 12 : 46;

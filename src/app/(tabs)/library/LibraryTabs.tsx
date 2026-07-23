@@ -120,7 +120,7 @@ function FollowedCourseCard({ course }: { course: FollowedCourse }) {
         </span>
       </div>
       <FollowProgressBar
-        status={course.followStatus}
+        course={course}
         editHref={editHref}
         originalHref={originalHref}
         hasOriginal={!!course.originalRouteId}
@@ -129,31 +129,51 @@ function FollowedCourseCard({ course }: { course: FollowedCourse }) {
   );
 }
 
-/** Persistent next-step checklist for P2 — always visible after re-entry. */
+/** Persistent next-step checklist for P2 — steps reflect real draft data (Wave E4). */
 function FollowProgressBar({
-  status,
+  course,
   editHref,
   originalHref,
   hasOriginal,
 }: {
-  status: FollowedCourse["followStatus"];
+  course: FollowedCourse;
   editHref: string;
   originalHref: string;
   hasOriginal: boolean;
 }) {
+  const status = course.followStatus;
+  const spotsOk = course.spotCount >= 1 && course.title.trim().length > 0;
+  const moveOk =
+    status === "done" ||
+    status === "ready" ||
+    !!(course.transitLabel || (course.totalDurationMin && course.totalDurationMin > 0));
+  const doneOk = status === "done";
+
   const steps = [
-    { label: "스팟 확인", done: true },
-    { label: "이동 확인", done: status !== "tuning" },
-    { label: "다녀왔어요", done: status === "done" },
+    { label: "스팟 확인", done: spotsOk },
+    { label: "이동 확인", done: moveOk },
+    { label: "다녀왔어요", done: doneOk },
   ];
+
   const nextHref =
-    status === "done" ? editHref : hasOriginal ? originalHref : editHref;
+    status === "done"
+      ? editHref
+      : !spotsOk || !moveOk
+        ? editHref
+        : hasOriginal
+          ? originalHref
+          : editHref;
+
   const nextLabel =
     status === "done"
       ? "내 초안 보기"
-      : status === "tuning"
-        ? "다듬기 · 원본에서 후기"
-        : "원본에서 후기 남기기";
+      : !spotsOk
+        ? "스팟 다듬기"
+        : !moveOk
+          ? "이동 확인하기"
+          : hasOriginal
+            ? "원본에서 후기 남기기"
+            : "초안 열기";
 
   const nextIdx = steps.findIndex((s) => !s.done);
 

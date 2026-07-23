@@ -32,6 +32,11 @@ export default function CollectionCard({ route, tab }: Props) {
   return (
     <div className="relative">
       <RouteCard route={route} />
+      {tab === "saved" && (
+        <span className="absolute left-2.5 top-2.5 z-10 max-w-[70%] truncate rounded-full bg-card/95 px-2.5 py-1 text-[11px] font-bold text-ink-soft shadow-sm ring-1 ring-line">
+          저장함 · 아직 안 따라감
+        </span>
+      )}
       <button
         type="button"
         onClick={onRemove}

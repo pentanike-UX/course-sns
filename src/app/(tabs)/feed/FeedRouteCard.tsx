@@ -11,7 +11,7 @@ import { formatDate } from "@/lib/format";
 import { ROUTE_ENTER_MORPH_NAME, writePendingRoute } from "@/lib/pending-route";
 import type { RouteSummary } from "@/lib/types";
 import type { FeedLayout } from "./FeedControls";
-import { courseSpecParts } from "@/lib/course-spec";
+import { courseSpecLine } from "@/lib/course-spec";
 
 export default function FeedRouteCard({
   route,
@@ -244,16 +244,17 @@ function OwnerPill({ route, compact = false }: { route: RouteSummary; compact?: 
 }
 
 function SpecLine({ route, className = "" }: { route: RouteSummary; className?: string }) {
-  const parts = courseSpecParts({
+  const line = courseSpecLine({
     durationMin: route.totalDurationMin,
     distanceMeters: route.approxDistanceM,
     transitLabel: route.transitLabel,
     difficulty: route.difficulty,
+    region: route.region,
+    spotCount: route.spotCount,
   });
-  if (!parts.length) return null;
   return (
     <p className={`truncate text-[11px] font-semibold tracking-tight ${className}`}>
-      {parts.join(" · ")}
+      {line}
     </p>
   );
 }
@@ -271,9 +272,7 @@ function TransferPill({ route, compact = false }: { route: RouteSummary; compact
             ? "가볍게"
             : route.difficulty === "hard"
               ? "많이 걸어요"
-              : null);
-
-  if (!label) return null;
+              : "첫 따라가기");
 
   return (
     <span
@@ -313,7 +312,9 @@ function MetaRow({ route, className = "" }: { route: RouteSummary; className?: s
         <span className="flex shrink-0 items-center gap-1 text-ink-soft" aria-label={`${done}명이 다녀옴`}>
           <DoneGlyph /> {done}
         </span>
-      ) : null}
+      ) : (
+        <span className="shrink-0 text-ink-soft">첫 따라가기</span>
+      )}
     </div>
   );
 }

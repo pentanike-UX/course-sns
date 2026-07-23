@@ -31,15 +31,21 @@ export default function FollowToggle({
   const [following, setFollowing] = useState(initialFollowing);
   const [, start] = useTransition();
 
+  const FOLLOW_AUTH = {
+    title: "팔로우하려면 로그인이 필요해요",
+    description:
+      "로그인하면 이 메이커의 새 코스를 보관함「팔로잉」에서 받아볼 수 있어요.",
+  } as const;
+
   const onToggle = () => {
-    if (!requireAuth()) return; // guest → login sheet
+    if (!requireAuth(FOLLOW_AUTH)) return;
     const next = !following;
     setFollowing(next); // optimistic
     start(async () => {
       const res = await toggleFollow(followeeId, next);
       if (res?.error) {
         setFollowing(!next);
-        if (res.needsAuth) requireAuth();
+        if (res.needsAuth) requireAuth(FOLLOW_AUTH);
       } else {
         router.refresh();
       }

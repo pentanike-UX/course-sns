@@ -4,7 +4,7 @@ import { Skeleton, SectionHeadingSkeleton } from "@/components/Skeleton";
 export default function TravelStatsLoading() {
   return (
     <>
-      <AppHeader back="/profile" title="여행 통계" />
+      <AppHeader back="/profile" title="코스 통계" />
 
       <section className="mx-4 mt-4 grid grid-cols-3 divide-x divide-line rounded-[var(--radius-card)] border border-line bg-card py-4 text-center">
         {Array.from({ length: 3 }).map((_, i) => (

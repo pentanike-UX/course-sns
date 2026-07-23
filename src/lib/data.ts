@@ -246,6 +246,10 @@ export type FeedMapPoint = {
   copyCount: number;
   completionCount: number;
   spotCount: number;
+  difficulty?: string;
+  totalDurationMin?: number;
+  approxDistanceM?: number;
+  transitLabel?: string;
   lat: number;
   lng: number;
   /** ordered geocoded spot coordinates — the route's course for a map overlay */
@@ -260,7 +264,9 @@ type MapPointRow = {
   like_count: number;
   copy_count: number | null;
   completion_count: number | null;
+  difficulty: string | null;
   spots: { lat: number | null; lng: number | null; order_index: number }[];
+  legs: { transport: string | null; duration_min: number | null }[] | null;
 };
 
 /**
@@ -311,7 +317,7 @@ export async function getFeedMapPoints(opts?: {
   let query = supabase
     .from("routes")
     .select(
-      "id, title, region, cover_photo_url, like_count, copy_count, completion_count, spots!spots_route_id_fkey(lat, lng, order_index)",
+      "id, title, region, cover_photo_url, like_count, copy_count, completion_count, difficulty, spots!spots_route_id_fkey(lat, lng, order_index), legs!legs_route_id_fkey(transport, duration_min)",
     )
     .eq("visibility", "public")
     .order("created_at", { ascending: false })
@@ -345,6 +351,10 @@ export async function getFeedMapPoints(opts?: {
       .filter((s) => typeof s.lat === "number" && typeof s.lng === "number")
       .map((s) => ({ lat: s.lat as number, lng: s.lng as number }));
     if (path.length === 0) continue;
+    const legs = r.legs ?? [];
+    const totalDurationMin = legs.reduce((sum, l) => sum + (l.duration_min ?? 0), 0);
+    const approxDistanceM = sumPathDistanceMeters(path);
+    const transitLabel = summarizeTransit(legs.map((l) => l.transport)) ?? undefined;
     points.push({
       id: r.id,
       title: r.title,
@@ -354,6 +364,10 @@ export async function getFeedMapPoints(opts?: {
       copyCount: r.copy_count ?? 0,
       completionCount: r.completion_count ?? 0,
       spotCount: spots.length,
+      difficulty: r.difficulty ?? undefined,
+      totalDurationMin: totalDurationMin > 0 ? totalDurationMin : undefined,
+      approxDistanceM: approxDistanceM > 0 ? approxDistanceM : undefined,
+      transitLabel,
       lat: path[0].lat,
       lng: path[0].lng,
       path,
@@ -574,7 +588,7 @@ export async function getViewerCompletionState(
   };
 }
 
-/** Aggregates for the profile 여행 통계 page. Null when not logged in. */
+/** Aggregates for the profile 코스 통계 page. Null when not logged in. */
 export async function getMyTravelStats(): Promise<TravelStats | null> {
   const user = await getAuthUser();
   if (!user) return null;
@@ -1004,12 +1018,14 @@ export async function getNotifications(): Promise<AppNotification[]> {
     .order("created_at", { ascending: false })
     .limit(50);
 
-  // Transfer signals first (completion / follow), then social chatter.
+  // Transfer signals first (publish / copy / completion / follow), then social.
   const rank: Record<AppNotification["type"], number> = {
-    completion: 0,
-    follow: 1,
-    comment: 2,
-    like: 3,
+    course_publish: 0,
+    copy: 1,
+    completion: 2,
+    follow: 3,
+    comment: 4,
+    like: 5,
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mapped = ((data as any[]) ?? []).map((n) => ({

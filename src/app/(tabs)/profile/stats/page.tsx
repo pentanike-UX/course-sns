@@ -43,7 +43,7 @@ export default async function TravelStatsPage() {
   if (!stats || stats.routeCount === 0) {
     return (
       <>
-        <AppHeader back="/profile" title="여행 통계" />
+        <AppHeader back="/profile" title="코스 통계" />
         <div className="px-4 py-16 text-center text-[14px] text-ink-faint">
           아직 기록한 코스가 없어요.
           <br />첫 코스를 남기면 통계가 쌓이기 시작해요.
@@ -67,7 +67,7 @@ export default async function TravelStatsPage() {
 
   return (
     <>
-      <AppHeader back="/profile" title="여행 통계" />
+      <AppHeader back="/profile" title="코스 통계" />
 
       {/* summary */}
       <section className="mx-4 mt-4 grid grid-cols-3 divide-x divide-line rounded-[var(--radius-card)] border border-line bg-card py-4 text-center">

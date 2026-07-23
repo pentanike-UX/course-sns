@@ -70,7 +70,8 @@
   --success-soft: #ccfbf1;
   --warning: #d97706;
   --warning-soft: #fef3c7;
-  --error: #ef4444;
+  /* Destructive — darker than brand CTA so errors ≠ “따라가기” red (Wave E5) */
+  --error: #b91c1c;
   --error-soft: #fee2e2;
   --info: #0ea5e9;
   --info-soft: #e0f2fe;
@@ -149,8 +150,8 @@
   --success-soft: rgba(45, 212, 191, 0.16);
   --warning: #fbbf24;
   --warning-soft: rgba(217, 119, 6, 0.2);
-  --error: #f87171;
-  --error-soft: rgba(248, 113, 113, 0.16);
+  --error: #fb7185; /* rose — distinct from brand #f87171 */
+  --error-soft: rgba(251, 113, 133, 0.16);
   --info: #38bdf8;
   --info-soft: rgba(14, 165, 233, 0.16);
 

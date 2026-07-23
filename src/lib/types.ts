@@ -92,7 +92,13 @@ export interface Comment {
   author: RouteAuthor;
 }
 
-export type NotificationType = "like" | "comment" | "follow" | "completion";
+export type NotificationType =
+  | "like"
+  | "comment"
+  | "follow"
+  | "completion"
+  | "copy"
+  | "course_publish";
 
 export interface RouteCompletion {
   id: string;
