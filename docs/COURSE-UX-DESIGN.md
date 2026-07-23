@@ -33,14 +33,23 @@
 - [x] 알림: 미읽음·완주·팔로우 우선 정렬
 - [x] 잔여 사용자 카피(일기/하루 톤) 정리
 
+## Wave A–D · 게이트 (v0.2.0-mvp)
+
+- [x] A: 보관함 스택 아이콘 · peek/카드 전이 프루프 · error-soft · 뱃지 재매핑
+- [x] B: CTA 톤 사다리 · 저장「따라가기」· FollowProgressBar · AuthGate 전이 카피 · popular 퇴장
+- [x] C: success teal · 플래너 레드 예산 · walk slate · leaf deprecate
+- [x] D: 프로필 전이 지표 · 알림 그룹 · FollowReadyHint
+- [x] 공개/비공개 명시 선택 게이트 (`visibilityChosen`)
+- [ ] **Wave E** — 상세 전이 위계 · 콜드/지도 패리티 · P4 구독 배달 · 체크리스트 진정성 ([`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md) §6)
+
 ---
 
 # 코스 UX 적용 설계
 
 > **포지션:** 따라갈 수 있는 이동 코스 커뮤니티  
 > **북스타 루프:** 발견 → 따라가기 → 다녀왔어요 → 영향력(복제·완주·팔로우)  
-> **기준 코드:** course-sns MVP (`v0.1.0-mvp`, routdiary fork)  
-> **관련:** 페르소나 P1 탐색러 · P2 따라가이 · P3 코스 메이커 · P4 영향력 구독자
+> **기준 코드:** course-sns MVP (`v0.2.0-mvp`, routdiary fork)  
+> **관련:** 페르소나 P1 탐색러 · P2 따라가이 · P3 코스 메이커 · P4 영향력 구독자 · 재채점 [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md)
 
 이 문서는 “무엇을 만들지”가 아니라 **어디에·어떤 순서로·어떤 멘탈모델로 심을지**를 고정한다.  
 구현 시 이 문서의 Phase·화면 스펙을 벗어나지 않는 것을 기본으로 한다.

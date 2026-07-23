@@ -4,41 +4,42 @@
 
 ## 1. 제품 개요
 
-**routdiary** — 사용자가 특정 지역의 여행을 **일기처럼** 기록하는 앱.
+**course-sns (코스)** — 따라갈 수 있는 **이동 코스**를 발견·복제·완주·구독하는 커뮤니티.  
+정본 UX: [`COURSE-UX-DESIGN.md`](COURSE-UX-DESIGN.md) · 토큰: [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) · 페인포인트: [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md).
 
-- 한 **Route**(루트) = 순서 있는 **Spot**(스팟)들 + 스팟 간 **Leg**(이동: 수단/시간/주의사항)
-- Route 메타: 테마, 감정, 추천 대상, 방문 시점, 예상 비용, 공개여부
-- **1단계**: 비공개 일기 기록 → **2단계**: 공개 전환 → 피드/좋아요/즐겨찾기(SNS)
-- 모바일 우선(~430px). **웹(데스크톱)은 같은 폰 UI를 우측에 두고 좌측에 브랜드/마케팅 레일**을 둔 2단 셸 (`MobileFrame` `shell`). 모바일은 풀스크린 그대로
-- **게스트 열람**(v1.13.0): `/`·`/routes/[id]`·`/u/[handle]`은 로그인 없이 열람. 쓰기·좋아요·팔로우 등은 `AuthGate` 바텀시트로 유도
+- 한 **Route**(코드/DB명 유지) = 순서 있는 **Spot** + 스팟 간 **Leg**(수단/시간/주의)
+- 메타: 지역·추천 대상·난이도·테마·감정(보조)·공개여부
+- **북스타 루프:** 발견 → 따라가기 → 다녀왔어요 → 영향력(복제·완주·팔로우). 좋아요는 보조 신호
+- 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
+- **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v1.14.21)
+### 현재 화면·내비 (v0.2.0-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
-| 탭 | URL | 역할 |
-|----|-----|------|
-| 홈 | `/` | **둘러보기** — 공개 루트 피드(랜딩). 검색·필터·레이아웃 전환 |
-| 지도 | `/?mode=map` | 같은 라우트의 지도 conveyor(목록↔지도 슬라이드). 클러스터·뷰포트 조회 |
-| 보관함 | `/library` | 저장·좋아요·**팔로잉 회원**(검색·관리) |
-| FAB(+) | — | 기록/계획 작성 바텀시트 → `/routes/new` |
+| 탭 | URL | 주인공 | 역할 |
+|----|-----|--------|------|
+| 홈 | `/` | P1 | **코스 쇼핑** — 공개 코스 피드. 정렬: 최신·많이 따라간·많이 다녀온·가까운 |
+| 지도 | `/?mode=map` | P1 | 동선으로 고르기 (목록↔지도). peek = 따라감/다녀옴 |
+| 보관함 | `/library` | P2·P4 | **따라가는 중 · 저장 · 팔로잉**(새 코스 스트림 + 사람). 아이콘=스택 |
+| FAB(+) | sheet → `/routes/new` | P3 | 코스 기록하기 / 코스 계획하기 |
 
 **드로어·오버레이 (라우트 전환 없이 클라이언트 스택)**:
 
-- **내 일기**: 둘러보기 헤더 **프로필 칩** → 좌측 `SlideDrawer` (`FeedExplorer`, URL 유지 `/`)
-- **설정/프로필**: 내 일기 또는 둘러보기 헤더 ⚙ → 우측 `SlideDrawer` (`ProfileDrawerBody`, feed 마운트 유지)
-- **하드 라우트**: `/feed`(내 일기 전용 페이지, `FeedProfileStack`+`EdgeDrawer`), `/profile`(둘러보기에서 설정 진입 또는 직접 URL)
-- **`@drawer` 병렬 슬롯**: `(tabs)/layout.tsx`에 `{drawer}` — intercept `(.)feed`는 **비활성(null)**. soft nav 깜빡임 방지를 위해 내 일기는 클라이언트 `SlideDrawer`만 사용(v1.14.6)
+- **내 코스**: 둘러보기 헤더 프로필 칩 → 좌측 `SlideDrawer` (`FeedExplorer`, URL 유지 `/`)
+- **설정/프로필**: 내 코스 또는 헤더 ⚙ → 우측 `SlideDrawer` (`ProfileDrawerBody` — 전이 지표 우선)
+- **하드 라우트**: `/feed`(내 코스), `/profile`
+- **`@drawer` 병렬 슬롯**: intercept `(.)feed`는 **비활성**. soft nav는 클라 `SlideDrawer`만 (드로어 애니메이션 스택 보호)
 
 **주요 라우트**:
 
-- `/` — 둘러보기(공개 피드). `?mode=map` 지도, `?q=&sort=&kind=&theme=&mood=&region=` 필터
-- `/feed` — 내 일기(보호 라우트). `?tab=all|record|plan`
-- `/library` — 보관함. `?tab=saved|liked|following`
-- `/routes/new`, `/routes/[id]`, `/routes/[id]/edit` — 작성·상세·수정
+- `/` — 둘러보기. `?mode=map`, `?q=&sort=&kind=&theme=&mood=&region=` (`popular`→`followed` 매핑)
+- `/feed` — 내 코스(보호). `?tab=all|record|plan`
+- `/library` — `?tab=following|saved|…` (세그먼트: 따라가는 중 | 저장 | 팔로잉)
+- `/routes/new`, `/routes/[id]`, `/routes/[id]/edit` — 작성·상세·수정 (완료 전 **공개/비공개 명시 선택**)
 - `/u/[handle]`, `/notifications`, `/login`, `/profile/*`
 
-**⚠️ 구 IA와의 차이**(문서·테스트 갱신 전 혼동 주의): 예전에는 홈=내 루트, 둘러보기=별도 탭, 프로필=5번째 탭, 피드 팔로잉 세그먼트였음. 현재는 **랜딩=둘러보기**, 내 일기=드로어, 팔로잉=보관함.
+**fork 이력:** routdiary(일기·좋아요 중심) → course-sns(전이 중심). §3 이하 구 로그의 일기/그린 표현이 남을 수 있음 — **현행 IA·카피·컬러는 이 §1 + DESIGN-SYSTEM + COURSE-UX가 정본**.
 
 ## 2. 기술 스택 / 리소스
 
@@ -552,3 +553,15 @@ pnpm test:e2e     # Playwright 스모크
 - **배경**: 토큰·UI 결정이 `globals.css`와 HANDOFF §3·§7에 분산 — 신규 컴포넌트·재활용 시 일관 언어 부재.
 - **추가**: `docs/DESIGN-SYSTEM.md` — 원칙, 컬러·타ipo·radius·shadow, MobileFrame/z-index, 컴포넌트 카탈로그, 모션 상수, 레시피, a11y, don'ts, 동기화 규칙.
 - **연결**: README·HANDOFF §6·§2에서 링크. 정본 토큰은 여전히 `globals.css`.
+
+### UX Waves A–D · 공개 게이트 · 페르소나 재채점 (Cursor, 2026-07-22~23 · v0.2.0-mvp)
+
+- **버전**: `APP_VERSION` `v0.1.0-mvp` → **`v0.2.0-mvp`** (전이 UX 마이너 묶음).
+- **Wave A (의미 충돌 제거)**: 보관함 탭 하트→스택; 지도 peek·카드 ♥ 폴백 제거→따라감/다녀옴; 에러 `error-soft`; 상태 뱃지 재매핑.
+- **Wave B (루프 전환)**: CTA 톤(따라가기 solid / 다녀왔어요 outline / 후기 수정 neutral); 저장 카드「따라가기」; `FollowProgressBar`; AuthGate 전이 카피; `popular`→`followed`.
+- **Wave C (토큰 건강)**: `--success` teal; 플래너 레드 예산(완료만 sunset); walk path slate; leaf/primary-green deprecate.
+- **Wave D (영향력)**: 프로필 전이 지표; 알림 전이/소셜 그룹; 게시 전 `FollowReadyHint`.
+- **공개/비공개 게이트**: `RouteForm` — finish→상세는 `visibilityChosen` 필수(스크롤/기본값으로 우회 불가). 임시저장은 허용. 편집 시 확인 시트+피커. (PR #15 계열)
+- **문서**: §1을 코스 IA로 재작성; [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md) Wave 이후 **10점 시나리오 재채점** + Wave E 개선안.
+- **검증**: `pnpm lint` / `pnpm build` / (가능 시) `pnpm test:e2e`.
+- **정본 동기화 순서**: `globals.css` → DESIGN-SYSTEM → HANDOFF §7 → (비표준 시) JSDoc.
