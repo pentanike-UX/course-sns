@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
       // 다른 Supabase 프로젝트로 이전해도 깨지지 않게
       {
         protocol: "https",
-        hostname: "*.supabase.co",
+        hostname: "**.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
       {
