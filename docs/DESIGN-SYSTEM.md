@@ -1,7 +1,7 @@
 # 코스 Design System
 
 > UI·인터페이스 일관성을 위한 정본 가이드. **코드 토큰 = 스펙** — 값을 바꿀 때는 `src/app/globals.css`를 먼저 수정하고, 이 문서와 `docs/HANDOFF.md` §7에 변경 이유를 남긴다.  
-> 최종 업데이트: 2026-07-24 · course-sns MVP `v0.3.1-mvp` · **브랜드 포인트 컬러 = 레드** (`globals.css` 정본) · 표면/잉크 뉴트럴 · success=teal · **error≠brand** (Wave E5)
+> 최종 업데이트: 2026-07-24 · course-sns MVP `v0.3.2-mvp` · **브랜드 포인트 컬러 = 레드** (`globals.css` 정본) · 표면/잉크 뉴트럴 · success=teal · **error≠brand** (Wave E5)
 
 ---
 

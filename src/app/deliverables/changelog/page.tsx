@@ -13,6 +13,15 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.2-mvp — 버전·작업기록 필수 규칙</H2>
+      <Ul>
+        <li>
+          <Code>AGENTS.md</Code>: 사소한 수정이라도 <Code>APP_VERSION</Code> 상승 +
+          HANDOFF §7 + changelog 기록 (예외 없음)
+        </li>
+        <li>HANDOFF §6 기록 패턴·에이전트 체크리스트와 동기화</li>
+      </Ul>
+
       <H2>v0.3.1-mvp — 업로드 사진 엑박 수정</H2>
       <Ul>
         <li>
@@ -59,7 +68,8 @@ export default function ChangelogPage() {
 
       <Note>
         SemVer는 <Code>src/lib/version.ts</Code>의 <Code>APP_VERSION</Code>이 단일 출처입니다.
-        UI·토큰 변경 시 HANDOFF §7에 맥락을 남기세요.
+        에이전트 규칙(<Code>AGENTS.md</Code>): 사소한 수정이라도 버전을 올리고 HANDOFF §7에
+        작업 내용을 남깁니다.
       </Note>
     </>
   );

@@ -5,7 +5,7 @@
 - **GitHub**: [pentanike-UX/course-sns](https://github.com/pentanike-UX/course-sns)
 - **프로덕션**: https://course-sns.vercel.app
 - **Supabase**: `pbyxnvtgsrwmsvxnynif` (routdiary와 분리)
-- **현재 버전**: `v0.3.1-mvp` (`src/lib/version.ts`)
+- **현재 버전**: `v0.3.2-mvp` (`src/lib/version.ts`) — 수정 시 버전·HANDOFF 기록 규칙: `AGENTS.md`
 - **개발·운영 가이드**: https://course-sns.vercel.app/deliverables (로컬 `/deliverables`)
 - **배포·인프라 체크리스트**: [`docs/MVP-SETUP.md`](docs/MVP-SETUP.md)
 - **상세 인수인계·IA·함정**: [`docs/HANDOFF.md`](docs/HANDOFF.md)
