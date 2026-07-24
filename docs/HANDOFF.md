@@ -567,6 +567,13 @@ pnpm test:e2e     # Playwright 스모크
 - **검증**: `pnpm lint` / `pnpm build` / (가능 시) `pnpm test:e2e`.
 - **정본 동기화 순서**: `globals.css` → DESIGN-SYSTEM → HANDOFF §7 → (비표준 시) JSDoc.
 
+### 사진 엑박: Next Image remotePatterns 호스트 불일치 (Cursor, 2026-07-24)
+
+- **증상**: Storage에는 업로드·공개 URL 200인데, 피드/상세에서 `next/image`가 엑박.
+- **원인**: `next.config.ts` `images.remotePatterns`가 fork 원본 routdiary 호스트(`aqafgebedvuixonfuaqm…`)만 허용. course-sns는 `pbyxnvtgsrwmsvxnynif…` → `/_next/image`가 `INVALID_IMAGE_OPTIMIZE_REQUEST`(400).
+- **수정**: `pbyxnvtgsrwmsvxnynif…` + `**.supabase.co` + Google avatar · legacy 호스트 유지.
+- **검증**: 공개 URL 직접 200 + 배포 후 `/_next/image?url=…&w=640&q=75` 200.
+
 ### 개발 가이드 `/deliverables` · 브랜드 아이콘 통일 (Cursor, 2026-07-23 · v0.3.0-mvp)
 
 - **웹 가이드**: routdiary `/deliverables`와 同구조 — `시작하기·기획·화면·아키텍처·DB·API·개발·현황·이력`. `noindex`, 코스 C 아이콘 헤더.
