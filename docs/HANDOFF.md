@@ -467,7 +467,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v1.14.21 (`src/lib/version.ts`)
+- **현재 버전**: v0.3.1-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: `https://routdiary.vercel.app` + `http://localhost:3000`. ⚠️ **프리뷰 배포는 URL이 달라 지도 인증 실패**(필요 시 프리뷰 도메인도 등록)
@@ -490,7 +490,7 @@ pnpm test:e2e     # Playwright 스모크
 
 - **PostgREST 임베드 모호성**: `routes`에서 `profiles` 임베드 시 `likes/bookmarks` 정션 때문에 다대다 경로가 추론돼 HTTP 300(PGRST201). → FK 힌트 필수: `author:profiles!routes_author_id_fkey(...)`. `spots`도 legs 정션 영향으로 `spots!spots_route_id_fkey` 사용 중.
 - **Next 16**: `middleware.ts` deprecated → `proxy.ts`(export `proxy`). `useSearchParams`는 `<Suspense>`로 감쌀 것. `next build`는 lint를 실행하지 않으므로 검증 시 `pnpm lint`를 별도로 돌릴 것.
-- **이미지 호스트**: `next.config.ts` `images.remotePatterns`에 Supabase Storage 호스트 등록돼 있음.
+- **이미지 호스트**: `next.config.ts` `images.remotePatterns`에 **현재** Supabase 프로젝트 호스트(`pbyxnvtgsrwmsvxnynif…`) + `**.supabase.co`가 있어야 함. 포크 원본만 있으면 업로드 사진은 엑박.
 - **기록 패턴**: 사람이 읽는 인수인계는 이 파일(`docs/HANDOFF.md`)에 같은 문체로 누적. **UI·디자인 규칙**은 [`docs/DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md)에 정본으로 유지하고, 버전별 UI 결정만 §7에 남긴다. `.bkit/`는 세션 자동 기록으로 보이며 현재 untracked 상태라 임의 삭제/커밋하지 말 것.
 
 ## 7. 작업 로그 (이어서 누적)
@@ -567,8 +567,9 @@ pnpm test:e2e     # Playwright 스모크
 - **검증**: `pnpm lint` / `pnpm build` / (가능 시) `pnpm test:e2e`.
 - **정본 동기화 순서**: `globals.css` → DESIGN-SYSTEM → HANDOFF §7 → (비표준 시) JSDoc.
 
-### 사진 엑박: Next Image remotePatterns 호스트 불일치 (Cursor, 2026-07-24)
+### 사진 엑박: Next Image remotePatterns 호스트 불일치 (Cursor, 2026-07-24 · v0.3.1-mvp)
 
+- **버전**: **`v0.3.1-mvp`** (PATCH).
 - **증상**: Storage에는 업로드·공개 URL 200인데, 피드/상세에서 `next/image`가 엑박.
 - **원인**: `next.config.ts` `images.remotePatterns`가 fork 원본 routdiary 호스트(`aqafgebedvuixonfuaqm…`)만 허용. course-sns는 `pbyxnvtgsrwmsvxnynif…` → `/_next/image`가 `INVALID_IMAGE_OPTIMIZE_REQUEST`(400).
 - **수정**: `pbyxnvtgsrwmsvxnynif…` + `**.supabase.co` + Google avatar · legacy 호스트 유지.

@@ -13,6 +13,15 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.1-mvp — 업로드 사진 엑박 수정</H2>
+      <Ul>
+        <li>
+          <Code>next/image</Code> <Code>remotePatterns</Code>에 course-sns Supabase
+          호스트 허용 (포크 원본 호스트만 있던 문제)
+        </li>
+        <li>Storage 업로드·지도 핀은 정상이었고, 최적화 프록시만 400이던 케이스</li>
+      </Ul>
+
       <H2>v0.3.0-mvp — Wave E</H2>
       <Ul>
         <li>상세 전이 CTA를 좋아요/저장보다 위</li>

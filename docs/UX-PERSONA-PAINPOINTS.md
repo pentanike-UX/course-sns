@@ -1,6 +1,6 @@
 # 브랜드 컬러 · 페르소나 시나리오 재채점 (Wave A–D 이후)
 
-> **범위:** course-sns MVP `v0.3.0-mvp` (코드 + DESIGN-SYSTEM · COURSE-UX)  
+> **범위:** course-sns MVP `v0.3.1-mvp` (코드 + DESIGN-SYSTEM · COURSE-UX)  
 > **목적:** Waves A–D 이후 재채점 → **Wave E 구현**까지 반영한 정본  
 > **기준일:** 2026-07-23  
 > **상태:** §5 Wave A–D ✅ · §6 Wave E ✅ (E3는 `0014` DB push 필요)
@@ -178,7 +178,7 @@ flowchart LR
 | X1 | HANDOFF §1 일기/그린 잔상 | ✅ §1 코스 IA로 재작성 (구 §3 로그는 이력) |
 | X2 | 상세 좋아요가 북스타와 경쟁 | ✅ E1 — 전이 CTA 상단 |
 | X3 | error ≈ brand 레드 | ✅ E5 — `#b91c1c` |
-| X4 | 버전·작업로그 | ✅ `v0.3.0-mvp` + HANDOFF §7 |
+| X4 | 버전·작업로그 | ✅ `v0.3.1-mvp` + HANDOFF §7 |
 
 ---
 
@@ -241,7 +241,7 @@ flowchart LR
 | `docs/DESIGN-SYSTEM.md` | 컬러·컴포넌트 |
 | `docs/COURSE-UX-DESIGN.md` | 페르소나·북스타·Phase |
 | `docs/HANDOFF.md` §1·§7 | 현행 IA · 버전 로그 |
-| `src/lib/version.ts` | `v0.2.0-mvp` |
+| `src/lib/version.ts` | `v0.3.1-mvp` |
 | `src/app/routes/[id]/CourseFollowActions.tsx` | CTA 톤 |
 | `src/app/(tabs)/library/LibraryTabs.tsx` | P2·P4 |
 | `src/components/route/RouteForm.tsx` | 공개 게이트 · FollowReadyHint |
