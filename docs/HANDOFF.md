@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.3.0-mvp)
+### 현재 화면·내비 (v0.3.2-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -467,7 +467,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.3.1-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.3.2-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: `https://routdiary.vercel.app` + `http://localhost:3000`. ⚠️ **프리뷰 배포는 URL이 달라 지도 인증 실패**(필요 시 프리뷰 도메인도 등록)
@@ -491,9 +491,17 @@ pnpm test:e2e     # Playwright 스모크
 - **PostgREST 임베드 모호성**: `routes`에서 `profiles` 임베드 시 `likes/bookmarks` 정션 때문에 다대다 경로가 추론돼 HTTP 300(PGRST201). → FK 힌트 필수: `author:profiles!routes_author_id_fkey(...)`. `spots`도 legs 정션 영향으로 `spots!spots_route_id_fkey` 사용 중.
 - **Next 16**: `middleware.ts` deprecated → `proxy.ts`(export `proxy`). `useSearchParams`는 `<Suspense>`로 감쌀 것. `next build`는 lint를 실행하지 않으므로 검증 시 `pnpm lint`를 별도로 돌릴 것.
 - **이미지 호스트**: `next.config.ts` `images.remotePatterns`에 **현재** Supabase 프로젝트 호스트(`pbyxnvtgsrwmsvxnynif…`) + `**.supabase.co`가 있어야 함. 포크 원본만 있으면 업로드 사진은 엑박.
-- **기록 패턴**: 사람이 읽는 인수인계는 이 파일(`docs/HANDOFF.md`)에 같은 문체로 누적. **UI·디자인 규칙**은 [`docs/DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md)에 정본으로 유지하고, 버전별 UI 결정만 §7에 남긴다. `.bkit/`는 세션 자동 기록으로 보이며 현재 untracked 상태라 임의 삭제/커밋하지 말 것.
+- **기록 패턴 (필수)**: 정본 규칙 = [`AGENTS.md`](../AGENTS.md) 「버전·작업 기록」. **사소한 수정이라도** ① `APP_VERSION` PATCH/MINOR 상승 ② 이 파일 §7에 작업 내용 기록 ③ `/deliverables/changelog` 반영 ④ README 등 버전 표기 동기화. 예외 없음. UI·디자인 규칙은 [`docs/DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md). `.bkit/`는 untracked — 임의 삭제/커밋 금지.
 
 ## 7. 작업 로그 (이어서 누적)
+
+> **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
+
+### 버전·작업기록 필수 규칙 명문화 (Cursor, 2026-07-24 · v0.3.2-mvp)
+
+- **버전**: **`v0.3.2-mvp`** (PATCH).
+- **내용**: `AGENTS.md`에 「사소한 수정이라도 버전 올리고 HANDOFF §7·changelog에 항시 기록」규칙을 고정. HANDOFF §6 기록 패턴·`version.ts` 주석·deliverables 이력 동기화.
+- **동기화**: README · changelog · 관련 docs 버전 표기.
 
 ### 사람 팔로우 디스커버리 루프 (Cursor, 2026-06-17 · v1.93 기준)
 - **배경**: 남의 프로필 화면(`/u/[handle]`)·팔로우·팔로잉 피드는 이미 동작했지만 **거기로 가는 길이 거의 없었음**. "프로필 새로 만들기"가 아니라 (1) 진입점(디스커버리)을 뚫고 (2) 프로필을 팔로우 판단에 맞게 다듬는 작업. 멘탈모델 = "프로필 = 그 사람의 여행 루트 책장", 팔로우 = "그 사람의 앞으로 공개 루트를 내 팔로잉 피드로 구독".
