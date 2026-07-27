@@ -1,16 +1,16 @@
 # 브랜드 컬러 · 페르소나 시나리오 재채점 (Wave A–D 이후)
 
-> **범위:** course-sns MVP `v0.3.2-mvp` (코드 + DESIGN-SYSTEM · COURSE-UX)  
-> **목적:** Waves A–D 이후 재채점 → **Wave E 구현**까지 반영한 정본  
-> **기준일:** 2026-07-23  
-> **상태:** §5 Wave A–D ✅ · §6 Wave E ✅ (E3는 `0014` DB push 필요)
+> **범위:** course-sns MVP `v0.3.3-mvp` (코드 + DESIGN-SYSTEM · COURSE-UX)  
+> **목적:** Playwright 실측 후 **Wave F 구현**까지 반영  
+> **기준일:** 2026-07-27  
+> **상태:** Wave A–E ✅ · Wave F ✅ 코드 (지도 도메인·`0015` 시드는 운영 push 필요)
 
 ---
 
 ## 0. 한 줄 요약
 
-Wave E로 상세 전이 위계·콜드/지도 패리티·체크리스트 진정성·error≠brand·홈 팔로잉 레일·`copy`/`course_publish` 알림을 심었다.  
-남은 후속은 **팔로잉 2단 IA 단순화(E6)** 와 **프로덕션에 `0014` 마이그레이션 적용**이다.
+Wave E로 전이 위계·콜드/지도 패리티·체크리스트·구독 알림을 심었고, Wave F로 **지도 타일 실패 UX · 홈 레일 empty · 데모 시드 · 카피/CTA/스크림 · `/profile` 풀페이지**를 보강했다.  
+운영 잔여: 네이버 Web URL에 `course-sns.vercel.app` · Supabase `0014`/`0015` push.
 
 ---
 
@@ -178,11 +178,23 @@ flowchart LR
 | X1 | HANDOFF §1 일기/그린 잔상 | ✅ §1 코스 IA로 재작성 (구 §3 로그는 이력) |
 | X2 | 상세 좋아요가 북스타와 경쟁 | ✅ E1 — 전이 CTA 상단 |
 | X3 | error ≈ brand 레드 | ✅ E5 — `#b91c1c` |
-| X4 | 버전·작업로그 | ✅ `v0.3.2-mvp` + HANDOFF §7 · 규칙 `AGENTS.md` |
+| X4 | 버전·작업로그 | ✅ `v0.3.3-mvp` + HANDOFF §7 · 규칙 `AGENTS.md` |
 
 ---
 
-## 6. UX 개선안 — Wave E (우선순위)
+## 6. Wave F — 실측 후속 (v0.3.3) ✅ 코드
+
+| ID | 항목 | 상태 |
+|----|------|------|
+| F1 | 지도 `tilesloaded` 감시·실패 배너·재시도 | ✅ |
+| F2 | `0015` 데모 따라가기+팔로우 시드 | ✅ SQL · ⚠️ push |
+| F3 | 홈 레일 empty · 팔로잉 empty CTA | ✅ |
+| F4 | 코스 카피·muted disabled·스크림·정렬 칩·대표 사진 힌트 | ✅ |
+| F5 | `/profile` 풀페이지 ·「사진 없이 다음」 | ✅ |
+
+---
+
+## 7. UX 개선안 — Wave E (이력)
 
 침습도·북스타 레버리지 순. 일정 단위 없음.
 
@@ -225,7 +237,7 @@ flowchart LR
 
 ---
 
-## 7. 하지 말 것
+## 8. 하지 말 것
 
 - 브랜드를 그린/보라/크림-세리프 테마로 교체
 - 좋아요·감정 **삭제**(위계만 조정)
@@ -234,16 +246,16 @@ flowchart LR
 
 ---
 
-## 8. 관련 정본
+## 9. 관련 정본
 
 | 문서/코드 | 역할 |
 |-----------|------|
 | `docs/DESIGN-SYSTEM.md` | 컬러·컴포넌트 |
 | `docs/COURSE-UX-DESIGN.md` | 페르소나·북스타·Phase |
 | `docs/HANDOFF.md` §1·§7 | 현행 IA · 버전 로그 |
-| `src/lib/version.ts` | `v0.3.2-mvp` |
-| `src/app/routes/[id]/CourseFollowActions.tsx` | CTA 톤 |
-| `src/app/(tabs)/library/LibraryTabs.tsx` | P2·P4 |
-| `src/components/route/RouteForm.tsx` | 공개 게이트 · FollowReadyHint |
+| `src/lib/version.ts` | `v0.3.3-mvp` |
+| `src/app/(tabs)/feed/FeedMap.tsx` | 타일 실패 UX |
+| `src/app/(tabs)/feed/FollowingRail.tsx` | P4 레일 |
+| `supabase/migrations/0015_demo_loop_seed.sql` | 데모 루프 시드 |
 
-**다음 구현:** Wave **E1 → E2 → E4** (낮은 침습) 후 **E3**(구독 배달)를 별도 PR로.
+**운영 다음:** 네이버 콘솔 Web URL · `0014`/`0015` Supabase push · 실기기 지도 타일 확인.

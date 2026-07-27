@@ -13,6 +13,17 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.3-mvp — Wave F (페르소나 후속)</H2>
+      <Ul>
+        <li>지도 타일 실패 배너·다시 시도 (`FeedMap`)</li>
+        <li>홈 팔로잉 레일 empty 슬롯 · 보관함 팔로잉 empty CTA</li>
+        <li>데모 루프 시드 migration <Code>0015</Code></li>
+        <li>여행→코스 카피 · 비활성 CTA muted · 카드 스크림 · 정렬 칩 단축</li>
+        <li>
+          <Code>/profile</Code> 풀페이지 · 작성「사진 없이 다음」·FollowReadyHint 대표 사진
+        </li>
+      </Ul>
+
       <H2>v0.3.2-mvp — 버전·작업기록 필수 규칙</H2>
       <Ul>
         <li>

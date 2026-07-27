@@ -197,6 +197,10 @@ export default function FeedMap({
   const geoMarkerRef = useRef<any>(null);
 
   const [error, setError] = useState<string | null>(null);
+  /** SDK loaded but basemap tiles never arrived (auth/domain/network). */
+  const [tileIssue, setTileIssue] = useState(false);
+  /** bump to tear down + re-init the map (retry). */
+  const [mapGen, setMapGen] = useState(0);
   const [pts, setPts] = useState(points);
   const [selected, setSelected] = useState<FeedMapPoint | null>(null);
   /** the routes the mini card cycles through, frozen when the card opens */
@@ -240,6 +244,7 @@ export default function FeedMap({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const listeners: any[] = [];
     let fetchTimer: ReturnType<typeof setTimeout> | undefined;
+    let tileTimer: ReturnType<typeof setTimeout> | undefined;
     let fetchAbort: AbortController | null = null;
     let lastFetchKey = "";
 
@@ -260,6 +265,19 @@ export default function FeedMap({
           logoControlOptions: { position: naver.maps.Position.BOTTOM_LEFT },
         });
         mapRef.current = map;
+
+        // Blank basemap with pins still showing = classic key/domain failure.
+        // Surface a retry banner instead of a silent empty plane.
+        let tilesOk = false;
+        listeners.push(
+          naver.maps.Event.addListener(map, "tilesloaded", () => {
+            tilesOk = true;
+            if (!cancelled) setTileIssue(false);
+          }),
+        );
+        tileTimer = setTimeout(() => {
+          if (!cancelled && !tilesOk) setTileIssue(true);
+        }, 4500);
 
         const fitTo = (group: FeedMapPoint[]) => {
           if (group.length === 0) return;
@@ -434,6 +452,7 @@ export default function FeedMap({
     return () => {
       cancelled = true;
       clearTimeout(fetchTimer);
+      clearTimeout(tileTimer);
       fetchAbort?.abort();
       listeners.forEach((l) => window.naver?.maps?.Event?.removeListener?.(l));
       markersRef.current.forEach((m) => m.marker.setMap(null));
@@ -445,9 +464,9 @@ export default function FeedMap({
       mapRef.current?.destroy?.();
       mapRef.current = null;
     };
-    // q/view/points come from the server render; the component remounts per navigation
+    // mapGen retries tear down + re-init; q/view remount via parent key
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [mapGen]);
 
   // viewport fetch replaced the data set → rebuild markers + refresh the list
   useEffect(() => {
@@ -560,6 +579,12 @@ export default function FeedMap({
     return () => clearTimeout(t);
   }, [geoMsg]);
 
+  const retryMap = () => {
+    setError(null);
+    setTileIssue(false);
+    setMapGen((g) => g + 1);
+  };
+
   if (!NAVER_MAP_KEY) {
     return (
       <MapNotice fullscreen={fullscreen} onExit={onExit}>
@@ -571,8 +596,9 @@ export default function FeedMap({
 
   if (error) {
     return (
-      <MapNotice fullscreen={fullscreen} onExit={onExit}>
-        <span>지도를 불러오지 못했어요 ({error})</span>
+      <MapNotice fullscreen={fullscreen} onExit={onExit} onRetry={retryMap}>
+        <span>지도를 불러오지 못했어요</span>
+        <span className="text-[11px]">{error}</span>
       </MapNotice>
     );
   }
@@ -592,6 +618,35 @@ export default function FeedMap({
 
   return (
     <div className={fullscreen ? "relative h-full" : "relative mt-4 flex-1"}>
+      {tileIssue && (
+        <div
+          className={`absolute left-3 right-3 z-20 flex flex-col gap-2 rounded-2xl border border-line bg-card/95 px-3.5 py-3 shadow-[var(--shadow-md)] backdrop-blur ${chipTop}`}
+          role="alert"
+        >
+          <p className="text-[13px] font-bold text-ink">지도 바닥면을 못 불러왔어요</p>
+          <p className="text-[12px] leading-relaxed text-ink-soft">
+            핀은 보이지만 도로·지명이 비어 있으면 네이버 지도 키·웹 서비스 URL을 확인해 주세요.
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={retryMap}
+              className="rounded-full bg-ink px-3.5 py-1.5 text-[12px] font-bold text-paper"
+            >
+              다시 시도
+            </button>
+            {fullscreen && onExit && (
+              <button
+                type="button"
+                onClick={onExit}
+                className="rounded-full border border-line bg-card px-3.5 py-1.5 text-[12px] font-semibold text-ink-soft"
+              >
+                목록으로
+              </button>
+            )}
+          </div>
+        </div>
+      )}
       <div
         ref={containerRef}
         className={
@@ -1020,10 +1075,12 @@ function TourCard({
 function MapNotice({
   fullscreen,
   onExit,
+  onRetry,
   children,
 }: {
   fullscreen: boolean;
   onExit?: () => void;
+  onRetry?: () => void;
   children: ReactNode;
 }) {
   return (
@@ -1037,15 +1094,26 @@ function MapNotice({
       <div className="flex flex-col items-center gap-1 text-center text-[12px] text-ink-faint">
         {children}
       </div>
-      {fullscreen && onExit && (
-        <button
-          type="button"
-          onClick={onExit}
-          className="rounded-full border border-line bg-card px-4 py-2 text-[13px] font-semibold text-ink shadow-[var(--shadow-sm)]"
-        >
-          홈으로
-        </button>
-      )}
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        {onRetry && (
+          <button
+            type="button"
+            onClick={onRetry}
+            className="rounded-full bg-ink px-4 py-2 text-[13px] font-bold text-paper shadow-[var(--shadow-sm)]"
+          >
+            다시 시도
+          </button>
+        )}
+        {fullscreen && onExit && (
+          <button
+            type="button"
+            onClick={onExit}
+            className="rounded-full border border-line bg-card px-4 py-2 text-[13px] font-semibold text-ink shadow-[var(--shadow-sm)]"
+          >
+            홈으로
+          </button>
+        )}
+      </div>
     </div>
   );
 }

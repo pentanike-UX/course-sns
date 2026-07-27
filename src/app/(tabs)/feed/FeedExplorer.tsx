@@ -509,8 +509,8 @@ export default function FeedExplorer({
             onRemoveFilter={removeFilter}
           />
         </div>
-        {profile && followingCourses.length > 0 && (
-          <FollowingRail courses={followingCourses} />
+        {profile && (
+          <FollowingRail courses={followingCourses} signedIn />
         )}
         {renderPanel()}
       </div>

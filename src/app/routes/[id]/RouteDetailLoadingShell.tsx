@@ -66,7 +66,7 @@ export default function RouteDetailLoadingShell() {
         {isPlan && (
           <div className="absolute left-4 right-4 top-16 z-[2] flex items-start justify-between gap-3">
             <div className="rounded-2xl bg-card/92 px-3 py-2 shadow-sm ring-1 ring-white/50 backdrop-blur">
-              <div className="text-[11px] font-semibold text-ink-faint">지도 위 여행 계획</div>
+              <div className="text-[11px] font-semibold text-ink-faint">지도 위 코스 계획</div>
               <div className="mt-0.5 text-[14px] font-black text-ink">
                 스팟 {pending?.spotCount ?? 0}곳
               </div>

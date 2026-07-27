@@ -523,7 +523,7 @@ export default function RouteForm({
       // First place anchors the plan: tentatively fill the title from its city
       // (e.g. 강릉시 → "강릉 여행 계획") so the plan reads as a plan, not a form.
       const short = shortRegionName(detail.area2 ?? detail.area1);
-      if (short) setTitle((prev) => prev || `${short} 여행 계획`);
+      if (short) setTitle((prev) => prev || `${short} 코스 계획`);
     });
     return key;
   };
@@ -1123,7 +1123,7 @@ export default function RouteForm({
       </div>
       <div className="grid grid-cols-2 gap-3">
         <ReadonlyField
-          label={isPlanDraft ? "여행 예정" : "방문 시점"}
+          label={isPlanDraft ? "계획 시점" : "방문 시점"}
           value={bestSeason}
           placeholder={isPlanDraft ? "미정" : "사진에서 자동 기입"}
         />
@@ -1248,7 +1248,7 @@ export default function RouteForm({
         <div className="mt-3 rounded-[var(--radius-card)] border border-line bg-card p-4">
           <div className="text-[14px] font-bold text-ink">다녀온 뒤 기록으로 바꾸기</div>
           <p className="mt-1 text-[12px] leading-relaxed text-ink-faint">
-            여행을 마쳤다면 사진과 팁을 채울 수 있는 기록 화면으로 바꿀 수 있어요.
+            코스를 다녀왔다면 사진과 팁을 채울 수 있는 기록 화면으로 바꿀 수 있어요.
           </p>
           {convertError && (
             <p className="mt-2 rounded-lg bg-error-soft px-3 py-2 text-[12px] text-error" role="alert">
@@ -1415,7 +1415,7 @@ export default function RouteForm({
           >
             <StepHeading
               title={isPlanDraft ? "스팟을 내 일정에 맞게 다듬어요" : "어디를 다녀왔나요?"}
-              desc={isPlanDraft ? "장소 이름, 주소, 위치, 순서를 확인해 실제 여행 계획으로 정리해 주세요." : "지역과 다녀온 장소들을 확인하고 다듬어 주세요."}
+              desc={isPlanDraft ? "장소 이름, 주소, 위치, 순서를 확인해 따라갈 코스 계획으로 정리해 주세요." : "지역과 다녀온 장소들을 확인하고 다듬어 주세요."}
             />
             <Field label="지역" value={region} onChange={setRegion} placeholder="예: 제주 구좌·성산" required />
             {spotsBlock}
@@ -1453,6 +1453,7 @@ export default function RouteForm({
               recommendedFor={recommendedFor}
               difficulty={difficulty}
               spotCount={spots.length}
+              hasCover={!!coverPhotoKey}
             />
             {visibilityBox}
             {!visibilityChosen && (
@@ -1479,12 +1480,15 @@ export default function RouteForm({
   return (
     <MobileFrame shell>
       <AppHeader back="/" closeButton title="새 코스 만들기" />
-      <Stepper steps={STEP_LABELS} current={step} />
+      <Stepper steps={STEP_LABELS} current={step} optional={[1]} />
 
       <form id="route-form" onSubmit={handleSave} className="no-scrollbar flex-1 overflow-y-auto px-4 pb-4">
         {step === 1 && (
           <>
-            <StepHeading title="그날의 사진을 올려주세요" desc="위치가 담긴 사진을 올리면 장소·순서·경로를 자동으로 만들어요." />
+            <StepHeading
+              title="그날의 사진을 올려주세요"
+              desc="위치가 담긴 사진을 올리면 장소·순서·경로를 자동으로 만들어요. 사진 단계는 건너뛸 수 있어요."
+            />
             <label className="relative block overflow-hidden rounded-[var(--radius-card)] border-2 border-dashed border-sunset/40 bg-sunset-wash/40 p-6 text-center">
               <span className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-sunset text-white">
                 <CameraIcon />
@@ -1578,6 +1582,7 @@ export default function RouteForm({
               recommendedFor={recommendedFor}
               difficulty={difficulty}
               spotCount={spots.length}
+              hasCover={!!coverPhotoKey || allPhotos.length > 0}
             />
             {visibilityBox}
             {!visibilityChosen && (
@@ -1608,9 +1613,13 @@ export default function RouteForm({
             type="button"
             onClick={() => canNext && setStep((s) => s + 1)}
             disabled={!canNext}
-            className="flex-1 rounded-xl bg-sunset py-3 text-[15px] font-semibold text-white disabled:opacity-40"
+            className={
+              step === 1 && allPhotos.length === 0
+                ? "flex-1 rounded-xl border border-line bg-card py-3 text-[15px] font-semibold text-ink disabled:cursor-not-allowed disabled:text-ink-faint"
+                : "flex-1 rounded-xl bg-sunset py-3 text-[15px] font-semibold text-white disabled:cursor-not-allowed disabled:border disabled:border-line disabled:bg-muted disabled:text-ink-faint disabled:opacity-100"
+            }
           >
-            다음
+            {step === 1 && allPhotos.length === 0 ? "사진 없이 다음" : "다음"}
           </button>
         ) : (
           <button
@@ -1619,7 +1628,7 @@ export default function RouteForm({
             name="intent"
             value="finish"
             disabled={!canSave || saving || !visibilityChosen}
-            className="flex-1 rounded-xl bg-sunset py-3 text-[15px] font-semibold text-white disabled:opacity-40"
+            className="flex-1 rounded-xl bg-sunset py-3 text-[15px] font-semibold text-white disabled:cursor-not-allowed disabled:border disabled:border-line disabled:bg-muted disabled:text-ink-faint disabled:opacity-100"
           >
             {saving ? "저장 중…" : "완료"}
           </button>
@@ -2110,7 +2119,7 @@ function PlanRoutePlanner({
 
       <div className="pointer-events-none absolute left-3 right-3 top-3 z-10 flex items-start justify-between gap-2">
         <div className="rounded-2xl bg-card/90 px-3 py-2 shadow-sm ring-1 ring-line/70 backdrop-blur">
-          <div className="text-[11px] font-semibold text-ink-faint">여행 계획</div>
+          <div className="text-[11px] font-semibold text-ink-faint">코스 계획</div>
           <div className="mt-0.5 text-[14px] font-black text-ink">
             스팟 {spots.length}곳
             <span className="ml-1 text-[12px] font-semibold text-ink-faint">
@@ -2151,7 +2160,7 @@ function PlanRoutePlanner({
         <button
           type="button"
           aria-expanded={detent !== "peek"}
-          aria-label={detent === "peek" ? "여행 계획 시트 펼치기" : "여행 계획 시트 접기"}
+          aria-label={detent === "peek" ? "코스 계획 시트 펼치기" : "코스 계획 시트 접기"}
           className="flex h-9 w-full shrink-0 touch-none items-center justify-center"
           onPointerDown={onHandlePointerDown}
           onPointerMove={onHandlePointerMove}
@@ -2422,7 +2431,7 @@ function PlannerSheetContent({
     <div className="p-4 pt-3">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-[17px] font-black leading-tight text-ink">지도 위 여행 계획</h2>
+          <h2 className="text-[17px] font-black leading-tight text-ink">지도 위 코스 계획</h2>
           <p className="mt-0.5 text-[12px] text-ink-faint">
             {spots.length === 0
               ? "가고 싶은 곳을 검색해 첫 스팟을 추가해 보세요."
@@ -3185,30 +3194,47 @@ function distMeters(a: { lat: number; lng: number }, b: { lat: number; lng: numb
   return Math.sqrt(x * x + dLat * dLat) * R;
 }
 
-function Stepper({ steps, current }: { steps: string[]; current: number }) {
+function Stepper({
+  steps,
+  current,
+  optional = [],
+}: {
+  steps: string[];
+  current: number;
+  /** 1-based step numbers that can be skipped */
+  optional?: number[];
+}) {
   return (
-    <div className="flex border-b border-line bg-card px-2 py-2.5">
-      {steps.map((label, i) => {
-        const n = i + 1;
-        const active = n === current;
-        const done = n < current;
-        return (
-          <div key={label} className="flex flex-1 flex-col items-center gap-1">
-            <div className="flex w-full items-center">
-              <span className={`h-0.5 flex-1 ${i === 0 ? "bg-transparent" : n <= current ? "bg-ink" : "bg-line"}`} />
-              <span
-                className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold ${
-                  active ? "bg-ink text-paper" : done ? "bg-muted text-ink" : "bg-muted text-ink-faint"
-                }`}
-              >
-                {done ? "✓" : n}
+    <div className="border-b border-line bg-card px-2 py-2.5">
+      <div className="flex">
+        {steps.map((label, i) => {
+          const n = i + 1;
+          const active = n === current;
+          const done = n < current;
+          const skippable = optional.includes(n);
+          return (
+            <div key={label} className="flex flex-1 flex-col items-center gap-1">
+              <div className="flex w-full items-center">
+                <span className={`h-0.5 flex-1 ${i === 0 ? "bg-transparent" : n <= current ? "bg-ink" : "bg-line"}`} />
+                <span
+                  className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold ${
+                    active ? "bg-ink text-paper" : done ? "bg-muted text-ink" : "bg-muted text-ink-faint"
+                  }`}
+                >
+                  {done ? "✓" : n}
+                </span>
+                <span className={`h-0.5 flex-1 ${i === steps.length - 1 ? "bg-transparent" : n < current ? "bg-ink" : "bg-line"}`} />
+              </div>
+              <span className={`text-[10px] ${active ? "font-bold text-ink" : "text-ink-faint"}`}>
+                {label}
+                {skippable ? (
+                  <span className="ml-0.5 font-medium text-ink-faint">·선택</span>
+                ) : null}
               </span>
-              <span className={`h-0.5 flex-1 ${i === steps.length - 1 ? "bg-transparent" : n < current ? "bg-ink" : "bg-line"}`} />
             </div>
-            <span className={`text-[10px] ${active ? "font-bold text-ink" : "text-ink-faint"}`}>{label}</span>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -3222,29 +3248,32 @@ function StepHeading({ title, desc }: { title: string; desc: string }) {
   );
 }
 
-/** Soft checklist before publish — does not block save (Wave D). */
+/** Soft checklist before publish — does not block save (Wave D / F4). */
 function FollowReadyHint({
   region,
   recommendedFor,
   difficulty,
   spotCount,
+  hasCover,
 }: {
   region: string;
   recommendedFor: string;
   difficulty: string;
   spotCount: number;
+  hasCover?: boolean;
 }) {
   const checks = [
     { ok: !!region.trim(), label: "지역" },
     { ok: !!recommendedFor.trim(), label: "추천 대상" },
     { ok: !!difficulty, label: "난이도" },
     { ok: spotCount >= 2, label: "스팟 2곳+" },
+    { ok: !!hasCover, label: "대표 사진" },
   ];
   const missing = checks.filter((c) => !c.ok);
   if (missing.length === 0) {
     return (
       <p className="mb-3 rounded-xl bg-success-soft px-3 py-2 text-[12px] font-medium text-success">
-        따라가기 준비됨 · 지역·추천·난이도·스팟이 채워졌어요
+        따라가기 준비됨 · 지역·추천·난이도·스팟·대표 사진이 채워졌어요
       </p>
     );
   }
@@ -3259,7 +3288,7 @@ function FollowReadyHint({
         ))}
       </ul>
       <p className="mt-1.5 text-[11px] leading-relaxed text-ink-soft">
-        비워 둔 항목을 채우면 남이 따라가기 쉬워져요. 필수는 아니에요.
+        비워 둔 항목·대표 사진을 채우면 남이 따라가기 쉬워져요. 필수는 아니에요.
       </p>
     </div>
   );

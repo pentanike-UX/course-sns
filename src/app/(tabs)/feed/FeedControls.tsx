@@ -58,12 +58,12 @@ export default function FeedControls({
             onClick={() => router.replace(sortUrl("recent"))}
           />
           <SortChip
-            label="많이 따라간"
+            label="따라간순"
             active={sort === "followed"}
             onClick={() => router.replace(sortUrl("followed"))}
           />
           <SortChip
-            label="많이 다녀온"
+            label="다녀온순"
             active={sort === "completed"}
             onClick={() => router.replace(sortUrl("completed"))}
           />
