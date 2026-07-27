@@ -91,7 +91,7 @@ export default function FeedRouteCard({
       >
         <div className="relative aspect-[16/10] overflow-hidden bg-line">
           <Cover route={route} morphName={morphName} priority={priority} sizes="430px" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/72 via-black/10 to-black/15" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/35 to-black/25" />
           <div className="absolute left-3 right-3 top-3 flex items-center justify-between gap-2">
             <OwnerPill route={route} />
             <TransferPill route={route} />
@@ -122,7 +122,7 @@ export default function FeedRouteCard({
       className="group relative block aspect-[1/1.22] overflow-hidden rounded-[var(--radius-card)] bg-line shadow-[var(--shadow-sm)]"
     >
       <Cover route={route} morphName={morphName} priority={priority} sizes="210px" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/78 via-black/10 to-black/20" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/30" />
       <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-2.5">
         <OwnerPill route={route} compact />
         <TransferPill route={route} compact />

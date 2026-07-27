@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.3.2-mvp)
+### 현재 화면·내비 (v0.3.3-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -61,7 +61,8 @@
 - `handle_new_user` 트리거 하드닝(`0005`): 핸들 중복 자동 회피(suffix) + Google `full_name/name`·`picture`로 닉네임/아바타 채움 → OAuth/이메일 가입 모두 안전
 
 ### 데모 계정 (검증용, 시드됨)
-- `demo@routdiary.app` / `demo1234` (email_confirmed 상태)
+- `demo@course-sns.app` / `demo1234` (email_confirmed 상태)
+- 루프 시드: migration `0015` → 공개 코스 1건 따라가기 초안 + 메이커 팔로우
 - 신규 회원가입은 **이메일 확인(Confirm email) ON** 상태로 동작 (E2E 검증됨)
   - `signUp`이 요청 origin 기반 `emailRedirectTo`(`/auth/callback`)를 넘기고, `src/app/auth/callback/route.ts`가 `?code=`→세션 교환 후 리다이렉트
   - ⚠️ Supabase 대시보드 **Authentication → URL Configuration** 필수 설정 완료: Site URL=`https://routdiary.vercel.app`, Redirect URLs에 `https://routdiary.vercel.app/**`·`http://localhost:3000/**`
@@ -467,11 +468,11 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.3.2-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.3.3-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
-- 네이버 Maps Application Web URL: `https://routdiary.vercel.app` + `http://localhost:3000`. ⚠️ **프리뷰 배포는 URL이 달라 지도 인증 실패**(필요 시 프리뷰 도메인도 등록)
-- Supabase 마이그레이션: `supabase/migrations/0001`~`0009` — CLI/`supabase db push` 또는 SQL 수동 적용. `0009` = 직접 plan draft(`original_route_id` nullable)
+- 네이버 Maps Application Web URL: **`https://course-sns.vercel.app`** + `http://localhost:3000` (+ 필요 시 프리뷰). ⚠️ 도메인 미등록 시 **핀만 보이고 타일 공백**.
+- Supabase 마이그레이션: `0001`~`0015`. **`0014`** 알림 타입 · **`0015`** 데모 루프 시드(`private.seed_demo_loop`) — `supabase db push` 또는 SQL 수동.
 - `vercel --prod`로 수동 배포 가능. `.vercel/`은 gitignore
 
 ## 5. 실행 방법
@@ -496,6 +497,16 @@ pnpm test:e2e     # Playwright 스모크
 ## 7. 작업 로그 (이어서 누적)
 
 > **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
+
+### Wave F — 페르소나 실측 후속 구현 (Cursor, 2026-07-27 · v0.3.3-mvp)
+
+- **버전**: **`v0.3.3-mvp`** (PATCH).
+- **F1**: `FeedMap` — `tilesloaded` 감시·타일 실패 배너·다시 시도. HANDOFF에 course-sns 지도 도메인 주의.
+- **F2**: `0015_demo_loop_seed.sql` — 데모 계정 팔로우+따라가기 초안 시드(idempotent).
+- **F3**: 홈 `FollowingRail` empty 플레이스홀더 · 팔로잉 empty CTA(둘러보기/메이커).
+- **F4**: 「여행」→「코스」카피 · 비활성 CTA muted · 카드 스크림 강화 · 정렬 칩 단축 · FollowReadyHint에 대표 사진.
+- **F5**: `/profile` 하드 네비 = 풀페이지 설정 · 작성 1스텝「사진 없이 다음」·선택 표기.
+- **운영**: Supabase에 `0015` push + 네이버 콘솔에 `course-sns.vercel.app` Web URL 등록 확인.
 
 ### 버전·작업기록 필수 규칙 명문화 (Cursor, 2026-07-24 · v0.3.2-mvp)
 

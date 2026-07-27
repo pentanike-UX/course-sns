@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import PersonRow from "@/components/PersonRow";
 import type { PersonSummary } from "@/lib/data";
 
@@ -120,10 +121,16 @@ function FollowingEmpty() {
       </div>
       <p className="text-[14px] font-semibold text-ink">아직 팔로우한 회원이 없어요</p>
       <p className="mt-1 text-[13px] leading-relaxed text-ink-faint">
-        위 검색으로 친구를 찾아
+        둘러보기에서 코스 작성자를 탭하거나
         <br />
-        팔로우하면 여기에 모여요.
+        위에서 이름·@아이디로 찾아 팔로우해 보세요.
       </p>
+      <Link
+        href="/"
+        className="mt-5 rounded-full bg-sunset px-5 py-2.5 text-[13px] font-semibold text-white"
+      >
+        코스 둘러보기
+      </Link>
     </div>
   );
 }

@@ -285,7 +285,7 @@ export default function RouteView({
   const hasInfo = !!(route.recommendedFor || route.bestSeason || route.estCostKrw);
   const bottomInfo = hasInfo ? (
     <section className="px-4 pt-7">
-      <h2 className="mb-3 text-[16px] font-bold text-ink">여행 정보</h2>
+      <h2 className="mb-3 text-[16px] font-bold text-ink">코스 정보</h2>
       <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line">
         <Info label="추천 대상" value={route.recommendedFor} wide />
         <Info label="방문 시점" value={route.bestSeason} />
@@ -323,7 +323,7 @@ export default function RouteView({
           <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-black/80 via-black/20 to-black/25" />
           <div className="absolute left-4 right-4 top-[calc(env(safe-area-inset-top)+4.25rem)] z-[3] flex items-start justify-between gap-3">
             <div className="rounded-2xl bg-card/92 px-3 py-2 shadow-sm ring-1 ring-white/50 backdrop-blur">
-              <div className="text-[11px] font-semibold text-ink-faint">지도 위 여행 계획</div>
+              <div className="text-[11px] font-semibold text-ink-faint">지도 위 코스 계획</div>
               <div className="mt-0.5 text-[14px] font-black text-ink">
                 스팟 {route.spots.length}곳
                 <span className="ml-1 text-[12px] font-semibold text-ink-faint">

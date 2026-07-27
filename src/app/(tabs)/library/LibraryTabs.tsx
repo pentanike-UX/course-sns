@@ -230,7 +230,7 @@ function FollowingCoursesPanel({
       {mode === "people" ? (
         <FollowingPanel following={people} />
       ) : courses.length === 0 ? (
-        <EmptyFollowingCourses />
+        <EmptyFollowingCourses onFindPeople={() => setMode("people")} />
       ) : (
         <ul className="mt-3 space-y-4 px-4">
           {courses.map((r) => (
@@ -286,13 +286,30 @@ function EmptyFollowed() {
   );
 }
 
-function EmptyFollowingCourses() {
+function EmptyFollowingCourses({ onFindPeople }: { onFindPeople: () => void }) {
   return (
     <div className="flex flex-col items-center px-8 py-12 text-center">
-      <p className="text-[14px] font-semibold text-ink">팔로우한 사람의 새 코스가 없어요</p>
+      <p className="text-[14px] font-semibold text-ink">아직 받아 볼 새 코스가 없어요</p>
       <p className="mt-1 text-[13px] leading-relaxed text-ink-faint">
-        사람 탭에서 취향이 맞는 메이커를 팔로우해 보세요.
+        둘러보기에서 마음에 드는 코스를 보고
+        <br />
+        메이커를 팔로우하면 여기로 새 코스가 와요.
       </p>
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+        <Link
+          href="/"
+          className="rounded-full bg-sunset px-5 py-2.5 text-[13px] font-semibold text-white"
+        >
+          코스 둘러보기
+        </Link>
+        <button
+          type="button"
+          onClick={onFindPeople}
+          className="rounded-full border border-line bg-card px-5 py-2.5 text-[13px] font-semibold text-ink-soft"
+        >
+          메이커 찾기
+        </button>
+      </div>
     </div>
   );
 }

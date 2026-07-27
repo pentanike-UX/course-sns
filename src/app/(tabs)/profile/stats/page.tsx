@@ -86,7 +86,7 @@ export default async function TravelStatsPage() {
         </div>
         {stats.firstRecordAt && (
           <p className="mt-2 text-center text-[12px] text-ink-faint">
-            {formatDate(stats.firstRecordAt)}부터 함께한 여행
+            {formatDate(stats.firstRecordAt)}부터 함께한 코스
           </p>
         )}
       </Section>
@@ -152,7 +152,7 @@ export default async function TravelStatsPage() {
 
       {/* travel style: theme + mood */}
       {(stats.themes.length > 0 || stats.moods.length > 0) && (
-        <Section title="여행 스타일">
+        <Section title="코스 스타일">
           <div className="flex flex-wrap gap-2">
             {stats.themes.map((t) => (
               <span
@@ -207,7 +207,7 @@ export default async function TravelStatsPage() {
       {/* visited map */}
       {stats.points.length > 0 && (
         <section className="px-4 pb-10 pt-6">
-          <h3 className="text-[14px] font-bold text-ink">내 여행 지도</h3>
+          <h3 className="text-[14px] font-bold text-ink">내 코스 지도</h3>
           <p className="mb-3 mt-0.5 text-[12px] text-ink-faint">기록한 스팟 {stats.points.length}곳</p>
           <StatsMap points={stats.points} />
         </section>

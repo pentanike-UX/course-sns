@@ -139,7 +139,7 @@ export default function CopyRouteButton({
                 type="button"
                 onClick={startCopy}
                 disabled={!purpose || pending}
-                className="flex-1 rounded-xl bg-sunset py-3 text-[14px] font-semibold text-white disabled:opacity-40"
+                className="flex-1 rounded-xl bg-sunset py-3 text-[14px] font-semibold text-white disabled:cursor-not-allowed disabled:border disabled:border-line disabled:bg-muted disabled:text-ink-faint disabled:opacity-100"
               >
                 {pending ? "초안 만드는 중…" : "내 비공개 초안 만들기"}
               </button>
