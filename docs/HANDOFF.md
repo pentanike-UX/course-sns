@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.3.2-mvp)
+### 현재 화면·내비 (v0.3.3-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -467,7 +467,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.3.2-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.3.3-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: `https://routdiary.vercel.app` + `http://localhost:3000`. ⚠️ **프리뷰 배포는 URL이 달라 지도 인증 실패**(필요 시 프리뷰 도메인도 등록)
@@ -496,6 +496,14 @@ pnpm test:e2e     # Playwright 스모크
 ## 7. 작업 로그 (이어서 누적)
 
 > **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
+
+### 페르소나 Playwright 시각 감사 (Cursor, 2026-07-27 · v0.3.3-mvp)
+
+- **버전**: **`v0.3.3-mvp`** (PATCH).
+- **내용**: P1–P4 요약·10점 시나리오·UX/UI/멘탈모델 페인포인트를 프로덕션 실측으로 재정리 (`docs/UX-PERSONA-PAINPOINTS.md`).
+- **도구**: `e2e/persona-audit.spec.ts` · `persona-audit-part2.spec.ts` · `playwright.audit.config.ts` (BASE `course-sns.vercel.app`, 읽기 전용).
+- **핵심 발견**: 지도 베이스맵 공백 · 데모 실행함/팔로잉 empty · 콘텐츠 신뢰(사진↔태그) · 통계/플래너「여행」잔상 · 제품 종합 **6.3/10**.
+- **다음**: Wave F (지도 복구 · 데모 시드 · 구독 배달 가시성 · 카피 마감).
 
 ### 버전·작업기록 필수 규칙 명문화 (Cursor, 2026-07-24 · v0.3.2-mvp)
 

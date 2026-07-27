@@ -13,6 +13,19 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.3-mvp — 페르소나 Playwright 시각 감사</H2>
+      <Ul>
+        <li>P1–P4 시나리오를 프로덕션에서 Playwright로 재실측</li>
+        <li>
+          <Code>docs/UX-PERSONA-PAINPOINTS.md</Code> 재작성 — UX·UI·멘탈모델 페인포인트 ·
+          Wave F
+        </li>
+        <li>
+          감사 스크립트 <Code>e2e/persona-audit*.spec.ts</Code> ·{" "}
+          <Code>playwright.audit.config.ts</Code>
+        </li>
+      </Ul>
+
       <H2>v0.3.2-mvp — 버전·작업기록 필수 규칙</H2>
       <Ul>
         <li>

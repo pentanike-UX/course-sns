@@ -10,5 +10,6 @@
  *          · P4 구독 배달 · error≠brand
  * v0.3.1 — next/image remotePatterns: course-sns Supabase 호스트
  * v0.3.2 — 버전·작업기록 필수 규칙 (AGENTS.md)
+ * v0.3.3 — Playwright 페르소나 시각 감사 · 시나리오·페인포인트 재정리
  */
-export const APP_VERSION = "v0.3.2-mvp";
+export const APP_VERSION = "v0.3.3-mvp";
