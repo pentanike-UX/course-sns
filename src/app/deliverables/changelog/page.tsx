@@ -13,6 +13,37 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.6-mvp — OG/Twitter 공식 락업 동기화</H2>
+      <Ul>
+        <li>
+          <Code>opengraph-image.png</Code> · <Code>twitter-image.png</Code>를 공식 light
+          락업으로 갱신
+        </li>
+      </Ul>
+
+      <H2>v0.3.5-mvp — 공식 SVG 라이트/다크 락업</H2>
+      <Ul>
+        <li>
+          공식 락업: <Code>logo-full-light/dark.svg</Code> · 심볼{" "}
+          <Code>logo-mark-light/dark.svg</Code>
+        </li>
+        <li>
+          <Code>BrandLockup</Code>이 테마 전환 · 스플래시(다크)·로그인(라이트) 강제
+        </li>
+        <li>
+          래스터 재생성: <Code>node scripts/build-brand-assets.mjs</Code> (favicon·OG 포함)
+        </li>
+      </Ul>
+
+      <H2>v0.3.4-mvp — coursee 브랜드 로고</H2>
+      <Ul>
+        <li>심볼만: favicon · 앱아이콘 · apple-touch · 스플래시/헤더 마크</li>
+        <li>풀 로고: OG/Twitter · <Code>logo-full.png</Code> · 워드마크 coursee</li>
+        <li>
+          (v0.3.5에서 공식 SVG로 대체) 초기 소스 <Code>public/brand/</Code>
+        </li>
+      </Ul>
+
       <H2>v0.3.3-mvp — Wave F (페르소나 후속)</H2>
       <Ul>
         <li>지도 타일 실패 배너·다시 시도 (`FeedMap`)</li>

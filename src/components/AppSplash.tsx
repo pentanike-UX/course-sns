@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { BrandLockup } from "@/components/BrandMark";
 import { APP_VERSION } from "@/lib/version";
 
 /**
@@ -61,15 +62,13 @@ export default function AppSplash() {
       onTransitionEnd={() => {
         if (fading) setGone(true);
       }}
-      className={`absolute inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-paper transition-opacity duration-300 ${
+      className={`absolute inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-black transition-opacity duration-300 ${
         fading ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/icons/icon-512.png" alt="" width={84} height={84} className="rounded-[20px]" />
-      <span className="text-[26px] font-black tracking-tight text-ink">코스</span>
-      <span className="h-6 w-6 animate-spin rounded-full border-2 border-line border-t-sunset" />
-      <span className="absolute bottom-[max(24px,env(safe-area-inset-bottom))] text-[12px] font-medium text-ink-faint">
+      <BrandLockup height={56} theme="dark" alt="" />
+      <span className="h-6 w-6 animate-spin rounded-full border-2 border-white/25 border-t-[#FF0000]" />
+      <span className="absolute bottom-[max(24px,env(safe-area-inset-bottom))] text-[12px] font-medium text-white/50">
         {APP_VERSION}
       </span>
     </div>

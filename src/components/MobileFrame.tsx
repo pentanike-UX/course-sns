@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import AppSplash from "@/components/AppSplash";
+import { BrandLockup } from "@/components/BrandMark";
 
 /**
  * MobileFrame
@@ -93,17 +94,7 @@ export default function MobileFrame({
 function BrandRail() {
   return (
     <aside className="hidden w-full max-w-sm shrink-0 flex-col justify-center px-10 py-16 lg:flex">
-      <div className="flex items-center gap-3">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/icons/icon-512.png"
-          alt="코스"
-          width={48}
-          height={48}
-          className="rounded-[14px]"
-        />
-        <span className="text-2xl font-black tracking-tight text-ink">코스</span>
-      </div>
+      <BrandLockup height={40} theme="light" alt="coursee" />
 
       <h1 className="mt-9 break-keep text-[2.6rem] font-black leading-[1.15] tracking-[-0.01em] text-ink">
         좋은 길을

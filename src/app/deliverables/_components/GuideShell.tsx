@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import BrandMark from "@/components/BrandMark";
 import { APP_VERSION } from "@/lib/version";
 import { GUIDE_NAV, GUIDE_TITLE, PROD_URL } from "./nav";
 
@@ -18,14 +19,7 @@ export default function GuideShell({ children }: { children: ReactNode }) {
               href="/deliverables"
               className="flex h-9 w-9 shrink-0 overflow-hidden rounded-[10px] shadow-sm ring-1 ring-black/10"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/icons/icon-512.png"
-                alt="코스"
-                width={36}
-                height={36}
-                className="h-full w-full object-cover"
-              />
+              <BrandMark size={36} theme="light" alt="coursee" className="rounded-[10px]" />
             </Link>
             <div className="min-w-0">
               <p className="truncate text-sm font-bold tracking-tight">{GUIDE_TITLE}</p>
@@ -105,7 +99,7 @@ export default function GuideShell({ children }: { children: ReactNode }) {
             {children}
           </article>
           <footer className="mt-8 pb-10 text-center text-[12px] text-ink-faint">
-            코스 (course-sns) · {APP_VERSION} · 정본 문서는 저장소{" "}
+            coursee (course-sns) · {APP_VERSION} · 정본 문서는 저장소{" "}
             <code className="rounded bg-muted px-1 py-0.5 text-[11px]">docs/</code>
           </footer>
         </main>

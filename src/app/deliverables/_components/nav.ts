@@ -63,4 +63,4 @@ export const GUIDE_NAV: GuideNavItem[] = [
 ];
 
 export const PROD_URL = "https://course-sns.vercel.app";
-export const GUIDE_TITLE = "코스 개발 가이드";
+export const GUIDE_TITLE = "coursee 개발 가이드";
