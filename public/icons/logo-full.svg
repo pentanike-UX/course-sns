@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400" fill="none">
+  <rect width="1200" height="400" fill="#000000"/>
+  <g transform="translate(80,48)">
+    <circle cx="152" cy="152" r="140" stroke="#FFFFFF" stroke-width="20" fill="none"/>
+    <path
+      d="M 196 72
+         A 104 104 0 1 0 196 232"
+      stroke="#FFFFFF"
+      stroke-width="40"
+      stroke-linecap="round"
+      fill="none"
+    />
+    <circle cx="170" cy="152" r="10" fill="#FF0000" fill-opacity="0.28"/>
+    <circle cx="192" cy="152" r="13" fill="#FF0000" fill-opacity="0.55"/>
+    <circle cx="218" cy="152" r="16" fill="#FF0000"/>
+  </g>
+  <text
+    x="440" y="230"
+    fill="#FFFFFF"
+    font-family="Inter, Arial, Helvetica, sans-serif"
+    font-size="120"
+    font-weight="700"
+    letter-spacing="-2"
+  >coursee</text>
+</svg>

@@ -46,9 +46,9 @@ function LoginInner() {
             alt=""
             width={72}
             height={72}
-            className="mx-auto rounded-[18px] shadow-sm ring-1 ring-black/5"
+            className="mx-auto rounded-[18px] shadow-sm ring-1 ring-black/10"
           />
-          <h1 className="mt-4 text-3xl font-black text-ink">코스</h1>
+          <h1 className="mt-4 text-3xl font-black tracking-tight text-ink">coursee</h1>
           <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
             좋은 코스 따라가 보고,
             <br />
@@ -132,7 +132,7 @@ function LoginInner() {
         </button>
 
         <p className="mt-6 text-center text-[12px] text-ink-faint">
-          코스 · 코스 기록·공유
+          coursee · 따라갈 수 있는 이동 코스
         </p>
       </main>
     </MobileFrame>

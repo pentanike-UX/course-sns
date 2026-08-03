@@ -1,6 +1,8 @@
 import BackButton from "@/components/BackButton";
 import LargeTitleHeader from "@/components/LargeTitleHeader";
 
+import { BrandWordmark } from "@/components/BrandMark";
+
 /** Sticky top bar. A back button (sub-pages), the brand wordmark (home only),
  *  or a big section title (tab roots). */
 export default function AppHeader({
@@ -29,7 +31,7 @@ export default function AppHeader({
   /** iOS-style large title: the section title becomes the header, big and bold,
    *  with right actions on the same row. For tab roots only (no back button). */
   large?: boolean;
-  /** show the 코스 wordmark — home only; every other screen drops it. */
+  /** show the coursee wordmark — home only; every other screen drops it. */
   brand?: boolean;
 }) {
   const isLarge = !!large && !!title && !back;
@@ -49,11 +51,7 @@ export default function AppHeader({
       ) : back ? (
         <BackButton fallback={back} glass={glass} icon={closeButton ? "close" : "back"} />
       ) : brand ? (
-        <span className="flex items-center gap-1.5">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/icons/icon-512.png" alt="" width={24} height={24} className="rounded-[7px]" />
-          <span className="text-xl font-black tracking-tight text-ink">코스</span>
-        </span>
+        <BrandWordmark markSize={24} className="text-xl" />
       ) : null}
 
       {title ? (

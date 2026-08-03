@@ -16,12 +16,12 @@ export default function GuideShell({ children }: { children: ReactNode }) {
           <div className="flex min-w-0 items-center gap-3">
             <Link
               href="/deliverables"
-              className="flex h-9 w-9 shrink-0 overflow-hidden rounded-[10px] shadow-sm ring-1 ring-black/10"
+              className="flex h-9 w-9 shrink-0 overflow-hidden rounded-[10px] shadow-sm ring-1 ring-black/20"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/icons/icon-512.png"
-                alt="코스"
+                alt="coursee"
                 width={36}
                 height={36}
                 className="h-full w-full object-cover"
@@ -105,7 +105,7 @@ export default function GuideShell({ children }: { children: ReactNode }) {
             {children}
           </article>
           <footer className="mt-8 pb-10 text-center text-[12px] text-ink-faint">
-            코스 (course-sns) · {APP_VERSION} · 정본 문서는 저장소{" "}
+            coursee (course-sns) · {APP_VERSION} · 정본 문서는 저장소{" "}
             <code className="rounded bg-muted px-1 py-0.5 text-[11px]">docs/</code>
           </footer>
         </main>

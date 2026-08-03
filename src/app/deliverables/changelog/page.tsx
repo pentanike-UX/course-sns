@@ -13,6 +13,16 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.4-mvp — coursee 브랜드 로고</H2>
+      <Ul>
+        <li>심볼만: favicon · 앱아이콘 · apple-touch · 스플래시/헤더 마크</li>
+        <li>풀 로고: OG/Twitter · <Code>logo-full.png</Code> · 워드마크 coursee</li>
+        <li>
+          재생성: <Code>node scripts/build-brand-assets.mjs</Code> · 소스{" "}
+          <Code>public/brand/</Code>
+        </li>
+      </Ul>
+
       <H2>v0.3.3-mvp — Wave F (페르소나 후속)</H2>
       <Ul>
         <li>지도 타일 실패 배너·다시 시도 (`FeedMap`)</li>

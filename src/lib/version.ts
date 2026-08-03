@@ -9,6 +9,7 @@
  * v0.3.0 — Wave E
  * v0.3.1 — next/image remotePatterns
  * v0.3.2 — 버전·작업기록 필수 규칙 (AGENTS.md)
- * v0.3.3 — Wave F: 지도 타일 실패 UX · 구독 레일 · 데모 시드 · 카피 마감
+ * v0.3.3 — Wave F
+ * v0.3.4 — coursee 브랜드 로고·파비콘·OG 전면 교체
  */
-export const APP_VERSION = "v0.3.3-mvp";
+export const APP_VERSION = "v0.3.4-mvp";

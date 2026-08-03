@@ -28,33 +28,33 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL ??
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"),
   ),
-  title: "코스 — 코스 기록·공유",
+  title: "coursee — 따라갈 수 있는 이동 코스",
   description: SITE_DESCRIPTION,
   icons: {
     icon: [
+      { url: "/icon.png", sizes: "32x32", type: "image/png" },
       { url: "/icons/icon.svg", type: "image/svg+xml" },
       { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
       { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
     ],
     apple: "/icons/apple-touch-icon.png",
   },
-  // default share card: the app/opengraph-image.png (white bg + centered mark)
-  // is picked up by the file convention; route pages override images with cover
+  // default share card: app/opengraph-image.png (coursee lockup on black)
   openGraph: {
     type: "website",
-    siteName: "코스",
-    title: "코스 — 따라갈 수 있는 이동 코스",
+    siteName: "coursee",
+    title: "coursee — 따라갈 수 있는 이동 코스",
     description: SITE_DESCRIPTION,
     locale: "ko_KR",
   },
   twitter: {
     card: "summary_large_image",
-    title: "코스 — 따라갈 수 있는 이동 코스",
+    title: "coursee — 따라갈 수 있는 이동 코스",
     description: SITE_DESCRIPTION,
   },
   appleWebApp: {
     capable: true,
-    title: "코스",
+    title: "coursee",
     statusBarStyle: "black-translucent",
   },
 };

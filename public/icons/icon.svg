@@ -1,26 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
-  <!--
-    코스 (COS) app icon — refined monogram
-    Soft circular C (opens right) + a single red course-stroke inside.
-    C stroke doubled (96) for stronger mark; ink charcoal + brand red.
-  -->
-  <rect width="512" height="512" fill="#ffffff"/>
-
-  <!-- C: center (244, 256), r=138, opening widened (±52°) so thick stroke still reads -->
+  <rect width="512" height="512" fill="#000000"/>
+  <!-- outer white ring -->
+  <circle cx="256" cy="256" r="198" stroke="#FFFFFF" stroke-width="28" fill="none"/>
+  <!-- geometric C -->
   <path
-    d="M 329 147 A 138 138 0 1 0 329 365"
-    stroke="#171717"
-    stroke-width="96"
+    d="M 318 142
+       A 148 148 0 1 0 318 370"
+    stroke="#FFFFFF"
+    stroke-width="56"
     stroke-linecap="round"
     fill="none"
   />
-
-  <!-- Course stroke: soft diagonal, optically centered in the mouth -->
-  <path
-    d="M 198 186 C 236 232, 262 274, 300 318"
-    stroke="#dc2626"
-    stroke-width="40"
-    stroke-linecap="round"
-    fill="none"
-  />
+  <!-- motion trail (left → right, growing) -->
+  <circle cx="286" cy="256" r="14" fill="#FF0000" fill-opacity="0.28"/>
+  <circle cx="318" cy="256" r="18" fill="#FF0000" fill-opacity="0.55"/>
+  <circle cx="354" cy="256" r="22" fill="#FF0000"/>
 </svg>
