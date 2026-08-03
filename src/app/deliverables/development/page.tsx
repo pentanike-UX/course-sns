@@ -98,7 +98,8 @@ pnpm test:e2e      # 스모크 — 읽기 전용`}
           풀 로고 <Code>logo-full-light/dark.svg</Code>
         </li>
         <li>
-          Favicon: <Code>src/app/favicon.ico</Code> (+ <Code>public/favicon.ico</Code>)
+          Favicon: <Code>public/favicon.png</Code> · <Code>src/app/icon.png</Code> ·{" "}
+          <Code>public/icons/icon.svg</Code>
         </li>
         <li>
           OG/Twitter: <Code>src/app/opengraph-image.png</Code> ·{" "}

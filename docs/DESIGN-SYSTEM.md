@@ -1,7 +1,7 @@
 # 코스 Design System
 
 > UI·인터페이스 일관성을 위한 정본 가이드. **코드 토큰 = 스펙** — 값을 바꿀 때는 `src/app/globals.css`를 먼저 수정하고, 이 문서와 `docs/HANDOFF.md` §7에 변경 이유를 남긴다.  
-> 최종 업데이트: 2026-08-03 · course-sns MVP `v0.3.6-mvp` · **브랜드 = coursee** (공식 SVG 라이트/다크 락업 · C+모션 도트) · 포인트 레드 · 표면/잉크 뉴트럴 · success=teal · **error≠brand**
+> 최종 업데이트: 2026-08-03 · course-sns MVP `v0.3.7-mvp` · **브랜드 = coursee** (공식 SVG 라이트/다크 락업 · C+모션 도트) · 포인트 레드 · 표면/잉크 뉴트럴 · success=teal · **error≠brand**
 
 ---
 
