@@ -13,6 +13,27 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.8-mvp — 브랜드(BI·BX) 가이드</H2>
+      <Ul>
+        <li>
+          <Code>/deliverables/brand</Code> — 개요·메시지·철학·포지셔닝·로고 시스템·BX
+        </li>
+        <li>
+          저장소 정본 <Code>docs/BRAND.md</Code> · 시작하기·내비·개발 페이지 연결
+        </li>
+      </Ul>
+
+      <H2>v0.3.7-mvp — favicon·OG 공식 로고</H2>
+      <Ul>
+        <li>
+          favicon: <Code>public/favicon.png</Code> · <Code>src/app/icon.png</Code> (공식 light
+          심볼)
+        </li>
+        <li>
+          OG/Twitter: 블랙 배경 + 공식 dark 락업 (<Code>opengraph-image.png</Code>)
+        </li>
+      </Ul>
+
       <H2>v0.3.6-mvp — OG/Twitter 공식 락업 동기화</H2>
       <Ul>
         <li>

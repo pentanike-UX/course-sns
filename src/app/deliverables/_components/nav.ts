@@ -19,6 +19,12 @@ export const GUIDE_NAV: GuideNavItem[] = [
     group: "product",
   },
   {
+    href: "/deliverables/brand",
+    label: "브랜드",
+    blurb: "BI·BX·로고 시스템",
+    group: "product",
+  },
+  {
     href: "/deliverables/screens",
     label: "화면",
     blurb: "화면 주소·구조",
