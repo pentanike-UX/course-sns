@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Code, DocTable, H2, H3, Note, P, PageHeader, Ul, Warn } from "../_components/ui";
 import { PROD_URL } from "../_components/nav";
 import { APP_VERSION } from "@/lib/version";
@@ -89,9 +90,17 @@ pnpm test:e2e      # 스모크 — 읽기 전용`}
       </Ul>
 
       <H2>브랜드 아이콘·메타</H2>
+      <P>
+        BI·메시지·심볼 의미는{" "}
+        <Link href="/deliverables/brand" className="font-semibold text-sunset-ink hover:underline">
+          브랜드 (BI · BX)
+        </Link>
+        · 저장소 <Code>docs/BRAND.md</Code>가 정본입니다. 아래는 구현·빌드 경로입니다.
+      </P>
       <Ul>
         <li>
-          마크 정본: <Code>public/icons/icon.svg</Code> (C + 레드 스트로크)
+          마크 정본: <Code>public/icons/logo-mark-*.svg</Code> · <Code>icon.svg</Code> (열린 C +
+          이동점 + 잔상)
         </li>
         <li>
           앱 아이콘(심볼): <Code>logo-mark-*.svg</Code> → <Code>icon-192/512.png</Code> ·
@@ -121,6 +130,13 @@ pnpm test:e2e      # 스모크 — 읽기 전용`}
 
       <H3>관련 저장소 문서</H3>
       <Ul>
+        <li>
+          <Code>docs/BRAND.md</Code> — BI·BX·로고 (
+          <Link href="/deliverables/brand" className="font-semibold text-sunset-ink hover:underline">
+            웹 가이드
+          </Link>
+          )
+        </li>
         <li>
           <Code>docs/MVP-SETUP.md</Code> — 인프라 체크리스트
         </li>

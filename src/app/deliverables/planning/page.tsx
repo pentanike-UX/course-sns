@@ -124,6 +124,13 @@ export default function PlanningPage() {
           </Link>
         </li>
         <li>
+          브랜드(BI·BX) →{" "}
+          <Link href="/deliverables/brand" className="font-semibold text-sunset-ink hover:underline">
+            브랜드
+          </Link>
+          · <Code>docs/BRAND.md</Code>
+        </li>
+        <li>
           UX 정본 → 저장소 <Code>docs/COURSE-UX-DESIGN.md</Code> ·{" "}
           <Code>docs/UX-PERSONA-PAINPOINTS.md</Code>
         </li>
