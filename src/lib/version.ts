@@ -13,5 +13,6 @@
  * v0.3.4 — coursee 브랜드 로고·파비콘·OG 전면 교체
  * v0.3.5 — 공식 SVG 라이트/다크 락업으로 브랜드 재적용
  * v0.3.6 — opengraph/twitter 래스터를 공식 락업으로 동기화
+ * v0.3.7 — favicon·OG를 공식 심볼/다크 락업으로 교체
  */
-export const APP_VERSION = "v0.3.6-mvp";
+export const APP_VERSION = "v0.3.7-mvp";
