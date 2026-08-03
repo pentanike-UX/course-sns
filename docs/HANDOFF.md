@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.3.4-mvp)
+### 현재 화면·내비 (v0.3.5-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -468,7 +468,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.3.4-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.3.5-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: **`https://course-sns.vercel.app`** + `http://localhost:3000` (+ 필요 시 프리뷰). ⚠️ 도메인 미등록 시 **핀만 보이고 타일 공백**.
@@ -498,12 +498,20 @@ pnpm test:e2e     # Playwright 스모크
 
 > **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
 
+### 공식 SVG 라이트/다크 락업 재적용 (Cursor, 2026-08-03 · v0.3.5-mvp)
+
+- **버전**: **`v0.3.5-mvp`** (PATCH).
+- **소스**: 제공된 공식 SVG — `logo-full-light.svg` / `logo-full-dark.svg` · 심볼 crop `logo-mark-*.svg`.
+- **UI**: `BrandMark` / `BrandLockup`이 `html.dark`에 맞춰 라이트·다크 전환. 스플래시(다크)·로그인(라이트) 강제.
+- **래스터**: `node scripts/build-brand-assets.mjs` → icon-192/512 · apple-touch · `src/app/icon.png` · OG/Twitter.
+- **제거**: AI 근사 `public/brand/coursee-*-black.png`.
+
 ### coursee 브랜드 로고 전면 교체 (Cursor, 2026-08-03 · v0.3.4-mvp)
 
 - **버전**: **`v0.3.4-mvp`** (PATCH).
 - **심볼만**: favicon · `icon-192/512` · apple-touch · `icon.svg` · 스플래시/헤더/로그인 마크.
 - **풀 로고**: OG/Twitter · `logo-full.png` · 워드마크 `coursee`.
-- **소스**: `public/brand/coursee-*-black.png` · 재생성 `node scripts/build-brand-assets.mjs`.
+- **소스**(이후 v0.3.5에서 공식 SVG로 대체): `public/brand/coursee-*-black.png`.
 - **카피**: metadata/manifest/가이드/스플래시 브랜드명 `coursee` (제품 언어어「코스」는 유지).
 
 ### Wave F — 페르소나 실측 후속 구현 (Cursor, 2026-07-27 · v0.3.3-mvp)

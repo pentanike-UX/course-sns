@@ -51,7 +51,7 @@ export default function AppHeader({
       ) : back ? (
         <BackButton fallback={back} glass={glass} icon={closeButton ? "close" : "back"} />
       ) : brand ? (
-        <BrandWordmark markSize={24} className="text-xl" />
+        <BrandWordmark markSize={28} />
       ) : null}
 
       {title ? (

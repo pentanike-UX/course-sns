@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import BrandMark from "@/components/BrandMark";
 import { APP_VERSION } from "@/lib/version";
 import { GUIDE_NAV, GUIDE_TITLE, PROD_URL } from "./nav";
 
@@ -16,16 +17,9 @@ export default function GuideShell({ children }: { children: ReactNode }) {
           <div className="flex min-w-0 items-center gap-3">
             <Link
               href="/deliverables"
-              className="flex h-9 w-9 shrink-0 overflow-hidden rounded-[10px] shadow-sm ring-1 ring-black/20"
+              className="flex h-9 w-9 shrink-0 overflow-hidden rounded-[10px] shadow-sm ring-1 ring-black/10"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/icons/icon-512.png"
-                alt="coursee"
-                width={36}
-                height={36}
-                className="h-full w-full object-cover"
-              />
+              <BrandMark size={36} theme="light" alt="coursee" className="rounded-[10px]" />
             </Link>
             <div className="min-w-0">
               <p className="truncate text-sm font-bold tracking-tight">{GUIDE_TITLE}</p>

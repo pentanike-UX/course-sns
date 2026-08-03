@@ -94,8 +94,8 @@ pnpm test:e2e      # 스모크 — 읽기 전용`}
           마크 정본: <Code>public/icons/icon.svg</Code> (C + 레드 스트로크)
         </li>
         <li>
-          앱 아이콘(심볼): <Code>icon-192/512.png</Code> · apple-touch · 풀 로고{" "}
-          <Code>logo-full.png</Code>
+          앱 아이콘(심볼): <Code>logo-mark-*.svg</Code> → <Code>icon-192/512.png</Code> ·
+          풀 로고 <Code>logo-full-light/dark.svg</Code>
         </li>
         <li>
           Favicon: <Code>src/app/favicon.ico</Code> (+ <Code>public/favicon.ico</Code>)

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import BrandMark from "@/components/BrandMark";
+import { BrandLockup } from "@/components/BrandMark";
 import { APP_VERSION } from "@/lib/version";
 
 /**
@@ -66,8 +66,7 @@ export default function AppSplash() {
         fading ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
-      <BrandMark size={88} alt="" className="rounded-[22px]" />
-      <span className="text-[26px] font-black tracking-tight text-white">coursee</span>
+      <BrandLockup height={56} theme="dark" alt="" />
       <span className="h-6 w-6 animate-spin rounded-full border-2 border-white/25 border-t-[#FF0000]" />
       <span className="absolute bottom-[max(24px,env(safe-area-inset-bottom))] text-[12px] font-medium text-white/50">
         {APP_VERSION}
