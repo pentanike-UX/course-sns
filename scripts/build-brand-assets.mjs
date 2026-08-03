@@ -95,13 +95,18 @@ async function main() {
   }
 
   // favicon.ico via multi-size PNG pack (16/32/48) — write PNG favicon + ico-compatible
-  // Next.js ICO decoder requires RGBA PNG payloads inside the .ico
-  const fav32 = await sharp(markBuf).ensureAlpha().resize(32, 32).png().toBuffer();
-  const fav16 = await sharp(markBuf).ensureAlpha().resize(16, 16).png().toBuffer();
-  await sharp(markBuf).ensureAlpha().resize(32, 32).png().toFile(path.join(APP_DIR, "icon.png"));
-  await writeIco(path.join(APP_DIR, "favicon.ico"), [fav16, fav32]);
-  await writeIco(path.join(APP, "favicon.ico"), [fav16, fav32]);
-  console.log("wrote favicon.ico");
+  // Prefer app/icon.png (Next file convention). Skip .ico — Turbopack is strict about PNG-in-ICO RGBA.
+  await sharp(markBuf)
+    .ensureAlpha()
+    .resize(32, 32)
+    .png()
+    .toFile(path.join(APP_DIR, "icon.png"));
+  await sharp(markBuf)
+    .ensureAlpha()
+    .resize(32, 32)
+    .png()
+    .toFile(path.join(APP, "favicon.png"));
+  console.log("wrote icon.png + favicon.png");
 
   // Full lockup → OG / Twitter (1200x630)
   let lockupBuf;
@@ -138,39 +143,6 @@ async function main() {
     .png()
     .toFile(path.join(ICONS, "logo-full.png"));
   console.log("wrote opengraph/twitter + logo-full.png");
-}
-
-/** Minimal ICO writer embedding PNG images (Windows Vista+). */
-async function writeIco(filePath, pngBuffers) {
-  const count = pngBuffers.length;
-  const headerSize = 6 + count * 16;
-  let offset = headerSize;
-  const entries = [];
-  for (const buf of pngBuffers) {
-    const meta = await sharp(buf).metadata();
-    const w = meta.width === 256 ? 0 : meta.width;
-    const h = meta.height === 256 ? 0 : meta.height;
-    entries.push({ w, h, size: buf.length, offset, buf });
-    offset += buf.length;
-  }
-  const out = Buffer.alloc(offset);
-  out.writeUInt16LE(0, 0);
-  out.writeUInt16LE(1, 2);
-  out.writeUInt16LE(count, 4);
-  let entryAt = 6;
-  for (const e of entries) {
-    out.writeUInt8(e.w, entryAt);
-    out.writeUInt8(e.h, entryAt + 1);
-    out.writeUInt8(0, entryAt + 2);
-    out.writeUInt8(0, entryAt + 3);
-    out.writeUInt16LE(1, entryAt + 4);
-    out.writeUInt16LE(32, entryAt + 6);
-    out.writeUInt32LE(e.size, entryAt + 8);
-    out.writeUInt32LE(e.offset, entryAt + 12);
-    e.buf.copy(out, e.offset);
-    entryAt += 16;
-  }
-  await writeFile(filePath, out);
 }
 
 main().catch((err) => {
