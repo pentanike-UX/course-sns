@@ -13,6 +13,14 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.6-mvp — OG/Twitter 공식 락업 동기화</H2>
+      <Ul>
+        <li>
+          <Code>opengraph-image.png</Code> · <Code>twitter-image.png</Code>를 공식 light
+          락업으로 갱신
+        </li>
+      </Ul>
+
       <H2>v0.3.5-mvp — 공식 SVG 라이트/다크 락업</H2>
       <Ul>
         <li>

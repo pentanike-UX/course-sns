@@ -63,6 +63,9 @@ async function main() {
     .toBuffer();
   writeFileSync(join(iconsDir, "og-image.png"), og);
   writeFileSync(join(iconsDir, "twitter-image.png"), og);
+  // Next.js metadata file conventions
+  writeFileSync(join(appDir, "opengraph-image.png"), og);
+  writeFileSync(join(appDir, "twitter-image.png"), og);
 
   console.log("Brand assets written from official SVG lockups.");
 }
