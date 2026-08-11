@@ -13,6 +13,13 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.11-mvp — Wave G1 (발견→따라가기)</H2>
+      <Ul>
+        <li>지도 필터: 누구와·난이도 등 전 패싯 재조회 (MAP-01)</li>
+        <li>지도 시트: 「이 코스 따라가기」primary + 콜드「첫 따라가기」메타</li>
+        <li>상세: 공개 코스 전이 슬롯 상시 (콜드「첫 따라가기」)</li>
+      </Ul>
+
       <H2>v0.3.10-mvp — 시나리오 페인포인트 점검</H2>
       <Ul>
         <li>

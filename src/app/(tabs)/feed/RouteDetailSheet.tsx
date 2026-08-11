@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import RouteMap, { type MapLeg, type MapSpot } from "@/components/RouteMap";
 import JellyButton from "@/components/JellyButton";
+import CopyRouteButton from "@/app/routes/[id]/CopyRouteButton";
 import { TRANSPORT_LABEL, type Leg, type Route } from "@/lib/types";
 import { formatKrw, formatDate, formatDuration } from "@/lib/format";
 import type { FeedMapPoint } from "@/lib/data";
@@ -320,8 +321,17 @@ export default function RouteDetailSheet({
 
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-5 pt-3 text-[12px] text-ink-faint">
                 <span>스팟 {route.spots.length}</span>
-                {(route.copyCount ?? 0) > 0 && <span>{route.copyCount} 따라감</span>}
-                {(route.completionCount ?? 0) > 0 && <span>{route.completionCount} 다녀옴</span>}
+                {(route.copyCount ?? 0) > 0 && (
+                  <span className="font-semibold text-sunset-ink">{route.copyCount} 따라감</span>
+                )}
+                {(route.completionCount ?? 0) > 0 && (
+                  <span className="font-semibold text-sunset-ink">
+                    {route.completionCount} 다녀옴
+                  </span>
+                )}
+                {(route.copyCount ?? 0) === 0 && (route.completionCount ?? 0) === 0 && (
+                  <span className="font-semibold text-sunset-ink">첫 따라가기</span>
+                )}
                 <span>댓글 {route.commentCount}</span>
                 {typeof route.estCostKrw === "number" && route.estCostKrw > 0 && (
                   <span>{formatKrw(route.estCostKrw)}</span>
@@ -407,10 +417,13 @@ export default function RouteDetailSheet({
                 })}
               </ol>
 
-              <div className="px-5 pt-6">
+              <div className="space-y-2 px-5 pt-6">
+                {route.visibility === "public" && (
+                  <CopyRouteButton routeId={route.id} prominent />
+                )}
                 <Link
                   href={`/routes/${route.id}`}
-                  className="block rounded-full bg-sunset py-3 text-center text-[14px] font-semibold text-white shadow-[var(--shadow-brand)]"
+                  className="block rounded-full border border-line bg-card py-3 text-center text-[14px] font-semibold text-ink-soft transition-colors active:scale-[0.98]"
                 >
                   전체 페이지에서 보기
                 </Link>

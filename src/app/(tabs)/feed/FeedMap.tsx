@@ -215,7 +215,16 @@ export default function FeedMap({
   // re-pull pins for the current viewport.
   const filtersRef = useRef(filters);
   const refetchRef = useRef<(() => void) | null>(null);
-  const filterSig = `${filters.themes}|${filters.moods}|${filters.regions}`;
+  // Must include every facet that appendFilterParams sends — omitting purposes/
+  // difficulties left map pins stale when those chips changed (MAP-01).
+  const filterSig = [
+    filters.kinds.join(","),
+    filters.purposes.join(","),
+    filters.themes.join(","),
+    filters.moods.join(","),
+    filters.difficulties.join(","),
+    filters.regions.join(","),
+  ].join("|");
 
   useEffect(() => {
     filtersRef.current = filters;
