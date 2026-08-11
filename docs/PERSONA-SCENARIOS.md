@@ -227,5 +227,6 @@
 | `/deliverables/scenarios` | 웹 가이드(이 문서 요약·표) |
 | `/deliverables/planning` | 제품 정의·기능 목록 |
 | `COURSE-UX-DESIGN.md` | IA·화면 스펙·Phase |
-| `UX-PERSONA-PAINPOINTS.md` | 페인포인트·개선 백로그 |
+| `PERSONA-SCENARIO-PAINPOINTS.md` | 시나리오 walkthrough UX 점검 (정본) |
+| `UX-PERSONA-PAINPOINTS.md` | 이전 컬러·페인 분석 |
 | `BRAND.md` | 브랜드 메시지와 시나리오 톤 정합 |

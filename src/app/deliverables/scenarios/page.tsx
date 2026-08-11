@@ -24,7 +24,14 @@ export default function ScenariosPage() {
 
       <Note>
         북스타: <strong className="font-semibold text-ink">발견 → 따라가기 → 다녀왔어요 → 영향력</strong>
-        . 정본 저장소 문서: <Code>docs/PERSONA-SCENARIOS.md</Code>
+        . 정본: <Code>docs/PERSONA-SCENARIOS.md</Code>. 시나리오대로 밟을 때 막히는 점 →{" "}
+        <Link
+          href="/deliverables/scenario-painpoints"
+          className="font-semibold text-sunset-ink hover:underline"
+        >
+          시나리오 페인포인트
+        </Link>
+        .
       </Note>
 
       <H2>페르소나 한눈에</H2>
@@ -214,6 +221,15 @@ export default function ScenariosPage() {
             브랜드
           </Link>
           — 메시지·톤
+        </li>
+        <li>
+          <Link
+            href="/deliverables/scenario-painpoints"
+            className="font-semibold text-sunset-ink hover:underline"
+          >
+            시나리오 페인포인트
+          </Link>
+          · <Code>docs/PERSONA-SCENARIO-PAINPOINTS.md</Code>
         </li>
         <li>
           <Code>docs/PERSONA-SCENARIOS.md</Code> · <Code>docs/COURSE-UX-DESIGN.md</Code> ·{" "}

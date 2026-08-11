@@ -13,6 +13,16 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.10-mvp — 시나리오 페인포인트 점검</H2>
+      <Ul>
+        <li>
+          <Code>/deliverables/scenario-painpoints</Code> — 단계별 사용실패·이해도저하·불쾌감
+        </li>
+        <li>
+          정본 <Code>docs/PERSONA-SCENARIO-PAINPOINTS.md</Code> · Top8 · Wave G1–G4
+        </li>
+      </Ul>
+
       <H2>v0.3.9-mvp — 페르소나 시나리오</H2>
       <Ul>
         <li>

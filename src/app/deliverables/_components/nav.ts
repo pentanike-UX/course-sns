@@ -31,6 +31,12 @@ export const GUIDE_NAV: GuideNavItem[] = [
     group: "product",
   },
   {
+    href: "/deliverables/scenario-painpoints",
+    label: "시나리오 점검",
+    blurb: "단계별 UX 페인포인트",
+    group: "product",
+  },
+  {
     href: "/deliverables/screens",
     label: "화면",
     blurb: "화면 주소·구조",

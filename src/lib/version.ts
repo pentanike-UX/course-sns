@@ -16,5 +16,6 @@
  * v0.3.7 — favicon·OG를 공식 심볼/다크 락업으로 교체
  * v0.3.8 — deliverables 브랜드(BI·BX) 가이드 추가
  * v0.3.9 — 페르소나별 시나리오 가이드 추가
+ * v0.3.10 — 시나리오 walkthrough UX 페인포인트 점검
  */
-export const APP_VERSION = "v0.3.9-mvp";
+export const APP_VERSION = "v0.3.10-mvp";

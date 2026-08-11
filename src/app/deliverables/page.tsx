@@ -81,6 +81,9 @@ export default function DeliverablesHomePage() {
         <DocCard href="/deliverables/scenarios" title="시나리오" badge="페르소나">
           P1–P4·게스트 happy path, 변형, 북스타 end-to-end 데모
         </DocCard>
+        <DocCard href="/deliverables/scenario-painpoints" title="시나리오 점검" badge="UX">
+          시나리오 단계별 불쾌감·이해도저하·사용실패 (코드 점검)
+        </DocCard>
         <DocCard href="/deliverables/brand" title="브랜드" badge="BI · BX">
           Coursee 개요·메시지·철학·포지셔닝, 로고·심볼 설계, 앱 BX
         </DocCard>

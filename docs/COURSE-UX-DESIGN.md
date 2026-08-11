@@ -49,7 +49,7 @@
 
 > **포지션:** 따라갈 수 있는 이동 코스 커뮤니티  
 > **북스타 루프:** 발견 → 따라가기 → 다녀왔어요 → 영향력(복제·완주·팔로우)  
-> **기준 코드:** course-sns MVP (`v0.3.9-mvp`, routdiary fork) · 브랜드 **coursee**  
+> **기준 코드:** course-sns MVP (`v0.3.10-mvp`, routdiary fork) · 브랜드 **coursee**  
 > **관련:** 페르소나 P1–P4 · Wave F 구현 · [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md)
 
 이 문서는 “무엇을 만들지”가 아니라 **어디에·어떤 순서로·어떤 멘탈모델로 심을지**를 고정한다.  

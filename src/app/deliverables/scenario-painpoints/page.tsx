@@ -1,0 +1,182 @@
+import Link from "next/link";
+import {
+  Code,
+  DocTable,
+  H2,
+  H3,
+  Note,
+  P,
+  PageHeader,
+  Ul,
+  Warn,
+} from "../_components/ui";
+
+/**
+ * Scenario walkthrough UX audit — paired with /deliverables/scenarios.
+ * Full detail: docs/PERSONA-SCENARIO-PAINPOINTS.md
+ */
+export default function ScenarioPainpointsPage() {
+  return (
+    <>
+      <PageHeader
+        title="시나리오 페인포인트"
+        description="페르소나 시나리오대로 화면을 따라갈 때, UX/UI 완성도 때문에 생기는 불쾌감·이해도 저하·사용 실패를 코드 기준으로 점검한 결과입니다."
+      />
+
+      <Note>
+        기준 시나리오:{" "}
+        <Link
+          href="/deliverables/scenarios"
+          className="font-semibold text-sunset-ink hover:underline"
+        >
+          페르소나 시나리오
+        </Link>
+        · 정본 <Code>docs/PERSONA-SCENARIO-PAINPOINTS.md</Code> (2026-08-11)
+      </Note>
+
+      <Warn>
+        심각도 <strong className="font-semibold">P0</strong> = 사용 막힘 ·{" "}
+        <strong className="font-semibold">P1</strong> = 높은 마찰 · P2 = 혼란·불쾌 · P3 =
+        폴리시
+      </Warn>
+
+      <H2>우선순위 Top 8</H2>
+      <DocTable
+        headers={["ID", "페르소나", "한 줄", "심각도", "유형"]}
+        rows={[
+          ["MAP-01", "G/P1", "지도에서 누구와·난이도 필터가 핀에 미반영", "P0", "사용실패"],
+          ["MAP-02", "G/P1", "지도 peek 시트에 따라가기 CTA 없음", "P1", "사용실패"],
+          ["DET-01", "G/P1", "콜드 상세에서 ♥가 유일한 소셜 숫자", "P1", "이해도저하"],
+          ["LIB-01", "P2", "체크리스트「이동 확인」가짜 완료", "P1", "이해도저하"],
+          ["PUB-01", "P3", "수정 저장마다 공개/비공개 재선택", "P1", "사용실패"],
+          ["STAT-01", "P3", "드로어 통계에「저장」이 영향력 자리", "P1", "이해도저하"],
+          ["FOL-01", "P4", "따라가는 중 vs 팔로잉 용어·IA 충돌", "P1", "이해도저하"],
+          ["FOL-02", "P4", "홈 레일「전체 보기」→ tab=people", "P1", "사용실패"],
+        ]}
+      />
+
+      <H2>G · P1 — 게스트 / 탐색러</H2>
+      <H3>사용실패</H3>
+      <Ul>
+        <li>
+          <strong className="font-semibold text-ink">MAP-01 (P0)</strong> —{" "}
+          <Code>FeedMap</Code> <Code>filterSig</Code>에 purposes·difficulties 누락 → 지도
+          필터가 안 먹음
+        </li>
+        <li>
+          <strong className="font-semibold text-ink">MAP-02 (P1)</strong> —{" "}
+          <Code>RouteDetailSheet</Code> CTA가「전체 페이지에서 보기」뿐 → 따라가기 경로 단절
+        </li>
+        <li>
+          <strong className="font-semibold text-ink">HOME-03 (P2)</strong> — 「가까운」위치
+          거부 시 칩만 활성, 안내 없음
+        </li>
+      </Ul>
+      <H3>이해도저하</H3>
+      <Ul>
+        <li>
+          <strong className="font-semibold text-ink">DET-01 (P1)</strong> — 전이 0이면 ♥·저장만
+          노출 → 좋아요 SNS로 오인
+        </li>
+        <li>
+          <strong className="font-semibold text-ink">CARD-01 (P2)</strong> — 콜드 TransferPill이
+          라이프스타일 태그로 대체
+        </li>
+        <li>
+          <strong className="font-semibold text-ink">HOME-01 (P2)</strong> — 게스트 홈 헤더
+          「둘러보기」만 (브랜드 약함)
+        </li>
+        <li>
+          <strong className="font-semibold text-ink">HOME-02 / MAP-03 (P2)</strong> — 정렬 카피·필터
+          밀도 · peek↔시트 콜드 카피 불일치
+        </li>
+      </Ul>
+      <H3>불쾌감</H3>
+      <Ul>
+        <li>
+          <strong className="font-semibold text-ink">DET-02 (P2)</strong> — 따라가기 CTA 직하단
+          하트·저장 경쟁
+        </li>
+      </Ul>
+
+      <H2>P2 — 따라가이</H2>
+      <Ul>
+        <li>
+          <strong className="font-semibold text-ink">LIB-01 (P1 · 이해도저하)</strong> —{" "}
+          <Code>FollowProgressBar</Code>가 status로「이동 확인」을 가짜 완료 처리
+        </li>
+        <li>
+          <strong className="font-semibold text-ink">CTA-01 (P1 · 이해도저하)</strong> — 「후기
+          수정」과「내 초안 다시 보기」톤이 같아 다음 행동 불명
+        </li>
+        <li>
+          <strong className="font-semibold text-ink">LIB-04 (P1 · 이해도저하)</strong> — 저장
+          카드가 따라가는 중과 유사 · 하트 잔상
+        </li>
+        <li>
+          <strong className="font-semibold text-ink">LIB-02 / LIB-03 (P2)</strong> — 뱃지「기록
+          중」· 완료 후 next가 초안만
+        </li>
+      </Ul>
+
+      <H2>P3 — 코스 메이커</H2>
+      <Ul>
+        <li>
+          <strong className="font-semibold text-ink">PUB-01 (P1 · 사용실패)</strong> — edit마다
+          공개 게이트 재강제 (<Code>visibilityChosen</Code>)
+        </li>
+        <li>
+          <strong className="font-semibold text-ink">STAT-01 (P1 · 이해도저하)</strong> —{" "}
+          <Code>ProfileDrawerBody</Code> 통계에「저장」· fallback「여행자」
+        </li>
+        <li>
+          <strong className="font-semibold text-ink">PUB-02 / PUB-03 / STAT-02 (P2)</strong> —
+          성공 토스트 모호 · 준비도 soft만 · 전이 통계 하단
+        </li>
+      </Ul>
+
+      <H2>P4 — 영향력 구독자</H2>
+      <Ul>
+        <li>
+          <strong className="font-semibold text-ink">FOL-01 (P1 · 이해도저하)</strong> —
+          「따라가는 중」vs「팔로잉」+ 새 코스/사람 2단 IA
+        </li>
+        <li>
+          <strong className="font-semibold text-ink">FOL-02 (P1 · 사용실패)</strong> —{" "}
+          <Code>FollowingRail</Code> 「전체 보기」→ <Code>/library?tab=people</Code>
+        </li>
+        <li>
+          <strong className="font-semibold text-ink">FOL-03 (P2)</strong> — 책장 empty CTA 약함 ·
+          알림 배지 축약
+        </li>
+      </Ul>
+
+      <H2>권장 수정 Wave</H2>
+      <DocTable
+        headers={["Wave", "이슈", "효과"]}
+        rows={[
+          ["G1 발견", "MAP-01 · MAP-02 · MAP-03 · DET-01", "발견→따라가기 막힘 해소"],
+          ["G2 완주", "LIB-01 · LIB-03 · CTA-01 · LIB-04", "Copy→Completion"],
+          ["G3 메이커", "PUB-01 · STAT-01 · PUB-02", "게시·영향력 루프"],
+          ["G4 구독", "FOL-01 · FOL-02 · FOL-03", "팔로우→따라가기"],
+        ]}
+      />
+
+      <H2>이미 양호한 점</H2>
+      <Ul>
+        <li>리스트/지도 peek에서 ♥를 전이 프루프로 쓰지 않는 방향</li>
+        <li>상세 Primary「이 코스 따라가기」위계</li>
+        <li>
+          <Code>CopyRouteButton</Code> AuthGate 「따라가려면 로그인이 필요해요」
+        </li>
+        <li>보관함 탭 아이콘이 스택형(하트 아님)</li>
+      </Ul>
+
+      <P>
+        상세 표·시나리오 단계 매핑은 저장소{" "}
+        <Code>docs/PERSONA-SCENARIO-PAINPOINTS.md</Code>. 이전 컬러 중심 분석은{" "}
+        <Code>docs/UX-PERSONA-PAINPOINTS.md</Code>.
+      </P>
+    </>
+  );
+}
