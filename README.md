@@ -6,7 +6,7 @@
 - **GitHub**: [pentanike-UX/course-sns](https://github.com/pentanike-UX/course-sns)
 - **프로덕션**: https://course-sns.vercel.app
 - **Supabase**: `pbyxnvtgsrwmsvxnynif` (routdiary와 분리)
-- **현재 버전**: `v0.3.8-mvp` (`src/lib/version.ts`) — 수정 시 버전·HANDOFF 기록 규칙: `AGENTS.md`
+- **현재 버전**: `v0.3.9-mvp` (`src/lib/version.ts`) — 수정 시 버전·HANDOFF 기록 규칙: `AGENTS.md`
 - **개발·운영 가이드**: https://course-sns.vercel.app/deliverables (로컬 `/deliverables`)
 - **배포·인프라 체크리스트**: [`docs/MVP-SETUP.md`](docs/MVP-SETUP.md)
 - **상세 인수인계·IA·함정**: [`docs/HANDOFF.md`](docs/HANDOFF.md)
@@ -37,6 +37,7 @@ pnpm test:e2e    # Playwright 스모크 (데모 계정, 읽기 전용)
 | 위치 | 내용 |
 |------|------|
 | [`/deliverables`](https://course-sns.vercel.app/deliverables) | **공식 개발·운영 가이드** (기획·브랜드·화면·DB·API·현황·이력) |
+| [`docs/PERSONA-SCENARIOS.md`](docs/PERSONA-SCENARIOS.md) · [`/deliverables/scenarios`](https://course-sns.vercel.app/deliverables/scenarios) | 페르소나별 시나리오 |
 | [`docs/BRAND.md`](docs/BRAND.md) · [`/deliverables/brand`](https://course-sns.vercel.app/deliverables/brand) | BI·BX·로고 시스템 |
 | [`docs/MVP-SETUP.md`](docs/MVP-SETUP.md) | Supabase migration, Vercel env, 네이버 Maps URL 등록 |
 | [`docs/HANDOFF.md`](docs/HANDOFF.md) | 제품 IA, Supabase/OAuth, 완료·TODO, 함정 |

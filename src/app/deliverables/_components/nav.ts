@@ -25,6 +25,12 @@ export const GUIDE_NAV: GuideNavItem[] = [
     group: "product",
   },
   {
+    href: "/deliverables/scenarios",
+    label: "시나리오",
+    blurb: "페르소나별 이용 흐름",
+    group: "product",
+  },
+  {
     href: "/deliverables/screens",
     label: "화면",
     blurb: "화면 주소·구조",

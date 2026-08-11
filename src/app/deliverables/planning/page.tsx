@@ -92,6 +92,16 @@ export default function PlanningPage() {
       </Ul>
 
       <H2>6. 대표 시나리오</H2>
+      <P>
+        단계별 happy path·변형·데모 스크립트는{" "}
+        <Link
+          href="/deliverables/scenarios"
+          className="font-semibold text-sunset-ink hover:underline"
+        >
+          페르소나 시나리오
+        </Link>
+        · <Code>docs/PERSONA-SCENARIOS.md</Code>가 정본입니다.
+      </P>
       <DocTable
         headers={["누가", "무엇을", "어떻게"]}
         rows={[
@@ -122,6 +132,16 @@ export default function PlanningPage() {
           <Link href="/deliverables/screens" className="font-semibold text-sunset-ink hover:underline">
             화면
           </Link>
+        </li>
+        <li>
+          페르소나 시나리오 →{" "}
+          <Link
+            href="/deliverables/scenarios"
+            className="font-semibold text-sunset-ink hover:underline"
+          >
+            시나리오
+          </Link>
+          · <Code>docs/PERSONA-SCENARIOS.md</Code>
         </li>
         <li>
           브랜드(BI·BX) →{" "}

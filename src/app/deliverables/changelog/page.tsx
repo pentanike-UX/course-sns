@@ -13,6 +13,16 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.9-mvp — 페르소나 시나리오</H2>
+      <Ul>
+        <li>
+          <Code>/deliverables/scenarios</Code> — P1–P4·게스트 happy path·변형·E2E 데모
+        </li>
+        <li>
+          정본 <Code>docs/PERSONA-SCENARIOS.md</Code> · 기획·시작하기 연결
+        </li>
+      </Ul>
+
       <H2>v0.3.8-mvp — 브랜드(BI·BX) 가이드</H2>
       <Ul>
         <li>
