@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.3.13-mvp)
+### 현재 화면·내비 (v0.3.14-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -22,7 +22,7 @@
 |----|-----|--------|------|
 | 홈 | `/` | P1 | **코스 쇼핑** — 공개 코스 피드. 정렬: 최신·많이 따라간·많이 다녀온·가까운 |
 | 지도 | `/?mode=map` | P1 | 동선으로 고르기 (목록↔지도). peek = 따라감/다녀옴 |
-| 보관함 | `/library` | P2·P4 | **따라가는 중 · 저장 · 팔로잉**(새 코스 스트림 + 사람). 아이콘=스택 |
+| 보관함 | `/library` | P2·P4 | **따라가는 중 · 저장 · 구독 코스**(스트림 + 팔로우 관리). 아이콘=스택 |
 | FAB(+) | sheet → `/routes/new` | P3 | 코스 기록하기 / 코스 계획하기 |
 
 **드로어·오버레이 (라우트 전환 없이 클라이언트 스택)**:
@@ -36,7 +36,7 @@
 
 - `/` — 둘러보기. `?mode=map`, `?q=&sort=&kind=&theme=&mood=&region=` (`popular`→`followed` 매핑)
 - `/feed` — 내 코스(보호). `?tab=all|record|plan`
-- `/library` — `?tab=following|saved|…` (세그먼트: 따라가는 중 | 저장 | 팔로잉)
+- `/library` — `?tab=saved|subscribed|people` (세그먼트: 따라가는 중 | 저장 | 구독 코스)
 - `/routes/new`, `/routes/[id]`, `/routes/[id]/edit` — 작성·상세·수정 (완료 전 **공개/비공개 명시 선택**)
 - `/u/[handle]`, `/notifications`, `/login`, `/profile/*`
 
@@ -468,7 +468,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.3.13-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.3.14-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: **`https://course-sns.vercel.app`** + `http://localhost:3000` (+ 필요 시 프리뷰). ⚠️ 도메인 미등록 시 **핀만 보이고 타일 공백**.
@@ -497,6 +497,13 @@ pnpm test:e2e     # Playwright 스모크
 ## 7. 작업 로그 (이어서 누적)
 
 > **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
+
+### Wave G4 — 구독 IA · 레일 · 알림 (Cursor, 2026-08-12 · v0.3.14-mvp)
+
+- **버전**: **`v0.3.14-mvp`** (PATCH).
+- **FOL-01**: 보관함 탭「팔로잉」→「구독 코스」· 새 코스/사람 동등 칩 제거 →「팔로우 관리」 demote.
+- **FOL-02**: 홈 레일「전체 보기」→ `/library?tab=subscribed` · 사람 찾기는 empty만 `?tab=people`.
+- **FOL-03**: 프로필 책장 empty「다른 코스 둘러보기」· 알림 배지 풀네임 · 소셜 그룹 더 mute.
 
 ### Wave G3 — 메이커 게시·영향력 루프 (Cursor, 2026-08-12 · v0.3.13-mvp)
 

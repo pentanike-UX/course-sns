@@ -46,7 +46,12 @@ export default async function NotificationsPage() {
                 <NotificationGroup title="전이 · 구독" items={transfer} />
               )}
               {social.length > 0 && (
-                <NotificationGroup title="좋아요 · 댓글" items={social} muted />
+                <NotificationGroup
+                  title="좋아요 · 댓글"
+                  items={social}
+                  muted
+                  demoted
+                />
               )}
             </>
           )}
@@ -60,14 +65,25 @@ function NotificationGroup({
   title,
   items,
   muted = false,
+  demoted = false,
 }: {
   title: string;
   items: AppNotification[];
   muted?: boolean;
+  /** FOL-03: social sits below transfer — quieter chrome */
+  demoted?: boolean;
 }) {
   return (
-    <section className={muted ? "opacity-90" : undefined}>
-      <h2 className="sticky top-0 z-[1] bg-paper/95 px-4 pb-1.5 pt-4 text-[12px] font-bold text-ink-soft backdrop-blur">
+    <section
+      className={
+        demoted ? "opacity-55" : muted ? "opacity-80" : undefined
+      }
+    >
+      <h2
+        className={`sticky top-0 z-[1] bg-paper/95 px-4 pb-1.5 pt-4 text-[12px] font-bold backdrop-blur ${
+          demoted ? "text-ink-faint" : "text-ink-soft"
+        }`}
+      >
         {title}
       </h2>
       <ul>
@@ -132,8 +148,8 @@ function NotificationRow({ n }: { n: AppNotification }) {
           </span>
         )}
         <span
-          className={`absolute -bottom-0.5 -right-0.5 rounded px-1 text-[9px] font-black leading-4 ${
-            transfer ? "bg-sunset text-white" : "bg-ink/80 text-paper"
+          className={`absolute -bottom-1 -right-1 max-w-[3.5rem] truncate rounded px-1 text-[8px] font-black leading-4 tracking-tight ${
+            transfer ? "bg-sunset text-white" : "bg-ink/70 text-paper"
           }`}
         >
           {TYPE_LABEL[n.type]}
@@ -152,11 +168,12 @@ function NotificationRow({ n }: { n: AppNotification }) {
   );
 }
 
+/** FOL-03: full labels — avoid cryptic「따라/팔로/새코스」. */
 const TYPE_LABEL: Record<AppNotification["type"], string> = {
-  course_publish: "새코스",
-  copy: "따라",
+  course_publish: "새 코스",
+  copy: "따라가기",
   completion: "완주",
-  follow: "팔로",
+  follow: "팔로우",
   comment: "댓글",
   like: "좋아요",
 };

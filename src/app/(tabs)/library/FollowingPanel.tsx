@@ -6,7 +6,7 @@ import PersonRow from "@/components/PersonRow";
 import type { PersonSummary } from "@/lib/data";
 
 /**
- * 보관함 > 팔로잉: 내가 팔로우한 회원 카드 + 회원 검색(친구 찾기).
+ * 보관함 > 구독 코스 > 팔로우 관리: 내가 팔로우한 회원 + 검색.
  * 검색어가 없으면 팔로잉 목록을, 2글자 이상 입력하면 전체 공개 회원을
  * 이름/@아이디로 타이프어헤드 검색한다(`/api/people`). 결과 행은 프로필
  * 어디서나 쓰는 PersonRow(아바타·이름·@핸들·인라인 팔로우)를 그대로 사용.

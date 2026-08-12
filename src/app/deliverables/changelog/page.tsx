@@ -13,6 +13,13 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.14-mvp — Wave G4 (구독 IA)</H2>
+      <Ul>
+        <li>보관함 탭「구독 코스」· 팔로우 관리 demote (FOL-01)</li>
+        <li>홈 레일「전체 보기」→ <Code>?tab=subscribed</Code> (FOL-02)</li>
+        <li>책장 empty CTA · 알림 배지 풀네임 · 소셜 mute (FOL-03)</li>
+      </Ul>
+
       <H2>v0.3.13-mvp — Wave G3 (메이커)</H2>
       <Ul>
         <li>수정 시 공개 게이트 재선택 제거 · 공개 준비도 경고 강화</li>

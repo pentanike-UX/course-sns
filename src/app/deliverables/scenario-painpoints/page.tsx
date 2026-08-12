@@ -50,8 +50,8 @@ export default function ScenarioPainpointsPage() {
           ["LIB-01", "P2", "✅ 이동 확인=실데이터 (v0.3.12)", "fixed", "이해도저하"],
           ["PUB-01", "P3", "✅ edit visibility seed (v0.3.13)", "fixed", "사용실패"],
           ["STAT-01", "P3", "✅ 팔로워·나 (v0.3.13)", "fixed", "이해도저하"],
-          ["FOL-01", "P4", "따라가는 중 vs 팔로잉 용어·IA 충돌", "P1", "이해도저하"],
-          ["FOL-02", "P4", "홈 레일「전체 보기」→ tab=people", "P1", "사용실패"],
+          ["FOL-01", "P4", "✅ 구독 코스·팔로우 관리 demote (v0.3.14)", "fixed", "이해도저하"],
+          ["FOL-02", "P4", "✅ 레일→ tab=subscribed (v0.3.14)", "fixed", "사용실패"],
         ]}
       />
 
@@ -138,16 +138,16 @@ export default function ScenarioPainpointsPage() {
       <H2>P4 — 영향력 구독자</H2>
       <Ul>
         <li>
-          <strong className="font-semibold text-ink">FOL-01 (P1 · 이해도저하)</strong> —
-          「따라가는 중」vs「팔로잉」+ 새 코스/사람 2단 IA
+          <strong className="font-semibold text-ink">FOL-01 (✅ v0.3.14)</strong> —
+          탭「구독 코스」·「팔로우 관리」demote
         </li>
         <li>
-          <strong className="font-semibold text-ink">FOL-02 (P1 · 사용실패)</strong> —{" "}
-          <Code>FollowingRail</Code> 「전체 보기」→ <Code>/library?tab=people</Code>
+          <strong className="font-semibold text-ink">FOL-02 (✅ v0.3.14)</strong> —{" "}
+          <Code>FollowingRail</Code> 「전체 보기」→ <Code>/library?tab=subscribed</Code>
         </li>
         <li>
-          <strong className="font-semibold text-ink">FOL-03 (P2)</strong> — 책장 empty CTA 약함 ·
-          알림 배지 축약
+          <strong className="font-semibold text-ink">FOL-03 (✅ v0.3.14)</strong> — 책장 empty
+          CTA · 알림 배지 풀네임 · 소셜 demoted
         </li>
       </Ul>
 
@@ -158,7 +158,7 @@ export default function ScenarioPainpointsPage() {
           ["G1 발견", "✅ MAP-01 · MAP-02 · MAP-03 · DET-01 (v0.3.11)", "발견→따라가기 막힘 해소"],
           ["G2 완주", "✅ LIB-01 · LIB-03 · CTA-01 · LIB-04 (v0.3.12)", "Copy→Completion"],
           ["G3 메이커", "✅ PUB-01 · STAT-01 · PUB-02 · PUB-03 · STAT-02 (v0.3.13)", "게시·영향력 루프"],
-          ["G4 구독", "FOL-01 · FOL-02 · FOL-03", "팔로우→따라가기"],
+          ["G4 구독", "✅ FOL-01 · FOL-02 · FOL-03 (v0.3.14)", "팔로우→따라가기"],
         ]}
       />
 

@@ -75,8 +75,17 @@ export default async function UserProfilePage({
           <h3 className="mb-1 text-[14px] font-bold text-ink">코스 책장</h3>
           <p className="mb-3 text-[12px] text-ink-faint">따라갈 수 있는 공개 코스 {profile.routes.length}</p>
           {profile.routes.length === 0 ? (
-            <div className="py-12 text-center text-[13px] text-ink-faint">
-              아직 공개한 코스가 없어요.
+            <div className="flex flex-col items-center px-6 py-12 text-center">
+              <p className="text-[13px] text-ink-faint">아직 공개한 코스가 없어요.</p>
+              <p className="mt-1 text-[12px] leading-relaxed text-ink-faint">
+                다른 메이커의 코스를 둘러보고 따라가 보세요.
+              </p>
+              <Link
+                href="/"
+                className="mt-4 rounded-full bg-sunset px-5 py-2.5 text-[13px] font-semibold text-white"
+              >
+                다른 코스 둘러보기
+              </Link>
             </div>
           ) : (
             <ul className="space-y-4">

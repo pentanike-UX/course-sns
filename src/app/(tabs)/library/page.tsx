@@ -13,13 +13,16 @@ export default async function LibraryPage({
   searchParams: Promise<{ tab?: string }>;
 }) {
   const { tab } = await searchParams;
-  // Default = 따라가는 중 (transfer loop). ?tab=saved | people
+  // Default = 따라가는 중 (transfer). ?tab=saved | subscribed | people
+  // `following` kept as alias for subscribed (FOL-02 stream deep-link).
   const active: LibraryTab =
     tab === "saved"
       ? "saved"
-      : tab === "people" || tab === "following"
+      : tab === "people" || tab === "subscribed" || tab === "following"
         ? "followingPeople"
         : "following";
+  const subscribeMode: "courses" | "people" =
+    tab === "people" ? "people" : "courses";
 
   const [followed, saved, followingCourses, followingPeople] = await Promise.all([
     getMyFollowedCourses(),
@@ -37,6 +40,7 @@ export default async function LibraryPage({
         followingCourses={followingCourses}
         followingPeople={followingPeople}
         initialTab={active}
+        initialSubscribeMode={subscribeMode}
       />
     </>
   );

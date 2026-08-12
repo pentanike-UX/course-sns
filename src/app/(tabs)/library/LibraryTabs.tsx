@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import CollectionCard from "./CollectionCard";
 import FollowingPanel from "./FollowingPanel";
@@ -16,28 +17,40 @@ export type LibraryTab = "following" | "saved" | "followingPeople";
 
 const TAB_ORDER = ["following", "saved", "followingPeople"] as const;
 
-/** 따라가는 중 / 저장 / 팔로잉 — course-community library IA (Phase 2). */
+/** 따라가는 중 / 저장 / 구독 코스 — transfer vs subscribe IA (FOL-01). */
 export default function LibraryTabs({
   followed,
   saved,
   followingCourses,
   followingPeople,
   initialTab,
+  initialSubscribeMode = "courses",
 }: {
   followed: FollowedCourse[];
   saved: RouteSummary[];
   followingCourses: RouteSummary[];
   followingPeople: PersonSummary[];
   initialTab: LibraryTab;
+  /** people only via ?tab=people — stream defaults to courses (FOL-02). */
+  initialSubscribeMode?: "courses" | "people";
 }) {
   const { tab, select } = useSegTabs<LibraryTab>(initialTab, (t) =>
-    t === "following" ? "/library" : `/library?tab=${t === "followingPeople" ? "people" : t}`,
+    t === "following"
+      ? "/library"
+      : t === "followingPeople"
+        ? "/library?tab=subscribed"
+        : `/library?tab=${t}`,
   );
 
   const renderPanel = (t: LibraryTab) => {
     if (t === "followingPeople") {
       return (
-        <FollowingCoursesPanel courses={followingCourses} people={followingPeople} />
+        <FollowingCoursesPanel
+          key={initialSubscribeMode}
+          courses={followingCourses}
+          people={followingPeople}
+          initialMode={initialSubscribeMode}
+        />
       );
     }
     if (t === "following") {
@@ -71,7 +84,7 @@ export default function LibraryTabs({
           options={[
             { value: "following", label: "따라가는 중" },
             { value: "saved", label: "저장" },
-            { value: "followingPeople", label: "팔로잉" },
+            { value: "followingPeople", label: "구독 코스" },
           ]}
           value={tab}
           onChange={select}
@@ -229,59 +242,68 @@ function FollowProgressBar({
 function FollowingCoursesPanel({
   courses,
   people,
+  initialMode = "courses",
 }: {
   courses: RouteSummary[];
   people: PersonSummary[];
+  initialMode?: "courses" | "people";
 }) {
-  const [mode, setMode] = useState<"courses" | "people">("courses");
+  const router = useRouter();
+  const [mode, setMode] = useState<"courses" | "people">(initialMode);
+
+  const showCourses = () => {
+    setMode("courses");
+    router.replace("/library?tab=subscribed", { scroll: false });
+  };
+  const showPeople = () => {
+    setMode("people");
+    router.replace("/library?tab=people", { scroll: false });
+  };
 
   return (
     <div className="pb-8">
-      <div className="flex gap-2 px-4 pt-3">
-        <SubChip active={mode === "courses"} onClick={() => setMode("courses")}>
-          새 코스
-        </SubChip>
-        <SubChip active={mode === "people"} onClick={() => setMode("people")}>
-          사람
-        </SubChip>
-      </div>
       {mode === "people" ? (
-        <FollowingPanel following={people} />
-      ) : courses.length === 0 ? (
-        <EmptyFollowingCourses onFindPeople={() => setMode("people")} />
+        <>
+          <div className="flex items-center justify-between gap-2 px-4 pt-3">
+            <button
+              type="button"
+              onClick={showCourses}
+              className="text-[12px] font-semibold text-ink-soft underline-offset-2 hover:underline"
+            >
+              ← 구독 코스
+            </button>
+            <p className="text-[12px] font-bold text-ink">팔로우 관리</p>
+          </div>
+          <FollowingPanel following={people} />
+        </>
       ) : (
-        <ul className="mt-3 space-y-4 px-4">
-          {courses.map((r) => (
-            <li key={r.id}>
-              <RouteCard route={r} />
-            </li>
-          ))}
-        </ul>
+        <>
+          <div className="flex items-baseline justify-between gap-2 px-4 pt-3">
+            <p className="text-[12px] font-semibold text-ink-soft">
+              팔로우한 메이커의 새 코스
+            </p>
+            <button
+              type="button"
+              onClick={showPeople}
+              className="shrink-0 text-[12px] font-semibold text-ink-faint underline-offset-2 hover:underline"
+            >
+              팔로우 관리
+            </button>
+          </div>
+          {courses.length === 0 ? (
+            <EmptyFollowingCourses onFindPeople={showPeople} />
+          ) : (
+            <ul className="mt-3 space-y-4 px-4">
+              {courses.map((r) => (
+                <li key={r.id}>
+                  <RouteCard route={r} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </div>
-  );
-}
-
-function SubChip({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={`rounded-full px-3.5 py-1.5 text-[13px] font-bold transition-colors ${
-        active ? "bg-ink text-paper" : "bg-muted text-ink-soft"
-      }`}
-    >
-      {children}
-    </button>
   );
 }
 

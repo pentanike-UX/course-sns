@@ -20,5 +20,6 @@
  * v0.3.11 — Wave G1: 지도 필터·따라가기 CTA·콜드 전이 슬롯
  * v0.3.12 — Wave G2: 완주 체크리스트·CTA 톤·저장 카드
  * v0.3.13 — Wave G3: 메이커 공개 게이트·통계·토스트
+ * v0.3.14 — Wave G4: 구독 IA·레일 CTA·알림 배지
  */
-export const APP_VERSION = "v0.3.13-mvp";
+export const APP_VERSION = "v0.3.14-mvp";
