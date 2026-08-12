@@ -33,10 +33,10 @@ export default function CompleteCourseButton({
 
   const hasCompletion = !!state.completion;
   const label = hasCompletion ? "후기 수정" : "다녀왔어요";
-  // Tone ladder (Wave B): brand solid = 따라가기 only;
-  // not-done = brand outline; done = neutral ink.
+  // Tone ladder: brand solid = 따라가기 only;
+  // not-done = brand outline; done = ink solid primary (CTA-01 — not same as draft link).
   const buttonClass = hasCompletion
-    ? "flex w-full items-center justify-center gap-2 rounded-full border border-line bg-card px-4 py-3.5 text-[15px] font-bold text-ink transition-colors active:scale-[0.98] disabled:opacity-60"
+    ? "flex w-full items-center justify-center gap-2 rounded-full bg-ink px-4 py-3.5 text-[15px] font-bold text-paper transition-transform active:scale-[0.98] disabled:opacity-60"
     : prominent
       ? "flex w-full items-center justify-center gap-2 rounded-full border-2 border-sunset bg-paper px-4 py-3.5 text-[15px] font-bold text-sunset-ink shadow-[var(--shadow-sm)] transition-transform active:scale-[0.98] disabled:opacity-60"
       : "flex w-full items-center justify-center gap-2 rounded-full border border-sunset/30 bg-sunset-wash px-4 py-3 text-[14px] font-bold text-sunset-ink transition-colors disabled:opacity-60";
@@ -86,8 +86,12 @@ export default function CompleteCourseButton({
       <ActionBottomSheet
         open={open}
         title={hasCompletion ? "후기 수정" : "다녀왔어요!"}
-        description="이 코스를 다녀오셨나요? 별점과 한 줄 팁을 남기면 다음 사람의 선택에 도움이 돼요."
-        primaryLabel={pending ? "저장 중…" : "후기 남기기"}
+        description={
+          hasCompletion
+            ? "남긴 별점과 팁을 고칠 수 있어요. 다음 사람의 따라가기에 도움이 됩니다."
+            : "이 코스를 다녀오셨나요? 별점과 한 줄 팁을 남기면 다음 사람의 선택에 도움이 돼요."
+        }
+        primaryLabel={pending ? "저장 중…" : hasCompletion ? "후기 저장" : "후기 남기기"}
         secondaryLabel="취소"
         onClose={() => !pending && setOpen(false)}
         onPrimary={handleSubmit}

@@ -6,10 +6,10 @@ import CompleteCourseButton from "./CompleteCourseButton";
 import type { ViewerCompletionState } from "@/lib/types";
 
 /**
- * Detail CTA state machine for the follow loop (Wave B tones):
+ * Detail CTA state machine for the follow loop (Wave B + G2 tones):
  * - not copied → Primary brand「따라가기」
  * - copied, not completed → Primary brand-outline「다녀왔어요」+ Secondary 내 초안
- * - completed → Primary neutral「후기 수정」+ Secondary 내 초안
+ * - completed → Primary ink「후기 수정」+ soft text Secondary 내 초안 (CTA-01)
  */
 export default function CourseFollowActions({
   routeId,
@@ -35,14 +35,22 @@ export default function CourseFollowActions({
       {viewerCompletion && (
         <CompleteCourseButton routeId={routeId} state={viewerCompletion} prominent />
       )}
-      {draftId && (
-        <Link
-          href={`/routes/${draftId}/edit`}
-          className="flex w-full items-center justify-center gap-2 rounded-full border border-line bg-card px-4 py-3 text-[14px] font-bold text-ink-soft transition-colors active:scale-[0.98]"
-        >
-          {hasCompletion ? "내 초안 다시 보기" : "내 초안 열기 · 다듬기"}
-        </Link>
-      )}
+      {draftId &&
+        (hasCompletion ? (
+          <Link
+            href={`/routes/${draftId}/edit`}
+            className="flex w-full items-center justify-center px-4 py-2 text-[13px] font-medium text-ink-faint underline-offset-2 hover:underline"
+          >
+            내 초안 다시 보기
+          </Link>
+        ) : (
+          <Link
+            href={`/routes/${draftId}/edit`}
+            className="flex w-full items-center justify-center gap-2 rounded-full border border-line bg-card px-4 py-3 text-[14px] font-bold text-ink-soft transition-colors active:scale-[0.98]"
+          >
+            내 초안 열기 · 다듬기
+          </Link>
+        ))}
     </div>
   );
 }

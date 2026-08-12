@@ -13,6 +13,13 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.12-mvp — Wave G2 (완주 루프)</H2>
+      <Ul>
+        <li>체크리스트: 이동 확인 실데이터만 · 완료 후「후기 수정」→ 원본</li>
+        <li>CTA: 「후기 수정」ink solid · 초안 링크 soft · 시트「후기 저장」</li>
+        <li>저장 카드: footer 바로 따라가는 중과 구분</li>
+      </Ul>
+
       <H2>v0.3.11-mvp — Wave G1 (발견→따라가기)</H2>
       <Ul>
         <li>지도 필터: 누구와·난이도 등 전 패싯 재조회 (MAP-01)</li>

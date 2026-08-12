@@ -90,13 +90,14 @@ export default function LibraryTabs({
 }
 
 function FollowedCourseCard({ course }: { course: FollowedCourse }) {
+  // Follow-loop language (LIB-02) — avoid diary「기록 중」
   const statusLabel =
     course.followStatus === "done"
       ? "다녀옴"
       : course.followStatus === "tuning"
         ? "다듬는 중"
-        : "기록 중";
-  // done = ink soft (not brand/success red); tuning = brand wash; recording = muted
+        : "실행 준비";
+  // done = ink soft (not brand/success red); tuning = brand wash; preparing = muted
   const statusClass =
     course.followStatus === "done"
       ? "bg-muted text-ink ring-1 ring-line"
@@ -129,7 +130,7 @@ function FollowedCourseCard({ course }: { course: FollowedCourse }) {
   );
 }
 
-/** Persistent next-step checklist for P2 — steps reflect real draft data (Wave E4). */
+/** Persistent next-step checklist for P2 — steps reflect real draft data (Wave G2). */
 function FollowProgressBar({
   course,
   editHref,
@@ -142,12 +143,16 @@ function FollowProgressBar({
   hasOriginal: boolean;
 }) {
   const status = course.followStatus;
-  const spotsOk = course.spotCount >= 1 && course.title.trim().length > 0;
-  const moveOk =
-    status === "done" ||
-    status === "ready" ||
-    !!(course.transitLabel || (course.totalDurationMin && course.totalDurationMin > 0));
   const doneOk = status === "done";
+  // LIB-01: do not treat status===ready as move complete — require real transit data.
+  // After 다녀왔어요, keep the row visually complete even if draft legs are thin.
+  const spotsDataOk = course.spotCount >= 1 && course.title.trim().length > 0;
+  const moveDataOk = !!(
+    course.transitLabel ||
+    (course.totalDurationMin && course.totalDurationMin > 0)
+  );
+  const spotsOk = doneOk || spotsDataOk;
+  const moveOk = doneOk || moveDataOk;
 
   const steps = [
     { label: "스팟 확인", done: spotsOk },
@@ -155,25 +160,28 @@ function FollowProgressBar({
     { label: "다녀왔어요", done: doneOk },
   ];
 
-  const nextHref =
-    status === "done"
+  // LIB-03: after completion, next = tip edit on original (not dead-end draft only).
+  const nextHref = doneOk
+    ? hasOriginal
+      ? originalHref
+      : editHref
+    : !spotsDataOk || !moveDataOk
       ? editHref
-      : !spotsOk || !moveOk
-        ? editHref
-        : hasOriginal
-          ? originalHref
-          : editHref;
+      : hasOriginal
+        ? originalHref
+        : editHref;
 
-  const nextLabel =
-    status === "done"
-      ? "내 초안 보기"
-      : !spotsOk
-        ? "스팟 다듬기"
-        : !moveOk
-          ? "이동 확인하기"
-          : hasOriginal
-            ? "원본에서 후기 남기기"
-            : "초안 열기";
+  const nextLabel = doneOk
+    ? hasOriginal
+      ? "후기 수정"
+      : "내 초안 보기"
+    : !spotsDataOk
+      ? "스팟 다듬기"
+      : !moveDataOk
+        ? "이동 확인하기"
+        : hasOriginal
+          ? "원본에서 후기 남기기"
+          : "초안 열기";
 
   const nextIdx = steps.findIndex((s) => !s.done);
 
@@ -198,12 +206,22 @@ function FollowProgressBar({
           </li>
         ))}
       </ol>
-      <Link
-        href={nextHref}
-        className="mt-1.5 inline-flex text-[12px] font-bold text-sunset-ink underline-offset-2 hover:underline"
-      >
-        {nextLabel}
-      </Link>
+      <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+        <Link
+          href={nextHref}
+          className="inline-flex text-[12px] font-bold text-sunset-ink underline-offset-2 hover:underline"
+        >
+          {nextLabel}
+        </Link>
+        {doneOk && hasOriginal && (
+          <Link
+            href={editHref}
+            className="inline-flex text-[12px] font-medium text-ink-faint underline-offset-2 hover:underline"
+          >
+            내 초안 보기
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
@@ -272,9 +290,9 @@ function EmptyFollowed() {
     <div className="flex flex-col items-center px-8 py-16 text-center">
       <p className="text-[14px] font-semibold text-ink">아직 따라가는 코스가 없어요</p>
       <p className="mt-1 text-[13px] leading-relaxed text-ink-faint">
-        둘러보기에서 마음에 드는 코스를
+        둘러보기에서 따라갈 코스를 가져오면
         <br />
-        따라가면 여기 모여요.
+        초안이 여기 모여요.
       </p>
       <Link
         href="/"
