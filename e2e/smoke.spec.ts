@@ -93,7 +93,7 @@ test("코스 통계: 전이·지역이 렌더된다", async ({ page }) => {
   // Empty makers only see the empty CTA; with routes, transfer + region sections show.
   const empty = page.getByText("아직 기록한 코스가 없어요.");
   if (await empty.isVisible().catch(() => false)) {
-    await expect(page.getByRole("link", { name: /코스/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: "새 코스 만들기" })).toBeVisible();
     return;
   }
   await expect(page.getByRole("heading", { name: "전이 · 영향력" })).toBeVisible();
