@@ -219,6 +219,31 @@ export default function RouteView({
       )
     ) : null;
 
+  // P2-CARD: own followed draft — surface path to original「다녀왔어요」.
+  const followDraftBanner =
+    isOwner && copyContext?.original ? (
+      <div className="mx-4 mt-4 rounded-2xl border border-sunset/25 bg-sunset-wash/50 px-4 py-3">
+        <p className="text-[13px] font-semibold text-ink">따라가는 초안이에요</p>
+        <p className="mt-0.5 text-[12px] leading-relaxed text-ink-soft">
+          다녀온 후기는 원본에 남기면 전이 프루프가 쌓여요.
+        </p>
+        <div className="mt-2.5 flex flex-wrap gap-2">
+          <Link
+            href={`/routes/${copyContext.original.id}`}
+            className="rounded-full bg-sunset px-3.5 py-1.5 text-[12px] font-bold text-white"
+          >
+            원본에서 다녀왔어요
+          </Link>
+          <Link
+            href={`/routes/${route.id}/edit`}
+            className="rounded-full border border-line bg-card px-3.5 py-1.5 text-[12px] font-semibold text-ink-soft"
+          >
+            초안 다듬기
+          </Link>
+        </div>
+      </div>
+    ) : null;
+
   // COURSE-UX §2.3: transfer proof → follow CTA → demoted like/save.
   const social = !isOwner ? (
     <div className="space-y-3 px-4 pt-4">
@@ -371,6 +396,7 @@ export default function RouteView({
           />
         </div>
 
+        {followDraftBanner}
         {social}
         {socialProofSlot}
         {authorCard}
@@ -471,6 +497,7 @@ export default function RouteView({
           />
         </div>
 
+        {followDraftBanner}
         {social}
         {courseSummary}
 
@@ -535,6 +562,7 @@ export default function RouteView({
         <RouteHeroMeta meta={heroMeta} className="absolute inset-x-0 bottom-0 z-[3] p-4 text-white" />
       </div>
 
+      {followDraftBanner}
       {social}
       {courseSummary}
 

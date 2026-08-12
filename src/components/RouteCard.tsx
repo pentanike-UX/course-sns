@@ -17,15 +17,18 @@ export default function RouteCard({
   route,
   showOwner = false,
   priority = false,
+  href: hrefProp,
 }: {
   route: RouteSummary;
   /** show the author (avatar + name) under the title — used in the explore feed */
   showOwner?: boolean;
   /** prioritize the cover image (use for the first, above-the-fold card → LCP) */
   priority?: boolean;
+  /** override detail target (e.g. followed draft → original for 다녀왔어요) */
+  href?: string;
 }) {
   const router = useRouter();
-  const href = `/routes/${route.id}`;
+  const href = hrefProp ?? `/routes/${route.id}`;
   const prefetchedRef = useRef(false);
   const [entryMorphActive, setEntryMorphActive] = useState(false);
   const morphInstanceId = useId().replace(/[^a-zA-Z0-9_-]/g, "");

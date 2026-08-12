@@ -13,6 +13,15 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.24-mvp — 시나리오 단계별 심층 검수</H2>
+      <Ul>
+        <li>P2: 따라가는 중→원본 · 초안 배너 · 가져왔어요→보관함</li>
+        <li>P3: 플래너 Hint · 통계 0명 · P4 언팔/맞팔 · 정렬 시나리오 동기</li>
+        <li>
+          정본 <Code>docs/PERSONA-SCENARIO-STEP-AUDIT-2026-08.md</Code>
+        </li>
+      </Ul>
+
       <H2>v0.3.23-mvp — 전체화면 재검수</H2>
       <Ul>
         <li>작성 OS back dirty · 설정 로그인 후 드로어 · DET 후기→작성자</li>

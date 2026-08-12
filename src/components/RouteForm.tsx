@@ -1267,6 +1267,14 @@ export default function RouteForm({
         <span className="text-ink-faint">{showMoreMeta ? "−" : "+"}</span>
       </button>
       {showMoreMeta && secondaryMetaSelectors}
+      <FollowReadyHint
+        region={region}
+        recommendedFor={recommendedFor}
+        difficulty={difficulty}
+        spotCount={spots.length}
+        hasCover={!!coverPhotoKey}
+        visibility={visibility}
+      />
       <div className="mb-1 mt-2 text-[12px] font-medium text-ink-soft">공개 범위</div>
       {visibilityBox}
       {!visibilityChosen && (
@@ -3424,6 +3432,12 @@ function FollowNextStepsCard({
         <li>2. 이동·시간 맞추기</li>
         <li>3. {plan ? "다녀오면 ‘다녀왔어요’로 후기" : "사진·팁 채우고 공개"}</li>
       </ol>
+      <Link
+        href="/library"
+        className="mt-3 inline-flex rounded-full bg-sunset px-4 py-2 text-[12px] font-bold text-white"
+      >
+        보관함 · 따라가는 중
+      </Link>
     </div>
   );
 }

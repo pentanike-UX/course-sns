@@ -164,9 +164,8 @@ export default function ScenarioPainpointsPage() {
 
       <P>
         상세 표·시나리오 단계 매핑은 저장소{" "}
-        <Code>docs/PERSONA-SCENARIO-PAINPOINTS.md</Code>. 이전 컬러 중심 분석은{" "}
-        <Code>docs/UX-PERSONA-PAINPOINTS.md</Code>. 전체화면 GUI 검수(v0.3.23)는{" "}
-        <Code>docs/UX-UI-GUI-AUDIT-FULL-SCREEN-2026-08.md</Code>.
+        <Code>docs/PERSONA-SCENARIO-PAINPOINTS.md</Code>. 단계별 심층 검수(v0.3.24)는{" "}
+        <Code>docs/PERSONA-SCENARIO-STEP-AUDIT-2026-08.md</Code>.
       </P>
     </>
   );

@@ -538,7 +538,7 @@ export default function FeedExplorer({
               <div className="min-w-0 pl-0.5">
                 <BrandWordmark markSize={38} />
                 <p className="mt-0.5 truncate text-[11px] font-medium leading-none text-ink-faint">
-                  좋은 코스, 따라가 보세요
+                  좋은 코스 따라가 보세요
                 </p>
               </div>
             )}

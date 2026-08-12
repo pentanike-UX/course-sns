@@ -821,6 +821,8 @@ export type PersonSummary = {
   avatarUrl?: string;
   /** whether the current viewer follows this person */
   isFollowing: boolean;
+  /** whether this person follows the viewer back (맞팔 라벨) */
+  followsMe?: boolean;
   /** this row is the current viewer */
   isMe: boolean;
 };
@@ -978,7 +980,7 @@ async function hydratePeople(
   ids: string[],
 ): Promise<PersonSummary[]> {
   const user = await getAuthUser();
-  const [{ data: profs }, mine] = await Promise.all([
+  const [{ data: profs }, mine, theirs] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, handle, display_name, avatar_url")
@@ -990,9 +992,17 @@ async function hydratePeople(
           .eq("follower_id", user.id)
           .in("followee_id", ids)
       : Promise.resolve({ data: [] as { followee_id: string }[] }),
+    user
+      ? supabase
+          .from("follows")
+          .select("follower_id")
+          .eq("followee_id", user.id)
+          .in("follower_id", ids)
+      : Promise.resolve({ data: [] as { follower_id: string }[] }),
   ]);
 
   const followingIds = new Set((mine.data ?? []).map((r) => r.followee_id));
+  const followsMeIds = new Set((theirs.data ?? []).map((r) => r.follower_id));
   const byId = new Map((profs ?? []).map((p) => [p.id, p]));
 
   return ids
@@ -1004,6 +1014,7 @@ async function hydratePeople(
       displayName: p.display_name,
       avatarUrl: p.avatar_url ?? undefined,
       isFollowing: followingIds.has(p.id),
+      followsMe: followsMeIds.has(p.id),
       isMe: user?.id === p.id,
     }));
 }

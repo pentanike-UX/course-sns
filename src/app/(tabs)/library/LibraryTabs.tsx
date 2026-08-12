@@ -122,11 +122,16 @@ function FollowedCourseCard({ course }: { course: FollowedCourse }) {
   const originalHref = course.originalRouteId
     ? `/routes/${course.originalRouteId}`
     : editHref;
+  // P2-CARD: incomplete + original → open original (다녀왔어요 CTA). ProgressBar keeps edit.
+  const cardHref =
+    course.followStatus !== "done" && course.originalRouteId
+      ? originalHref
+      : `/routes/${course.id}`;
 
   return (
     <div className="space-y-2">
       <div className="relative">
-        <RouteCard route={course} />
+        <RouteCard route={course} href={cardHref} />
         <span
           className={`absolute left-2.5 top-2.5 z-10 rounded-full px-2.5 py-1 text-[11px] font-bold shadow-sm ${statusClass}`}
         >

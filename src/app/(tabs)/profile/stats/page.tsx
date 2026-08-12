@@ -76,18 +76,21 @@ export default async function TravelStatsPage() {
         <SummaryStat label="지역" value={stats.regions.length} />
       </section>
 
-      {/* STAT-02: transfer influence directly under summary */}
-      {reactionTotal > 0 && (
-        <Section title="전이 · 영향력" subtitle="남이 내 코스를 따라가고 다녀온 기록">
-          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line">
-            <Tile label="따라간 사람" value={`${stats.copiesReceived}명`} />
-            <Tile label="다녀온 사람" value={`${stats.completionsReceived}명`} />
-            {stats.likeTotal > 0 && (
-              <Tile label="받은 좋아요" value={`${stats.likeTotal}`} />
-            )}
-          </div>
-        </Section>
-      )}
+      {/* STAT-02: transfer influence always visible (0명 included for maker motivation) */}
+      <Section title="전이 · 영향력" subtitle="남이 내 코스를 따라가고 다녀온 기록">
+        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line">
+          <Tile label="따라간 사람" value={`${stats.copiesReceived}명`} />
+          <Tile label="다녀온 사람" value={`${stats.completionsReceived}명`} />
+          {stats.likeTotal > 0 && (
+            <Tile label="받은 좋아요" value={`${stats.likeTotal}`} />
+          )}
+        </div>
+        {reactionTotal === 0 && (
+          <p className="mt-2 text-center text-[12px] text-ink-faint">
+            공개 코스를 올리면 따라감·다녀옴이 여기 쌓여요
+          </p>
+        )}
+      </Section>
 
       {/* cumulative milestones */}
       <Section title="누적 기록">
@@ -190,7 +193,7 @@ export default async function TravelStatsPage() {
       )}
 
       {/* regions */}
-      <Section title="다녀온 지역">
+      <Section title="코스 지역">
         <div className="flex flex-wrap gap-2">
           {stats.regions.map((r) => (
             <span
