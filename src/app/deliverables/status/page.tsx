@@ -27,7 +27,7 @@ export default function StatusPage() {
           ["공개 코스 피드", "✅ 완료", "전이 정렬·필터"],
           ["지도 탐색", "✅ 완료", "스펙+전이 peek"],
           ["게스트 열람", "✅ 완료", "AuthGate 쓰기"],
-          ["팔로잉 홈 레일", "✅ 완료", "데이터 있을 때만"],
+          ["구독 홈 레일", "✅ 완료", "로그인 시 empty도 슬롯 노출"],
         ]}
       />
       <H3>따라가기 루프</H3>
@@ -84,7 +84,7 @@ export default function StatusPage() {
           DB/URL <code className="rounded bg-muted px-1 text-[12px]">routes→courses</code> rename
         </li>
         <li>추천 알고리즘·푸시 네이티브</li>
-        <li>팔로잉 2단 IA 완전 단순화 (E6 후속)</li>
+        <li>✅ 구독 코스 IA (FOL-01/02 · v0.3.14)</li>
       </Ul>
 
       <Warn>

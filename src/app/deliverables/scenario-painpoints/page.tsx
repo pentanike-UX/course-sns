@@ -102,36 +102,24 @@ export default function ScenarioPainpointsPage() {
       <H2>P2 — 따라가이</H2>
       <Ul>
         <li>
-          <strong className="font-semibold text-ink">LIB-01 (P1 · 이해도저하)</strong> —{" "}
-          <Code>FollowProgressBar</Code>가 status로「이동 확인」을 가짜 완료 처리
+          <strong className="font-semibold text-ink">LIB-01 / CTA-01 / LIB-04 (✅ v0.3.12)</strong>{" "}
+          — 체크리스트 실데이터 · 후기 톤 · 저장 카드 분리
         </li>
         <li>
-          <strong className="font-semibold text-ink">CTA-01 (P1 · 이해도저하)</strong> — 「후기
-          수정」과「내 초안 다시 보기」톤이 같아 다음 행동 불명
-        </li>
-        <li>
-          <strong className="font-semibold text-ink">LIB-04 (P1 · 이해도저하)</strong> — 저장
-          카드가 따라가는 중과 유사 · 하트 잔상
-        </li>
-        <li>
-          <strong className="font-semibold text-ink">LIB-02 / LIB-03 (P2)</strong> — 뱃지「기록
-          중」· 완료 후 next가 초안만
+          <strong className="font-semibold text-ink">LIB-02 / LIB-03 (✅ v0.3.12)</strong> — 뱃지
+          「실행 준비」· 완료 후「후기 수정」→ 원본
         </li>
       </Ul>
 
       <H2>P3 — 코스 메이커</H2>
       <Ul>
         <li>
-          <strong className="font-semibold text-ink">PUB-01 (P1 · 사용실패)</strong> — edit마다
-          공개 게이트 재강제 (<Code>visibilityChosen</Code>)
+          <strong className="font-semibold text-ink">PUB-01 · STAT-01 (✅ v0.3.13)</strong> —
+          edit visibility seed · 드로어 팔로워·나
         </li>
         <li>
-          <strong className="font-semibold text-ink">STAT-01 (P1 · 이해도저하)</strong> —{" "}
-          <Code>ProfileDrawerBody</Code> 통계에「저장」· fallback「여행자」
-        </li>
-        <li>
-          <strong className="font-semibold text-ink">PUB-02 / PUB-03 / STAT-02 (P2)</strong> —
-          성공 토스트 모호 · 준비도 soft만 · 전이 통계 하단
+          <strong className="font-semibold text-ink">PUB-02 / PUB-03 / STAT-02 (✅ v0.3.13)</strong>{" "}
+          — 토스트 분기 · 준비도 경고 · 전이 통계 상단
         </li>
       </Ul>
 
@@ -160,6 +148,7 @@ export default function ScenarioPainpointsPage() {
           ["G3 메이커", "✅ PUB-01 · STAT-01 · PUB-02 · PUB-03 · STAT-02 (v0.3.13)", "게시·영향력 루프"],
           ["G4 구독", "✅ FOL-01 · FOL-02 · FOL-03 (v0.3.14)", "팔로우→따라가기"],
           ["G5 폴리시", "✅ HOME · CARD-01 · DET-02 · 댓글 AuthGate (v0.3.16)", "첫인상·P2"],
+          ["G6 정합", "✅ MAP-01 residual · 게스트 map · IA 카피 (v0.3.17)", "잔여 정합"],
         ]}
       />
 

@@ -4,19 +4,24 @@ import { getFeedMapPoints } from "@/lib/data";
 import { parseFilters } from "@/lib/feed-filters";
 
 /**
- * GET /api/map-points?south&west&north&east&q&view&theme&mood&region — viewport
- * fetch for the explore map. Auth-gated like the rest of the feed.
+ * GET /api/map-points?south&west&north&east&q&view&…filters
+ * Public explore map is guest-readable (same as `/`).
+ * `view=following` still requires auth.
  */
 export async function GET(request: NextRequest) {
-  const user = await getAuthUser();
-  if (!user) {
-    return Response.json({ error: "unauthorized" }, { status: 401 });
-  }
-
   const sp = request.nextUrl.searchParams;
   const q = sp.get("q")?.trim().slice(0, 60) ?? "";
   const view = sp.get("view") === "following" ? ("following" as const) : ("all" as const);
+
+  if (view === "following") {
+    const user = await getAuthUser();
+    if (!user) {
+      return Response.json({ error: "unauthorized" }, { status: 401 });
+    }
+  }
+
   const filters = parseFilters({
+    kind: sp.get("kind") ?? undefined,
     purpose: sp.get("purpose") ?? undefined,
     theme: sp.get("theme") ?? undefined,
     mood: sp.get("mood") ?? undefined,

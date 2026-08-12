@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.3.16-mvp)
+### 현재 화면·내비 (v0.3.17-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -289,7 +289,7 @@
       - `getPublicFeed({sort, q})` — 최신순/인기순(like_count) + 지역·제목 ilike 검색(or 필터, 입력 sanitize)
       - `feed/FeedControls`(client): 디바운스 검색 + 정렬 칩, URL 쿼리 동기화(`?q=&sort=`)
 - [x] **알림** (`0007`): like/comment/follow 트리거 → notifications, 홈 종 뱃지 + `/notifications`(자동 읽음)
-- [x] **팔로잉 피드**: ~~둘러보기 `전체/팔로잉` 세그먼트~~ → **보관함>팔로잉**(회원 관리·검색, v1.96). `getFollowingFeed`는 data.ts에 dead export로 잔존
+- [x] **팔로잉 피드**: ~~둘러보기 `전체/팔로잉` 세그먼트~~ → **보관함>구독 코스**(스트림 + 팔로우 관리). `getFollowingFeed`는 `getFollowingCourseStream`이 사용.
 - [x] **루트 공유**: `generateMetadata`(OG/Twitter + 커버 이미지) + 공개 루트 ShareButton(native share/clipboard)
 - [x] **스팟 드래그 정렬**: 작성/수정 폼 @dnd-kit 드래그 핸들
 - [x] **계정 삭제**: `/profile/account` 위험구역 → service-role 스토리지 정리 + auth 유저 삭제(전체 cascade). E2E 검증(임시 유저)
@@ -468,7 +468,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.3.16-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.3.17-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: **`https://course-sns.vercel.app`** + `http://localhost:3000` (+ 필요 시 프리뷰). ⚠️ 도메인 미등록 시 **핀만 보이고 타일 공백**.
@@ -497,6 +497,14 @@ pnpm test:e2e     # Playwright 스모크
 ## 7. 작업 로그 (이어서 누적)
 
 > **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
+
+### Wave G6 — 잔여 정합 (Cursor, 2026-08-12 · v0.3.17-mvp)
+
+- **버전**: **`v0.3.17-mvp`** (PATCH).
+- **MAP-01 residual**: `FeedMap` viewport `lastFetchKey`에 kinds/purposes/difficulties 포함.
+- **게스트 map**: `/api/map-points` 공개 refetch 허용 (`view=following`만 auth).
+- **IA 카피**: AuthGate/BottomNav/deliverables「구독 코스」동기화 · 구독 스트림 `showOwner`.
+- **cleanup**: `getLikedRoutes`·liked CollectionCard 경로 제거 · 페인포인트 문서 G1–G5 ✅ 표기.
 
 ### Wave G5 — 홈·카드·상세 P2 폴리시 (Cursor, 2026-08-12 · v0.3.16-mvp)
 

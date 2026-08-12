@@ -709,11 +709,6 @@ export async function getBookmarkedRoutes(): Promise<RouteSummary[]> {
   return collectedRoutes("bookmarks");
 }
 
-/** Routes the current user has liked, most-recent first. */
-export async function getLikedRoutes(): Promise<RouteSummary[]> {
-  return collectedRoutes("likes");
-}
-
 export type FollowedCourseStatus = "tuning" | "ready" | "done";
 
 export type FollowedCourse = RouteSummary & {
@@ -784,7 +779,7 @@ export async function getMyFollowedCourses(): Promise<FollowedCourse[]> {
   });
 }
 
-/** Public courses from people I follow (보관함 팔로잉 코스 스트림). */
+/** Public courses from people I follow (보관함「구독 코스」스트림). */
 export async function getFollowingCourseStream(): Promise<RouteSummary[]> {
   return getFollowingFeed({ sort: "recent" });
 }

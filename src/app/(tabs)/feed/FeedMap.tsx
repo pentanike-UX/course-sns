@@ -396,9 +396,19 @@ export default function FeedMap({
               east: b.east + mLng,
             };
             const f = filtersRef.current;
+            // Must match filterSig facets — purpose/difficulty-only changes used to no-op (MAP-01).
             const key = [expanded.south, expanded.west, expanded.north, expanded.east]
               .map((v) => v.toFixed(2))
-              .concat(`${f.themes}|${f.moods}|${f.regions}`)
+              .concat(
+                [
+                  f.kinds.join(","),
+                  f.purposes.join(","),
+                  f.themes.join(","),
+                  f.moods.join(","),
+                  f.difficulties.join(","),
+                  f.regions.join(","),
+                ].join("|"),
+              )
               .join(",");
             if (key === lastFetchKey) return;
             lastFetchKey = key;

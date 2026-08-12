@@ -70,7 +70,7 @@ export default function LibraryTabs({
       <ul className="space-y-4 px-4 pb-8 pt-4">
         {saved.map((r) => (
           <li key={r.id}>
-            <CollectionCard route={r} tab="saved" />
+            <CollectionCard route={r} />
           </li>
         ))}
       </ul>
@@ -296,7 +296,7 @@ function FollowingCoursesPanel({
             <ul className="mt-3 space-y-4 px-4">
               {courses.map((r) => (
                 <li key={r.id}>
-                  <RouteCard route={r} />
+                  <RouteCard route={r} showOwner />
                 </li>
               ))}
             </ul>

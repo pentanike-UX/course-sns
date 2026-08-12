@@ -13,6 +13,12 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.17-mvp — Wave G6 (잔여 정합)</H2>
+      <Ul>
+        <li>지도 viewport fetch 키에 전 필터 · 게스트 <Code>/api/map-points</Code> 허용</li>
+        <li>「구독 코스」카피·구독 스트림 작성자 표시 · liked 보관함 경로 제거</li>
+      </Ul>
+
       <H2>v0.3.16-mvp — Wave G5 (P2 폴리시)</H2>
       <Ul>
         <li>게스트 홈 BrandWordmark · 정렬 라벨 · 레이아웃 오버플로 · 테마 접기</li>

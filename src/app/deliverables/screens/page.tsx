@@ -14,7 +14,7 @@ export default function ScreensPage() {
         rows={[
           ["/", "둘러보기(홈)", "공개", "랜딩. ?mode=map 지도, 필터 쿼리"],
           ["/?mode=map", "지도", "공개", "목록↔지도 슬라이드"],
-          ["/library", "보관함", "필요", "따라가는 중 · 저장 · 팔로잉"],
+          ["/library", "보관함", "필요", "따라가는 중 · 저장 · 구독 코스"],
           ["FAB → sheet", "새 코스", "필요", "기록/계획 → /routes/new"],
         ]}
       />
