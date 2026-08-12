@@ -21,7 +21,7 @@ type GateOptions = {
 type AuthGateValue = {
   isAuthed: boolean;
   /**
-   * Guests browse freely; meaningful actions (일기 등록·계획·따라가기, 좋아요·
+   * Guests browse freely; meaningful actions (코스 기록·계획·따라가기, 좋아요·
    * 저장·팔로우·댓글) call this first. Returns true when the user is signed in
    * (proceed), or false after opening the login sheet (stop).
    */
