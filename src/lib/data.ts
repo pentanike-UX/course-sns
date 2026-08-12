@@ -1071,17 +1071,25 @@ export async function getMyDefaultVisibility(): Promise<Visibility> {
   return (data?.default_visibility as Visibility) ?? "public";
 }
 
-/** Count of the current user's saved + liked routes (cheap head queries). */
-export async function getMyCollectionCounts(): Promise<{ saved: number; liked: number }> {
+/** Count of the current user's saved + liked routes + follower count (cheap head queries). */
+export async function getMyCollectionCounts(): Promise<{
+  saved: number;
+  liked: number;
+  followers: number;
+}> {
   const supabase = await getServerClient();
   const user = await getAuthUser();
-  if (!user) return { saved: 0, liked: 0 };
+  if (!user) return { saved: 0, liked: 0, followers: 0 };
 
-  const [bm, lk] = await Promise.all([
+  const [bm, lk, fol] = await Promise.all([
     supabase.from("bookmarks").select("*", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("likes").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+    supabase
+      .from("follows")
+      .select("*", { count: "exact", head: true })
+      .eq("followee_id", user.id),
   ]);
-  return { saved: bm.count ?? 0, liked: lk.count ?? 0 };
+  return { saved: bm.count ?? 0, liked: lk.count ?? 0, followers: fol.count ?? 0 };
 }
 
 async function collectedRoutes(

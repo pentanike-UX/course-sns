@@ -48,8 +48,8 @@ export default function ScenarioPainpointsPage() {
           ["MAP-02", "G/P1", "✅ 시트 따라가기 CTA (v0.3.11)", "fixed", "사용실패"],
           ["DET-01", "G/P1", "✅ 콜드 전이 슬롯 (v0.3.11)", "fixed", "이해도저하"],
           ["LIB-01", "P2", "✅ 이동 확인=실데이터 (v0.3.12)", "fixed", "이해도저하"],
-          ["PUB-01", "P3", "수정 저장마다 공개/비공개 재선택", "P1", "사용실패"],
-          ["STAT-01", "P3", "드로어 통계에「저장」이 영향력 자리", "P1", "이해도저하"],
+          ["PUB-01", "P3", "✅ edit visibility seed (v0.3.13)", "fixed", "사용실패"],
+          ["STAT-01", "P3", "✅ 팔로워·나 (v0.3.13)", "fixed", "이해도저하"],
           ["FOL-01", "P4", "따라가는 중 vs 팔로잉 용어·IA 충돌", "P1", "이해도저하"],
           ["FOL-02", "P4", "홈 레일「전체 보기」→ tab=people", "P1", "사용실패"],
         ]}
@@ -157,7 +157,7 @@ export default function ScenarioPainpointsPage() {
         rows={[
           ["G1 발견", "✅ MAP-01 · MAP-02 · MAP-03 · DET-01 (v0.3.11)", "발견→따라가기 막힘 해소"],
           ["G2 완주", "✅ LIB-01 · LIB-03 · CTA-01 · LIB-04 (v0.3.12)", "Copy→Completion"],
-          ["G3 메이커", "PUB-01 · STAT-01 · PUB-02", "게시·영향력 루프"],
+          ["G3 메이커", "✅ PUB-01 · STAT-01 · PUB-02 · PUB-03 · STAT-02 (v0.3.13)", "게시·영향력 루프"],
           ["G4 구독", "FOL-01 · FOL-02 · FOL-03", "팔로우→따라가기"],
         ]}
       />

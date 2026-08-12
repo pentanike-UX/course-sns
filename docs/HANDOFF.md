@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.3.12-mvp)
+### 현재 화면·내비 (v0.3.13-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -468,7 +468,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.3.12-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.3.13-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: **`https://course-sns.vercel.app`** + `http://localhost:3000` (+ 필요 시 프리뷰). ⚠️ 도메인 미등록 시 **핀만 보이고 타일 공백**.
@@ -497,6 +497,15 @@ pnpm test:e2e     # Playwright 스모크
 ## 7. 작업 로그 (이어서 누적)
 
 > **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
+
+### Wave G3 — 메이커 게시·영향력 루프 (Cursor, 2026-08-12 · v0.3.13-mvp)
+
+- **버전**: **`v0.3.13-mvp`** (PATCH).
+- **PUB-01**: edit 시 `visibilityChosen` seed — 공개/비공개 재탭 강제 제거.
+- **PUB-02**: `SaveNotice` 공개/비공개 분기 + 책장·통계 링크.
+- **PUB-03**: 공개+미충족 시 FollowReadyHint 경고 강화.
+- **STAT-01**: 드로어 통계「팔로워」· fallback「나」· 저장은 설정 행.
+- **STAT-02**: `/profile/stats` 전이·영향력 섹션을 요약 바로 아래로.
 
 ### Wave G2 — 완주 루프 마찰 해소 (Cursor, 2026-08-12 · v0.3.12-mvp)
 

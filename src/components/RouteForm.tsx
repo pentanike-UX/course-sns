@@ -254,9 +254,9 @@ export default function RouteForm({
   const [visibility, setVisibility] = useState<Visibility>(
     initial?.visibility ?? defaultVisibility ?? "private",
   );
-  // 완료(→상세) requires an explicit tap on 공개/비공개 — never infer from default
-  // or from merely scrolling to the share section.
-  const [visibilityChosen, setVisibilityChosen] = useState(false);
+  // PUB-01: create must explicitly pick 공개/비공개. Edit seeds from existing
+  // visibility so finish isn't blocked until the user re-taps the same choice.
+  const [visibilityChosen, setVisibilityChosen] = useState(mode === "edit");
   const [showMoreMeta, setShowMoreMeta] = useState(false);
   const [openInfoTick, setOpenInfoTick] = useState(0);
   const [confirmVisibility, setConfirmVisibility] = useState(false);
@@ -1454,6 +1454,7 @@ export default function RouteForm({
               difficulty={difficulty}
               spotCount={spots.length}
               hasCover={!!coverPhotoKey}
+              visibility={visibility}
             />
             {visibilityBox}
             {!visibilityChosen && (
@@ -1583,6 +1584,7 @@ export default function RouteForm({
               difficulty={difficulty}
               spotCount={spots.length}
               hasCover={!!coverPhotoKey || allPhotos.length > 0}
+              visibility={visibility}
             />
             {visibilityBox}
             {!visibilityChosen && (
@@ -3248,19 +3250,21 @@ function StepHeading({ title, desc }: { title: string; desc: string }) {
   );
 }
 
-/** Soft checklist before publish — does not block save (Wave D / F4). */
+/** Soft checklist before publish — does not hard-block save (Wave D / F4 / G3). */
 function FollowReadyHint({
   region,
   recommendedFor,
   difficulty,
   spotCount,
   hasCover,
+  visibility,
 }: {
   region: string;
   recommendedFor: string;
   difficulty: string;
   spotCount: number;
   hasCover?: boolean;
+  visibility?: Visibility;
 }) {
   const checks = [
     { ok: !!region.trim(), label: "지역" },
@@ -3277,8 +3281,15 @@ function FollowReadyHint({
       </p>
     );
   }
+  const publicWarn = visibility === "public";
   return (
-    <div className="mb-3 rounded-xl bg-muted px-3 py-2.5 ring-1 ring-line/60">
+    <div
+      className={`mb-3 rounded-xl px-3 py-2.5 ring-1 ${
+        publicWarn
+          ? "bg-sunset-wash/50 ring-sunset/25"
+          : "bg-muted ring-line/60"
+      }`}
+    >
       <p className="text-[12px] font-bold text-ink">따라가기 준비도</p>
       <ul className="mt-1.5 flex flex-wrap gap-x-2 gap-y-1 text-[11px] font-semibold">
         {checks.map((c) => (
@@ -3287,8 +3298,14 @@ function FollowReadyHint({
           </li>
         ))}
       </ul>
-      <p className="mt-1.5 text-[11px] leading-relaxed text-ink-soft">
-        비워 둔 항목·대표 사진을 채우면 남이 따라가기 쉬워져요. 필수는 아니에요.
+      <p
+        className={`mt-1.5 text-[11px] leading-relaxed ${
+          publicWarn ? "font-semibold text-sunset-ink" : "text-ink-soft"
+        }`}
+      >
+        {publicWarn
+          ? `공개하면 남이 따라가요. 아직 ${missing.map((m) => m.label).join("·")}이(가) 비어 있어요 — 채우면 따라가기 쉬워집니다.`
+          : "비워 둔 항목·대표 사진을 채우면 남이 따라가기 쉬워져요. 필수는 아니에요."}
       </p>
     </div>
   );

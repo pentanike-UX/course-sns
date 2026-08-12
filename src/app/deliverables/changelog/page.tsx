@@ -13,6 +13,13 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.13-mvp — Wave G3 (메이커)</H2>
+      <Ul>
+        <li>수정 시 공개 게이트 재선택 제거 · 공개 준비도 경고 강화</li>
+        <li>저장 토스트 공개/비공개 분기 + 책장·통계 링크</li>
+        <li>드로어 통계「팔로워」· 통계 페이지 전이 섹션 상단</li>
+      </Ul>
+
       <H2>v0.3.12-mvp — Wave G2 (완주 루프)</H2>
       <Ul>
         <li>체크리스트: 이동 확인 실데이터만 · 완료 후「후기 수정」→ 원본</li>

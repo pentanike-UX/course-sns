@@ -72,7 +72,11 @@ export default async function RouteDetailPage({
 
   return (
     <MobileFrame shell immersive>
-      <SaveNotice kind={noticeKind} />
+      <SaveNotice
+        kind={noticeKind}
+        visibility={route.visibility}
+        handle={isOwner ? me?.handle : undefined}
+      />
       <main className="no-scrollbar min-h-0 flex-1 overflow-y-auto pb-10">
         <RouteView
           route={route}

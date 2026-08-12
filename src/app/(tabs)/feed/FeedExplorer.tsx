@@ -197,7 +197,7 @@ export default function FeedExplorer({
 
   const diaryContent = (
     <DiaryDrawerContent
-      displayName={profile?.displayName ?? "여행자"}
+      displayName={profile?.displayName?.trim() || "나"}
       routes={myRoutes}
       initialTab={diaryTab}
       overlayUrl
