@@ -10,8 +10,8 @@ export default function StatusPage() {
 
       <H2>한 줄 요약</H2>
       <P>
-        코스 MVP의 북스타 루프(발견 → 따라가기 → 다녀왔어요 → 영향력)와 시나리오 Wave G1–G6는
-        코드 반영·배포된 상태입니다. 남은 과제는{" "}
+        코스 MVP의 북스타 루프와 시나리오 Wave G1–G6·단계별 심층 검수(v0.3.24–25)까지 코드
+        반영된 상태입니다. 남은 과제는{" "}
         <strong className="font-semibold text-ink">운영 설정·실기기 검증</strong>입니다.
       </P>
 
@@ -47,8 +47,8 @@ export default function StatusPage() {
         headers={["기능", "상태", "메모"]}
         rows={[
           ["기록·계획 작성", "✅ 완료", "공개 게이트"],
-          ["따라가기 준비도", "✅ 완료", "soft hint"],
-          ["전이 통계", "✅ 완료", "코스 통계"],
+          ["따라가기 준비도", "✅ 완료", "soft hint + 공개 soft confirm"],
+          ["전이 통계", "✅ 완료", "0명 노출 · 코스 지역"],
           ["장소 검색", "⚠️ 부분", "키 미설정 시 UI 숨김"],
         ]}
       />
@@ -110,7 +110,11 @@ export default function StatusPage() {
       <Note>
         시나리오 페인포인트:{" "}
         <code className="rounded bg-muted px-1 text-[12px]">/deliverables/scenario-painpoints</code>
-        . 상세 로그는{" "}
+        . 단계별 심층 검수:{" "}
+        <code className="rounded bg-muted px-1 text-[12px]">
+          docs/PERSONA-SCENARIO-STEP-AUDIT-2026-08.md
+        </code>
+        . 로그:{" "}
         <code className="rounded bg-muted px-1 text-[12px]">docs/HANDOFF.md</code> §7.
       </Note>
     </>

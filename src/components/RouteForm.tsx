@@ -260,7 +260,10 @@ export default function RouteForm({
   const [showMoreMeta, setShowMoreMeta] = useState(false);
   const [openInfoTick, setOpenInfoTick] = useState(0);
   const [confirmVisibility, setConfirmVisibility] = useState(false);
+  const [confirmReady, setConfirmReady] = useState(false);
   const saveIntentRef = useRef<"draft" | "finish">("finish");
+  /** Skip one readiness soft-gate after the user confirms「그래도 공개」. */
+  const readySkipRef = useRef(false);
 
   const [spots, setSpots] = useState<DraftSpot[]>(() =>
     isDirectPlanCreate ? [] : initialToSpots(initial),
@@ -594,6 +597,27 @@ export default function RouteForm({
   const allPhotos = spots.flatMap((s) => s.photos);
   const draftMap = useMemo(() => buildDraftRouteMap(spots), [spots]);
 
+  const readinessMissing = useMemo(() => {
+    const checks = [
+      { ok: !!region.trim(), label: "지역" },
+      { ok: !!recommendedFor.trim(), label: "추천 대상" },
+      { ok: !!difficulty, label: "난이도" },
+      { ok: spots.filter((s) => s.title.trim()).length >= 2, label: "스팟 2곳+" },
+      { ok: !!coverPhotoKey, label: "대표 사진" },
+    ];
+    return checks.filter((c) => !c.ok).map((c) => c.label);
+  }, [region, recommendedFor, difficulty, spots, coverPhotoKey]);
+
+  const requestFinishSubmit = () => {
+    saveIntentRef.current = "finish";
+    const form = document.getElementById("route-form") as HTMLFormElement | null;
+    const finishBtn = form?.querySelector<HTMLButtonElement>(
+      'button[type="submit"][name="intent"][value="finish"]',
+    );
+    if (finishBtn) form?.requestSubmit(finishBtn);
+    else form?.requestSubmit();
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (saving) return;
@@ -640,6 +664,19 @@ export default function RouteForm({
       setSaveError("스팟을 한 곳 이상 추가해 주세요.");
       return;
     }
+
+    // P3-SOFT: public finish with incomplete follow-ready checklist → soft confirm.
+    if (
+      saveIntent === "finish" &&
+      visibility === "public" &&
+      readinessMissing.length > 0 &&
+      !readySkipRef.current
+    ) {
+      setConfirmReady(true);
+      return;
+    }
+    readySkipRef.current = false;
+
     setSaving(true);
     setSaveError(null);
 
@@ -882,14 +919,7 @@ export default function RouteForm({
       onPrimary={() => {
         if (!visibilityChosen) return;
         setConfirmVisibility(false);
-        saveIntentRef.current = "finish";
-        const form = document.getElementById("route-form") as HTMLFormElement | null;
-        // Submit with finish intent even if the last click wasn't the header button.
-        const finishBtn = form?.querySelector<HTMLButtonElement>(
-          'button[type="submit"][name="intent"][value="finish"]',
-        );
-        if (finishBtn) form?.requestSubmit(finishBtn);
-        else form?.requestSubmit();
+        requestFinishSubmit();
       }}
       secondaryLabel="닫기"
       onClose={() => setConfirmVisibility(false)}
@@ -919,6 +949,22 @@ export default function RouteForm({
         )}
       </div>
     </ActionBottomSheet>
+  );
+  const readinessConfirmSheet = (
+    <ActionBottomSheet
+      open={confirmReady}
+      title="이대로 공개할까요?"
+      description={`따라가기 준비도가 아직 비어 있어요: ${readinessMissing.join("·")}. 채우면 남이 따라가기 쉬워져요.`}
+      primaryLabel="그래도 공개"
+      onPrimary={() => {
+        setConfirmReady(false);
+        readySkipRef.current = true;
+        requestFinishSubmit();
+      }}
+      secondaryLabel="더 채우기"
+      onClose={() => setConfirmReady(false)}
+      ariaLabel="따라가기 준비도 확인"
+    />
   );
 
   // ── shared render pieces ──────────────────────────────────────────────
@@ -1351,6 +1397,7 @@ export default function RouteForm({
         {sheets}
         {exitConfirmSheet}
         {visibilityConfirmSheet}
+        {readinessConfirmSheet}
       </PlannerFrame>
     );
   }
@@ -1396,6 +1443,7 @@ export default function RouteForm({
         {sheets}
         {exitConfirmSheet}
         {visibilityConfirmSheet}
+        {readinessConfirmSheet}
       </PlannerFrame>
     );
   }
@@ -1517,6 +1565,7 @@ export default function RouteForm({
         {sheets}
         {exitConfirmSheet}
         {visibilityConfirmSheet}
+        {readinessConfirmSheet}
       </MobileFrame>
     );
   }
@@ -1687,6 +1736,7 @@ export default function RouteForm({
       {sheets}
       {exitConfirmSheet}
       {visibilityConfirmSheet}
+      {readinessConfirmSheet}
     </MobileFrame>
   );
 }

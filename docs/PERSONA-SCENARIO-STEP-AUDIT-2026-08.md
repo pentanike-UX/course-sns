@@ -84,7 +84,7 @@
 | 계획 3 | 동일 게이트+Hint | planInfoPanel Hint | OK |
 | P3-a/b/c | 비공개·알림·후기 | public-only 책장 · copy 알림 | OK |
 
-**잔여 P2:** 스팟&lt;2 공개 soft-block 시트(의도적 soft).
+**잔여:** ~~스팟&lt;2 공개 soft-block~~ → **v0.3.25** soft confirm「이대로 공개할까요?」.
 
 ---
 
@@ -130,6 +130,12 @@ P3 공개 → P4 팔로우 → P1 발견·따라가기 → P2 다녀왔어요 �
 7. PersonRow 맞팔(`followsMe`)  
 8. 게스트 태그라인 정합  
 
+## v0.3.25 후속
+
+9. 공개 완료 + 준비도 미충족 → soft confirm  
+10. 체크리스트「스팟·제목」· e2e/status IA 동기  
+
 ## 운영(사람)
 
-- Supabase `0014_transfer_notifications.sql` 미적용 시 P3→P4 알림 루프 무배달 — HANDOFF §4
+- Supabase `0014_transfer_notifications.sql` 미적용 시 P3→P4 알림 루프 무배달 — HANDOFF §4  
+- Vercel `NAVER_SEARCH_*` · `NEXT_PUBLIC_SITE_URL` · NCP Maps URL · 실기기 QA

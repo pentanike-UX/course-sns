@@ -173,7 +173,7 @@ function FollowProgressBar({
   const moveOk = doneOk || moveDataOk;
 
   const steps = [
-    { label: "스팟 확인", done: spotsOk },
+    { label: "스팟·제목", done: spotsOk },
     { label: "이동 확인", done: moveOk },
     { label: "다녀왔어요", done: doneOk },
   ];

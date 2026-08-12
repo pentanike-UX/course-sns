@@ -23,6 +23,8 @@ test("둘러보기: 검색 컨트롤이 렌더된다", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expectExploreLanding(page);
   await expect(page.getByRole("button", { name: "필터" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "많이 따라간" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "많이 다녀온" })).toBeVisible();
 });
 
 test("루트 상세: 피드 첫 카드에서 상세로 진입한다", async ({ page }) => {
@@ -85,10 +87,17 @@ test("프로필: 내 정보가 렌더된다", async ({ page }) => {
   await expect(page.getByRole("button", { name: "로그아웃" })).toBeVisible();
 });
 
-test("코스 통계: 요약·월별 차트·지역이 렌더된다", async ({ page }) => {
+test("코스 통계: 전이·지역이 렌더된다", async ({ page }) => {
   await page.goto("/profile/stats");
-  await expect(page.getByRole("heading", { name: "활동 기록" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "다녀온 지역" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "코스 통계" })).toBeVisible();
+  // Empty makers only see the empty CTA; with routes, transfer + region sections show.
+  const empty = page.getByText("아직 기록한 코스가 없어요.");
+  if (await empty.isVisible().catch(() => false)) {
+    await expect(page.getByRole("link", { name: /코스/ })).toBeVisible();
+    return;
+  }
+  await expect(page.getByRole("heading", { name: "전이 · 영향력" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "코스 지역" })).toBeVisible();
 });
 
 test("지도 모드: 지도 탭과 홈으로 버튼이 렌더된다", async ({ page }) => {

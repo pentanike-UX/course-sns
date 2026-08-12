@@ -13,6 +13,12 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.25-mvp — 공개 준비도 soft confirm</H2>
+      <Ul>
+        <li>공개 완료 시 따라가기 준비도 미충족 soft confirm</li>
+        <li>체크리스트「스팟·제목」· e2e 정렬/통계 IA 동기화</li>
+      </Ul>
+
       <H2>v0.3.24-mvp — 시나리오 단계별 심층 검수</H2>
       <Ul>
         <li>P2: 따라가는 중→원본 · 초안 배너 · 가져왔어요→보관함</li>

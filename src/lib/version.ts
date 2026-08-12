@@ -31,5 +31,6 @@
  * v0.3.22 — 전체 화면·플로우 검수 (AUTH/CREATE/DET/MAP)
  * v0.3.23 — 전체화면 재검수 (dirty back·설정 복귀·DET 순서)
  * v0.3.24 — 페르소나 시나리오 단계별 심층 검수 핫픽스
+ * v0.3.25 — 공개 준비도 soft confirm · e2e/status 동기화
  */
-export const APP_VERSION = "v0.3.24-mvp";
+export const APP_VERSION = "v0.3.25-mvp";
