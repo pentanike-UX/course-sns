@@ -25,5 +25,6 @@
  * v0.3.16 — Wave G5: 홈·카드·상세 P2 폴리시
  * v0.3.17 — Wave G6: MAP residual·게스트 map·IA 정합
  * v0.3.18 — 홈 loading·설계 문서 IA 마감 · PR 리뷰 준비
+ * v0.3.19 — e2e 스모크 IA 동기화 · 운영 체크리스트
  */
-export const APP_VERSION = "v0.3.18-mvp";
+export const APP_VERSION = "v0.3.19-mvp";

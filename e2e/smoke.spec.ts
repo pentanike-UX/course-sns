@@ -39,7 +39,7 @@ test("루트 상세: 피드 첫 카드에서 상세로 진입한다", async ({ p
   await expect(page.getByRole("heading", { name: /댓글/ })).toBeVisible();
 });
 
-test("이 루트 따라가기: 안내 시트와 목적 선택이 렌더된다", async ({ page }) => {
+test("이 코스 따라가기: 안내 시트와 목적 선택이 렌더된다", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expectExploreLanding(page);
 
@@ -50,7 +50,7 @@ test("이 루트 따라가기: 안내 시트와 목적 선택이 렌더된다", 
   await card.click();
   await page.waitForURL(/\/routes\/[0-9a-f-]+/, { waitUntil: "domcontentloaded" });
 
-  const copyButton = page.getByRole("button", { name: "이 루트 따라가기" });
+  const copyButton = page.getByRole("button", { name: "이 코스 따라가기" });
   const buttonAppeared = await copyButton
     .waitFor({ timeout: 7000 })
     .then(() => true)
@@ -60,8 +60,8 @@ test("이 루트 따라가기: 안내 시트와 목적 선택이 렌더된다", 
   }
   await copyButton.click();
 
-  await expect(page.getByRole("heading", { name: "이 루트를 내 여행으로 시작할까요?" })).toBeVisible();
-  await expect(page.getByText("장소와 이동 정보만 내 비공개 초안으로 가져와요.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "이 코스로 시작해 볼까요?" })).toBeVisible();
+  await expect(page.getByText("장소와 동선을 그대로 내 코스로 가져와요.")).toBeVisible();
 
   const start = page.getByRole("button", { name: "내 비공개 초안 만들기" });
   await expect(start).toBeDisabled();
@@ -69,11 +69,11 @@ test("이 루트 따라가기: 안내 시트와 목적 선택이 렌더된다", 
   await expect(start).toBeEnabled();
 });
 
-test("보관함: 따라가는 중/저장/팔로잉 탭이 렌더된다", async ({ page }) => {
+test("보관함: 따라가는 중/저장/구독 코스 탭이 렌더된다", async ({ page }) => {
   await page.goto("/library", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("button", { name: "따라가는 중" })).toBeVisible();
   await expect(page.getByRole("button", { name: "저장" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "팔로잉" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "구독 코스" })).toBeVisible();
 });
 
 test("프로필: 내 정보가 렌더된다", async ({ page }) => {

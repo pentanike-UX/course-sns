@@ -13,6 +13,14 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.19-mvp — e2e · 운영 체크리스트</H2>
+      <Ul>
+        <li>스모크: 보관함「구독 코스」· 따라가기 시트 카피 동기화</li>
+        <li>
+          <Code>/deliverables/status</Code> 인수 후 운영 항목 · HANDOFF §4 정리
+        </li>
+      </Ul>
+
       <H2>v0.3.18-mvp — IA 마감 · 리뷰 준비</H2>
       <Ul>
         <li>홈 loading 스켈레톤을 현재 피드(브랜드·정렬 칩)에 맞춤</li>

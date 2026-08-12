@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.3.18-mvp)
+### 현재 화면·내비 (v0.3.19-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -273,19 +273,22 @@
       - 검증: `pnpm lint`/`pnpm build` ✅, 키 미설정 → 검색창 미노출·`{enabled:false}`, 실키로 "세화 해변"/"광안리 해수욕장" 검색→선택→제목·주소·핀 자동 채움 확인(스크린샷 검증), 잘못된 키 → `{enabled:true, places:[]}` graceful
       - 참고: dev 콘솔에서 ViewTransition 중복 이름 경고가 버퍼에 보였으나 **실플로우(카드→상세, 뒤로가기)로 재현 안 됨** — Fast Refresh 재마운트/Playwright 다중 워커가 dev 서버에 물린 시점의 dev 전용 아티팩트로 판단. 프로덕션 빌드에서 재관찰되면 그때 조사
 - [ ] (권장) Supabase 대시보드에서 **이메일 확인 끄기**(개발 편의) 또는 실제 이메일로 가입 플로우 점검
+- [ ] (권장) Vercel Production에 `NAVER_SEARCH_CLIENT_ID`/`SECRET` 등록(없으면 장소 검색 UI만 숨김)
+- [ ] (권장) Supabase `0014`/`0015` 적용 여부 확인 · 실기기에서 로그인→작성→Back≠로그인 재확인
+- [ ] (권장) `.env.local` 있는 환경에서 `pnpm test:e2e` (스모크는「구독 코스」IA에 맞춤)
 
 ### 2단계 (SNS)
 - [x] **좋아요/즐겨찾기 토글 UI + 액션** (E2E 검증 완료)
       - `routes/[id]/actions.ts` `toggleLike/toggleBookmark`(server action, insert/delete + revalidate)
       - `routes/[id]/RouteActions.tsx`(client, 낙관적 토글, 미로그인 시 /login 리다이렉트)
       - `getRoute`가 현재 사용자 `liked/bookmarked` 동봉, 카운터는 기존 트리거가 like_count/bookmark_count 유지
-- [x] **보관함(저장/좋아요 모아보기)** (E2E 검증 완료)
-      - 하단탭 **홈·지도·보관함** + 중앙 "기록" FAB(`ring-card`로 관통). (구 5탭 구조에서 개편됨)
-      - `(tabs)/library/page.tsx`: `?tab=saved|liked` 세그먼트, 빈 상태 + 둘러보기 CTA
-      - `getBookmarkedRoutes`·`getLikedRoutes`(data.ts) — 본인 bookmarks/likes ⨝ routes(LITE)
+- [x] **보관함(따라가는 중·저장·구독 코스)** (E2E 검증 완료 · IA는 FOL-01 이후)
+      - 하단탭 **홈·지도·보관함** + 중앙 FAB(`ring-card`로 관통)
+      - `(tabs)/library/page.tsx`: `?tab=saved|subscribed|people` · 기본=따라가는 중
+      - `getBookmarkedRoutes` · `getFollowingCourseStream` · `getMyFollowing`
       - 전역 **탭 피드백**: 버튼/링크 `:active` 시 95% 축소(globals.css, 토글 제외)
-      - 보관함 카드 **원탭 해제**(`CollectionCard`: 저장/좋아요 해제 → 즉시 제거 + `router.refresh`)
-      - 프로필 통계에 **저장·좋아요 카운트**(`getMyCollectionCounts`) + 탭하면 보관함으로 이동
+      - 저장 카드 **원탭 해제**(`CollectionCard` → `router.refresh`)
+      - 프로필 통계: 팔로워·전이 지표 우선 (`getMyCollectionCounts`)
 - [x] **팔로우** (E2E 검증) — `/u/[handle]` 공개 프로필 + `toggleFollow`, 작성자명 링크
 - [x] **댓글** (E2E 검증) — `supabase/migrations/0004_comments.sql`(comments 테이블·RLS·`comment_count` 트리거), `getComments`/`addComment`/`deleteComment`, 상세에 댓글 목록+입력폼+삭제. `database.types.ts` 재생성됨
 - [x] **공개 피드 정렬/탐색** (E2E 검증 완료)
@@ -350,7 +353,7 @@
       - 공용화: `lib/use-seg-tabs.ts`(`useSegTabs` = 탭 상태+replaceState URL 동기화+스와이프+방향 클래스, `useSwipeTabs` = 제스처) + `components/SlidingSegments.tsx`(슬라이딩 필 세그먼트, 옵션 수 가변). 홈 `HomeRoutesTabs`도 이걸로 리팩터
       - 제스처 설계: **touch 전용**(마우스 무시), 화면 가장자리 24px 시작점 무시(브라우저 뒤로가기 스와이프와 충돌 방지), 첫 10px에서 축 잠금(세로면 스크롤에 양보), 48px 이상 플릭만 인정. 패널에 `touch-pan-y` 필수(가로 이동 중 포인터 이벤트 유지)
       - 패널 모션 (같은 날 푸시 전환으로 강화): `components/SegPanel.tsx` — 탭 전환 시 **나가는 패널 스냅샷을 absolute로 잠깐 유지**해 제스처 방향으로 밀어내고(`seg-panel-out-*`), 새 패널이 반대편에서 이어 들어옴(`seg-panel-in-*`, translateX ±100% 280ms 동일 easing → 이음새가 한 띠처럼 보임). adjust-state-during-render 패턴으로 스냅샷 캡처, `onAnimationEnd`(target===currentTarget 가드, 자식 애니 버블 무시)로 제거. 컨테이너 `overflow-hidden`+`touch-pan-y`. 첫 페인트는 무애니메이션(dir=0). **reduced-motion**: in은 animation none, out은 `display:none`(animationend가 안 와서 잔류 방지). ⚠️ 전환 중 ~280ms 동안 같은 루트 카드가 양쪽 패널에 중복 마운트됨(전체↔기록 등) — ViewTransition 이름 중복은 전환(네비게이션) 시점에만 문제라 실사용 무해, 전환 중 카드 탭이라는 엣지만 존재
-      - 보관함: `library/LibraryTabs.tsx`(client) — page가 `getBookmarkedRoutes`+`getLikedRoutes` **둘 다 병렬 fetch** 후 전달. CollectionCard 원탭 해제(router.refresh)는 그대로 동작
+      - 보관함: `library/LibraryTabs.tsx`(client) — 당시 page가 bookmark+liked 병렬 fetch. (현재 IA는 따라가는 중·저장·구독 코스)
       - 둘러보기: `feed/FeedExplorer.tsx`(client)가 view 상태 소유, page가 전체+팔로잉 피드(지도 모드면 양쪽 포인트) **둘 다 병렬 fetch**. 검색·정렬·지도 모드는 기존대로 router.replace(서버). FeedControls는 `onViewChange` controlled로 변경, 자체 Seg 제거. **지도 모드는 스와이프 없음**(지도 드래그와 충돌) — 세그먼트 탭만 즉시 전환
       - 트레이드오프: 피드/보관함 진입 시 양쪽 쿼리 실행(LITE select 2개) — 즉시 전환 대가로 수용
       - 검증: lint/build ✅, 목 데이터 SSR 프리뷰로 3화면 렌더(세그먼트 카운트·인디케이터 위치·빈 상태·`touch-pan-y`) 확인 후 삭제, dev 에러 0. **스와이프 제스처는 실기기(터치)에서만 동작하므로 다음 세션에서 확인 필수** (환경 제약: Supabase·Playwright 차단)
@@ -471,7 +474,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.3.18-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.3.19-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: **`https://course-sns.vercel.app`** + `http://localhost:3000` (+ 필요 시 프리뷰). ⚠️ 도메인 미등록 시 **핀만 보이고 타일 공백**.
@@ -500,6 +503,13 @@ pnpm test:e2e     # Playwright 스모크
 ## 7. 작업 로그 (이어서 누적)
 
 > **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
+
+### e2e·운영 체크리스트 동기화 (Cursor, 2026-08-12 · v0.3.19-mvp)
+
+- **버전**: **`v0.3.19-mvp`** (PATCH).
+- **e2e**: 보관함「구독 코스」· 따라가기 시트 카피(`이 코스 따라가기` / `이 코스로 시작해 볼까요?`).
+- **HANDOFF §4**: 운영 체크리스트 구체화 · 보관함 IA 잔상(`liked`) 정리.
+- **deliverables/status**: G1–G6 완료 표기 + 인수 후 운영 항목.
 
 ### 홈 loading·설계 문서 IA 마감 (Cursor, 2026-08-12 · v0.3.18-mvp)
 
@@ -654,7 +664,7 @@ pnpm test:e2e     # Playwright 스모크
 - **데이터(`src/lib/data.ts`)**: `searchPeople(q)` 추가 — `profiles`를 `display_name`/`handle` `ilike` OR 검색(or()/ilike 깨는 `%,()` 제거), 본인 제외, 이름순 20명, id만 뽑아 기존 `hydratePeople`로 뷰어 팔로우 상태까지 주입(PersonSummary). 피드 검색과 동일한 살균 규칙.
 - **API**: `src/app/api/people/route.ts`(GET `?q=`) 신설 — auth-gated, 2~60자만 조회, `{ people }` 반환(`/api/places` 타이프어헤드 패턴).
 - **UI**: `library/FollowingPanel.tsx`(신규, client) — 검색 인풋(이름/@아이디, 지우기)+디바운스 280ms fetch. 검색어<2글자=팔로잉 목록(서버 prop), ≥2글자=검색 결과. 행은 공용 `PersonRow`(인라인 `FollowToggle`, 낙관적). 상태: 스피너/무결과/빈 팔로잉. ⚠️ **린트 `set-state-in-effect` 회피**: effect 본문에서 동기 setState 금지라, 모든 setState를 디바운스 setTimeout 콜백 안에서만 호출(요청 경합은 `reqRef` 카운터로 최신만 반영).
-- **연결**: `LibraryTabs`에서 `루트/사람` 세그먼트·`FeedRouteCard`·`PersonRow`·`useState` 제거, 팔로잉 패널은 `<FollowingPanel following={followingPeople} />`로 단순화. `EmptyState`는 saved/liked 전용으로 축소. `library/page.tsx`는 `getFollowingFeed` fetch 제거(함수 자체는 data.ts에 dead export로 남겨둠 — 향후 둘러보기 '팔로잉' 필터 재사용 여지).
+- **연결**: 당시 `LibraryTabs` 팔로잉 패널을 `<FollowingPanel>`로 단순화. (현재:「구독 코스」스트림 + 팔로우 관리 · `getFollowingCourseStream`이 `getFollowingFeed` 사용)
 - **검증**: `pnpm lint` ✅ / `pnpm build` ✅(`/api/people` 라우트 생성). 실측 권장: 친구 검색→팔로우→팔로잉 목록 반영, 언팔 후 목록 갱신(router.refresh).
 
 ### 하단 회색 띠(콘텐츠 잘림) 수정 (Cursor, 2026-06-17 · v1.97)

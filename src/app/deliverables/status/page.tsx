@@ -10,13 +10,15 @@ export default function StatusPage() {
 
       <H2>한 줄 요약</H2>
       <P>
-        코스 MVP의 북스타 루프(발견 → 따라가기 → 다녀왔어요 → 영향력)는 배포된 상태입니다. 남은
-        과제는 주로 운영 설정 확인·실기기 검증·일부 마이그레이션 적용입니다.
+        코스 MVP의 북스타 루프(발견 → 따라가기 → 다녀왔어요 → 영향력)와 시나리오 Wave G1–G6는
+        코드 반영·배포된 상태입니다. 남은 과제는{" "}
+        <strong className="font-semibold text-ink">운영 설정·실기기 검증</strong>입니다.
       </P>
 
       <div className="mt-4 flex flex-wrap gap-2">
         <StatusPill tone="ok">핵심 루프 제공 중</StatusPill>
-        <StatusPill tone="warn">0014 DB 적용 확인</StatusPill>
+        <StatusPill tone="ok">시나리오 G1–G6 코드 완료</StatusPill>
+        <StatusPill tone="warn">0014 DB · env 확인</StatusPill>
       </div>
 
       <H2>사용자가 지금 할 수 있는 것</H2>
@@ -25,7 +27,7 @@ export default function StatusPage() {
         headers={["기능", "상태", "메모"]}
         rows={[
           ["공개 코스 피드", "✅ 완료", "전이 정렬·필터"],
-          ["지도 탐색", "✅ 완료", "스펙+전이 peek"],
+          ["지도 탐색", "✅ 완료", "스펙+전이 peek · 게스트 refetch"],
           ["게스트 열람", "✅ 완료", "AuthGate 쓰기"],
           ["구독 홈 레일", "✅ 완료", "로그인 시 empty도 슬롯 노출"],
         ]}
@@ -55,22 +57,38 @@ export default function StatusPage() {
         headers={["기능", "상태", "메모"]}
         rows={[
           ["팔로우", "✅ 완료", "맞팔 라벨"],
+          ["구독 코스", "✅ 완료", "보관함 탭 · FOL"],
           ["알림 그룹", "✅ 완료", "전이·소셜"],
           ["copy/publish 알림", "⚠️ DB 확인", "0014 push"],
           ["좋아요·댓글", "✅ 완료", "보조 위계"],
         ]}
       />
 
-      <H2>인수 후 체크리스트</H2>
+      <H2>인수 후 체크리스트 (운영)</H2>
       <Ul>
-        <li>프로덕션에서 스플래시·탭·파비콘이 코스 C 아이콘인지 확인</li>
-        <li>OG 미리보기(카카오/슬랙)에 코스 마크 + 「코스」 워드마크</li>
         <li>
-          Supabase에 <code className="rounded bg-muted px-1 text-[12px]">0014</code> 적용 여부
+          Supabase Auth →{" "}
+          <strong className="font-semibold text-ink">이메일 확인 off</strong> (개발) 또는 실제
+          메일 가입 플로우 점검
         </li>
-        <li>데모 계정으로 따라가기 → 다녀왔어요 → 알림 end-to-end</li>
-        <li>NCP Maps URL에 course-sns.vercel.app 등록</li>
+        <li>
+          Supabase에 <code className="rounded bg-muted px-1 text-[12px]">0014</code> ·{" "}
+          <code className="rounded bg-muted px-1 text-[12px]">0015</code> 적용 여부
+        </li>
+        <li>
+          Vercel Production:{" "}
+          <code className="rounded bg-muted px-1 text-[12px]">NAVER_SEARCH_*</code> ·{" "}
+          <code className="rounded bg-muted px-1 text-[12px]">NEXT_PUBLIC_SITE_URL</code>
+        </li>
+        <li>NCP Maps Web URL에 <code className="rounded bg-muted px-1 text-[12px]">course-sns.vercel.app</code></li>
         <li>Google OAuth 콜백이 course-sns Supabase를 가리키는지</li>
+        <li>
+          실기기: 게스트 + → Google → 작성 → 상세 → Back ≠ 로그인 · 지도 타일 · 팔로우 루프
+        </li>
+        <li>
+          로컬 <code className="rounded bg-muted px-1 text-[12px]">.env.local</code> 후{" "}
+          <code className="rounded bg-muted px-1 text-[12px]">pnpm test:e2e</code>
+        </li>
         <li>
           <code className="rounded bg-muted px-1 text-[12px]">/deliverables</code> 가이드 링크
           공유
@@ -84,16 +102,16 @@ export default function StatusPage() {
           DB/URL <code className="rounded bg-muted px-1 text-[12px]">routes→courses</code> rename
         </li>
         <li>추천 알고리즘·푸시 네이티브</li>
-        <li>✅ 구독 코스 IA (FOL-01/02 · v0.3.14)</li>
       </Ul>
 
       <Warn>
         routdiary 프로덕션·Supabase와 키·데이터를 섞지 마세요. 인프라는 완전 분리입니다.
       </Warn>
       <Note>
-        UX 잔여·Wave 상세는 저장소{" "}
-        <code className="rounded bg-muted px-1 text-[12px]">docs/UX-PERSONA-PAINPOINTS.md</code>{" "}
-        참고.
+        시나리오 페인포인트:{" "}
+        <code className="rounded bg-muted px-1 text-[12px]">/deliverables/scenario-painpoints</code>
+        . 상세 로그는{" "}
+        <code className="rounded bg-muted px-1 text-[12px]">docs/HANDOFF.md</code> §7.
       </Note>
     </>
   );
