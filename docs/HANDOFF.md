@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.3.14-mvp)
+### 현재 화면·내비 (v0.3.15-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -468,7 +468,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.3.14-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.3.15-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: **`https://course-sns.vercel.app`** + `http://localhost:3000` (+ 필요 시 프리뷰). ⚠️ 도메인 미등록 시 **핀만 보이고 타일 공백**.
@@ -497,6 +497,13 @@ pnpm test:e2e     # Playwright 스모크
 ## 7. 작업 로그 (이어서 누적)
 
 > **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
+
+### 로그인→작성 후 뒤로가기 인증 스택 제거 (Cursor, 2026-08-12 · v0.3.15-mvp)
+
+- **버전**: **`v0.3.15-mvp`** (PATCH).
+- **문제**: FAB(+) → AuthGate → Google → 코스 등록 → 상세에서 Back 시 `/login`·Google로 복귀.
+- **수정**: Google `skipBrowserRedirect` + `location.replace` · 이메일 `RedirectType.replace` · callback HTML `location.replace` · proxy `/login`이 `?next=` 존중 · 생성 직후 헤더 Back은 `preferFallback`→홈.
+- **의도 스택**: (더하기 직전 화면) → 상세. AuthGate의 login push는 유지(로그인 취소 시 복귀).
 
 ### Wave G4 — 구독 IA · 레일 · 알림 (Cursor, 2026-08-12 · v0.3.14-mvp)
 

@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { BrandLockup } from "@/components/BrandMark";
 import MobileFrame from "@/components/MobileFrame";
 import { createClient } from "@/lib/supabase/client";
+import { safeNextPath } from "@/lib/safe-next";
 import { signIn, signUp, type AuthState } from "./actions";
 
 export default function LoginPage() {
@@ -17,7 +18,7 @@ export default function LoginPage() {
 
 function LoginInner() {
   const params = useSearchParams();
-  const next = params.get("next") ?? "/";
+  const next = safeNextPath(params.get("next"));
   const [mode, setMode] = useState<"signin" | "signup">("signin");
 
   const action = mode === "signin" ? signIn : signUp;
@@ -30,11 +31,20 @@ function LoginInner() {
   const signInWithGoogle = async () => {
     setGoogleLoading(true);
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOAuth({
+    // skipBrowserRedirect + location.replace: drop /login from history so
+    // after OAuth → create → detail, Back never returns to the auth screen.
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(next)}` },
+      options: {
+        redirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+        skipBrowserRedirect: true,
+      },
     });
-    if (error) setGoogleLoading(false); // otherwise the browser is navigating away
+    if (error || !data.url) {
+      setGoogleLoading(false);
+      return;
+    }
+    window.location.replace(data.url);
   };
 
   return (

@@ -13,6 +13,13 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.15-mvp — 로그인→작성 뒤로가기 스택</H2>
+      <Ul>
+        <li>Google/이메일 로그인 후 <Code>replace</Code>로 인증 화면을 히스토리에서 제거</li>
+        <li>OAuth callback <Code>location.replace</Code> · 생성 직후 헤더 Back→홈</li>
+        <li>의도: 더하기 직전 화면(또는 홈) ↔ 상세. 로그인으로 Back 금지</li>
+      </Ul>
+
       <H2>v0.3.14-mvp — Wave G4 (구독 IA)</H2>
       <Ul>
         <li>보관함 탭「구독 코스」· 팔로우 관리 demote (FOL-01)</li>

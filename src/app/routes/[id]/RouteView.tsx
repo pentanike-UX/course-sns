@@ -46,6 +46,8 @@ type Props = {
   lineageSlot?: React.ReactNode;
   copyContext?: RouteCopyContext | null;
   viewerCompletion?: ViewerCompletionState | null;
+  /** post-create: header back → home (avoid auth stack) */
+  exitHome?: boolean;
 };
 
 const ROUTE_LAYOUT_EVENT = "course:route-layout";
@@ -82,6 +84,7 @@ export default function RouteView({
   lineageSlot,
   copyContext,
   viewerCompletion,
+  exitHome = false,
 }: Props) {
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
   const layout = useSyncExternalStore(
@@ -286,7 +289,13 @@ export default function RouteView({
     <>
       <RouteDetailChromeTone />
       <div className="fixed inset-x-0 top-0 z-30 h-[calc(env(safe-area-inset-top)+3.5rem)] w-full">
-        <AppHeader back="/" transparent glass right={controls(true)} />
+        <AppHeader
+          back="/"
+          preferFallback={exitHome}
+          transparent
+          glass
+          right={controls(true)}
+        />
       </div>
     </>
   );

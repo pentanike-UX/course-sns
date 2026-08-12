@@ -83,6 +83,7 @@ export default async function RouteDetailPage({
           isOwner={isOwner}
           copyContext={copyContext}
           viewerCompletion={viewerCompletion}
+          exitHome={noticeKind === "created"}
           lineageSlot={
             isOwner ? (
               <Suspense fallback={<RouteCopyLineageFallback />}>

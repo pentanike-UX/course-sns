@@ -11,15 +11,20 @@ import GlassCircle from "@/components/GlassCircle";
  * they opened this screen from (matching the OS back gesture); deep-linked
  * entries with no in-app history go to `fallback` instead. Use `icon="close"`
  * on forms/modals where "닫기" reads better than a back arrow.
+ *
+ * `preferFallback` — after create (`?created=1`), skip history.back() so a
+ * leaked auth entry under the detail never resurfaces (safety net).
  */
 export default function BackButton({
   fallback,
   glass,
   icon = "back",
+  preferFallback = false,
 }: {
   fallback: string;
   glass?: boolean;
   icon?: "back" | "close";
+  preferFallback?: boolean;
 }) {
   const router = useRouter();
   // When this header lives inside a <SlideOver> (a pushed full-page screen),
@@ -33,8 +38,8 @@ export default function BackButton({
       aria-label={icon === "close" ? "닫기" : "뒤로"}
       onClick={() => {
         if (slide) slide.close();
-        else if (hasInAppHistory()) router.back();
-        else router.replace(fallback);
+        else if (preferFallback || !hasInAppHistory()) router.replace(fallback);
+        else router.back();
       }}
       className="flex h-11 w-11 items-center justify-center"
     >

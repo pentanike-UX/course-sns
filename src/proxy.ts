@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import { safeNextPath } from "@/lib/safe-next";
 
 // Personal areas with no signed-out view — direct visits redirect to /login.
 // Browsing surfaces ("/", "/routes/[id]", "/u/[handle]") are PUBLIC: guests read
@@ -18,16 +19,15 @@ export async function proxy(request: NextRequest) {
   if (needsAuth && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    url.searchParams.set("next", pathname);
+    url.search = "";
+    url.searchParams.set("next", `${pathname}${request.nextUrl.search}`);
     return NextResponse.redirect(url);
   }
 
-  // already signed in → keep them out of the auth page
+  // already signed in → leave /login; honor ?next= (create / follow resume)
   if (pathname === "/login" && user) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/";
-    url.search = "";
-    return NextResponse.redirect(url);
+    const dest = safeNextPath(request.nextUrl.searchParams.get("next"));
+    return NextResponse.redirect(new URL(dest, request.url));
   }
 
   return response;
