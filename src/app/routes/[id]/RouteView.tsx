@@ -44,6 +44,8 @@ type Props = {
    *  external directions lookup never blocks the rest of the page. */
   mapSlot?: React.ReactNode;
   lineageSlot?: React.ReactNode;
+  /** Completions/comments — before author (COURSE-UX §2.3) */
+  socialProofSlot?: React.ReactNode;
   copyContext?: RouteCopyContext | null;
   viewerCompletion?: ViewerCompletionState | null;
   /** post-create: header back → home (avoid auth stack) */
@@ -82,6 +84,7 @@ export default function RouteView({
   isOwner,
   mapSlot,
   lineageSlot,
+  socialProofSlot,
   copyContext,
   viewerCompletion,
   exitHome = false,
@@ -300,14 +303,21 @@ export default function RouteView({
     </>
   );
 
-  // route meta moves to a "여행 정보" footer next to the map (passive reference
-  // info → bottom, keeping the hero → journey flow clean up top).
-  const hasInfo = !!(route.recommendedFor || route.bestSeason || route.estCostKrw);
+  // Passive meta (incl. theme/mood demoted from hero) — after spots/social proof.
+  const hasInfo = !!(
+    route.recommendedFor ||
+    route.bestSeason ||
+    route.estCostKrw ||
+    route.theme ||
+    route.mood
+  );
   const bottomInfo = hasInfo ? (
     <section className="px-4 pt-7">
       <h2 className="mb-3 text-[16px] font-bold text-ink">코스 정보</h2>
       <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line">
         <Info label="추천 대상" value={route.recommendedFor} wide />
+        <Info label="테마" value={route.theme} />
+        <Info label="분위기" value={route.mood} />
         <Info label="방문 시점" value={route.bestSeason} />
         <Info label="지출 비용" value={formatKrw(route.estCostKrw)} />
       </div>
@@ -362,6 +372,7 @@ export default function RouteView({
         </div>
 
         {social}
+        {socialProofSlot}
         {authorCard}
 
         <section className="px-4 pt-5">
@@ -486,6 +497,7 @@ export default function RouteView({
         </section>
 
         {mapSlot}
+        {socialProofSlot}
         {authorCard}
         {bottomInfo}
         {lineageSlot}
@@ -556,6 +568,7 @@ export default function RouteView({
       </section>
 
       {mapSlot}
+      {socialProofSlot}
       {authorCard}
       {bottomInfo}
       {lineageSlot}

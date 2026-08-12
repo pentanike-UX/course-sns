@@ -96,26 +96,28 @@ export default async function RouteDetailPage({
               <RouteMapSection route={route} />
             </Suspense>
           }
+          socialProofSlot={
+            <>
+              {route.visibility === "public" && route.completionCount > 0 && (
+                <Suspense fallback={<RouteCompletionsFallback />}>
+                  <RouteCompletionsSection
+                    routeId={route.id}
+                    completionCount={route.completionCount}
+                    completionRatingAvg={route.completionRatingAvg}
+                  />
+                </Suspense>
+              )}
+              <Suspense fallback={<RouteCommentsFallback commentCount={route.commentCount} />}>
+                <RouteCommentsSection
+                  routeId={route.id}
+                  commentCount={route.commentCount}
+                  me={me}
+                  isOwner={isOwner}
+                />
+              </Suspense>
+            </>
+          }
         />
-
-        {route.visibility === "public" && route.completionCount > 0 && (
-          <Suspense fallback={<RouteCompletionsFallback />}>
-            <RouteCompletionsSection
-              routeId={route.id}
-              completionCount={route.completionCount}
-              completionRatingAvg={route.completionRatingAvg}
-            />
-          </Suspense>
-        )}
-
-        <Suspense fallback={<RouteCommentsFallback commentCount={route.commentCount} />}>
-          <RouteCommentsSection
-            routeId={route.id}
-            commentCount={route.commentCount}
-            me={me}
-            isOwner={isOwner}
-          />
-        </Suspense>
       </main>
     </MobileFrame>
   );

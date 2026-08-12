@@ -13,6 +13,15 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.23-mvp — 전체화면 재검수</H2>
+      <Ul>
+        <li>작성 OS back dirty · 설정 로그인 후 드로어 · DET 후기→작성자</li>
+        <li>히어로 칩 demote · 정렬 칩·empty CTA · 게스트 태그라인</li>
+        <li>
+          정본 <Code>docs/UX-UI-GUI-AUDIT-FULL-SCREEN-2026-08.md</Code>
+        </li>
+      </Ul>
+
       <H2>v0.3.22-mvp — 전체 화면·플로우 검수</H2>
       <Ul>
         <li>로그인 실패/탈출 · 작성·수정 dirty confirm · 지도/상세 CTA 위계</li>

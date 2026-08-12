@@ -345,21 +345,6 @@ export default function RouteDetailSheet({
                 </div>
               )}
 
-              {(route.theme || route.mood || route.recommendedFor || route.bestSeason) && (
-                <div className="flex flex-wrap gap-1.5 px-5 pt-3">
-                  {[route.theme, route.mood, route.recommendedFor, route.bestSeason]
-                    .filter(Boolean)
-                    .map((chip, i) => (
-                      <span
-                        key={i}
-                        className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-ink-soft"
-                      >
-                        {chip}
-                      </span>
-                    ))}
-                </div>
-              )}
-
               {mapSpots.length > 0 && (
                 <RouteMap
                   spots={mapSpots}
@@ -423,6 +408,21 @@ export default function RouteDetailSheet({
                   );
                 })}
               </ol>
+
+              {(route.recommendedFor || route.theme || route.mood || route.bestSeason) && (
+                <div className="flex flex-wrap gap-1.5 px-5 pt-4">
+                  {[route.recommendedFor, route.theme, route.mood, route.bestSeason]
+                    .filter(Boolean)
+                    .map((chip, i) => (
+                      <span
+                        key={i}
+                        className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-ink-soft"
+                      >
+                        {chip}
+                      </span>
+                    ))}
+                </div>
+              )}
 
               <div className="px-5 pt-6">
                 <Link

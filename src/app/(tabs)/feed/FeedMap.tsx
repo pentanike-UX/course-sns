@@ -763,11 +763,22 @@ export default function FeedMap({
               </div>
 
               {bodyList.length === 0 ? (
-                <p className="whitespace-pre-line px-1 py-10 text-center text-[13px] text-ink-faint">
-                  {pts.length === 0
-                    ? "이 지역엔 좌표가 있는 공개 코스가 아직 없어요"
-                    : "이 화면엔 공개 코스가 없어요.\n지도를 움직여 보세요."}
-                </p>
+                <div className="flex flex-col items-center px-1 py-10 text-center">
+                  <p className="whitespace-pre-line text-[13px] text-ink-faint">
+                    {pts.length === 0
+                      ? "이 지역엔 좌표가 있는 공개 코스가 아직 없어요"
+                      : "이 화면엔 공개 코스가 없어요.\n지도를 움직여 보세요."}
+                  </p>
+                  {onExit && (
+                    <button
+                      type="button"
+                      onClick={onExit}
+                      className="mt-4 rounded-full bg-sunset px-5 py-2.5 text-[13px] font-semibold text-white"
+                    >
+                      목록으로 보기
+                    </button>
+                  )}
+                </div>
               ) : (
                 <ul className="space-y-1 pb-2">
                   {bodyList.map((p) => (

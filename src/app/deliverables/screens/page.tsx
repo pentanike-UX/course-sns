@@ -35,7 +35,7 @@ export default function ScreensPage() {
         rows={[
           ["/u/[handle]", "공개 책장", "공개", "팔로우 토글"],
           ["/u/[handle]/followers", "팔로워", "공개", ""],
-          ["/u/[handle]/following", "팔로잉", "공개", ""],
+          ["/u/[handle]/following", "팔로우 중", "공개", ""],
           ["/feed", "내 코스(하드)", "필요", "주로 홈 드로어로 대체"],
           ["/profile", "설정(풀페이지)", "필요", "드로어에서도 진입"],
           ["/profile/edit", "프로필 편집", "필요", ""],

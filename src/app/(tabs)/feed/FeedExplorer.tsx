@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import FeedControls, {
@@ -188,6 +189,25 @@ export default function FeedExplorer({
     if (profileOpen) return;
     openOverlay("profile");
   };
+
+  const settingsAuthNext = () => {
+    if (typeof window === "undefined") return "/?settings=1";
+    const u = new URL(window.location.href);
+    u.searchParams.set("settings", "1");
+    return `${u.pathname}${u.search}`;
+  };
+
+  // After login from settings AuthGate — reopen the profile drawer.
+  useEffect(() => {
+    if (!profile || typeof window === "undefined") return;
+    const u = new URL(window.location.href);
+    if (u.searchParams.get("settings") !== "1") return;
+    openProfile();
+    u.searchParams.delete("settings");
+    const qs = u.searchParams.toString();
+    router.replace(qs ? `${u.pathname}?${qs}` : u.pathname);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once after settings login
+  }, [profile]);
 
   const closeProfile = () => closeOverlay("profile");
 
@@ -407,28 +427,58 @@ export default function FeedExplorer({
 
   const renderPanel = () =>
     routes.length === 0 ? (
-      <div className="px-4 py-16 text-center text-[14px] text-ink-faint">
+      <div className="flex flex-col items-center px-4 py-16 text-center text-[14px] text-ink-faint">
         {hasFilters ? (
           <>
-            조건에 맞는 코스가 없어요. 지역만 바꿔 보세요.
-            <br />
+            <p>조건에 맞는 코스가 없어요. 지역만 바꿔 보세요.</p>
             <button
               type="button"
               onClick={() => applyFilters(EMPTY_FILTERS)}
-              className="mt-3 rounded-full bg-sunset-wash px-4 py-2 text-[13px] font-semibold text-sunset"
+              className="mt-4 rounded-full bg-sunset px-5 py-2.5 text-[13px] font-semibold text-white"
             >
               필터 초기화
             </button>
           </>
         ) : q ? (
           <>
-            ‘{q}’에 맞는 코스를 찾지 못했어요.
-            <br />다른 검색어로 시도해 보세요.
+            <p>
+              ‘{q}’에 맞는 코스를 찾지 못했어요.
+              <br />
+              다른 검색어로 시도해 보세요.
+            </p>
+            <button
+              type="button"
+              onClick={() => router.replace(feedUrl("", sort, view, "list", filters))}
+              className="mt-4 rounded-full bg-sunset px-5 py-2.5 text-[13px] font-semibold text-white"
+            >
+              검색 지우기
+            </button>
           </>
         ) : (
           <>
-            아직 공개된 코스가 없어요.
-            <br />첫 번째 공개 코스의 주인공이 되어보세요!
+            <p>
+              아직 공개된 코스가 없어요.
+              <br />
+              첫 번째 공개 코스의 주인공이 되어보세요!
+            </p>
+            <Link
+              href="/routes/new"
+              onClick={(e) => {
+                if (
+                  !requireAuth({
+                    next: "/routes/new",
+                    title: "코스를 만들려면 로그인이 필요해요",
+                    description:
+                      "로그인하면 다녀온 코스를 기록하고 다른 사람이 따라갈 수 있게 공개할 수 있어요.",
+                  })
+                ) {
+                  e.preventDefault();
+                }
+              }}
+              className="mt-4 rounded-full bg-sunset px-5 py-2.5 text-[13px] font-semibold text-white"
+            >
+              코스 만들기
+            </Link>
           </>
         )}
       </div>
@@ -485,7 +535,12 @@ export default function FeedExplorer({
                 <span className="truncate text-[15px] font-bold text-ink">{profile.displayName}</span>
               </button>
             ) : (
-              <BrandWordmark markSize={38} className="pl-0.5" />
+              <div className="min-w-0 pl-0.5">
+                <BrandWordmark markSize={38} />
+                <p className="mt-0.5 truncate text-[11px] font-medium leading-none text-ink-faint">
+                  좋은 코스, 따라가 보세요
+                </p>
+              </div>
             )}
             <div className="ml-auto flex items-center">
               <button
@@ -504,7 +559,7 @@ export default function FeedExplorer({
                 onClick={() => {
                   if (
                     !requireAuth({
-                      next: "/",
+                      next: settingsAuthNext(),
                       title: "설정을 보려면 로그인이 필요해요",
                       description:
                         "로그인하면 프로필·알림·기본 공개 범위를 관리할 수 있어요. 둘러보기는 계속해도 돼요.",
@@ -641,7 +696,7 @@ export default function FeedExplorer({
                 onClick={() => {
                   if (
                     !requireAuth({
-                      next: "/",
+                      next: settingsAuthNext(),
                       title: "설정을 보려면 로그인이 필요해요",
                       description:
                         "로그인하면 프로필·알림·기본 공개 범위를 관리할 수 있어요. 둘러보기는 계속해도 돼요.",

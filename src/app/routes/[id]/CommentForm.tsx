@@ -5,6 +5,12 @@ import { useState, useTransition } from "react";
 import { addComment } from "./actions";
 import { useAuthGate } from "@/components/AuthGate";
 
+const COMMENT_AUTH = {
+  title: "댓글을 남기려면 로그인이 필요해요",
+  description:
+    "로그인하면 다녀온 팁을 남기고, 이 코스를 따라갈 수도 있어요. 둘러보기는 계속해도 돼요.",
+} as const;
+
 export default function CommentForm({ routeId }: { routeId: string }) {
   const router = useRouter();
   const { requireAuth } = useAuthGate();
@@ -15,13 +21,13 @@ export default function CommentForm({ routeId }: { routeId: string }) {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (pending) return;
-    if (!requireAuth({ next: `/routes/${routeId}` })) return; // guest → login sheet
+    if (!requireAuth({ next: `/routes/${routeId}`, ...COMMENT_AUTH })) return;
     if (!body.trim()) return;
     start(async () => {
       const res = await addComment(routeId, body);
       if (res?.error) {
         setError(res.error);
-        if (res.needsAuth) requireAuth({ next: `/routes/${routeId}` });
+        if (res.needsAuth) requireAuth({ next: `/routes/${routeId}`, ...COMMENT_AUTH });
       } else {
         setBody("");
         setError(null);

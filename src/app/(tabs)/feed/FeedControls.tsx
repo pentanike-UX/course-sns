@@ -67,12 +67,12 @@ export default function FeedControls({
             onClick={() => router.replace(sortUrl("recent"))}
           />
           <SortChip
-            label="많이 따라간"
+            label="따라간"
             active={sort === "followed"}
             onClick={() => router.replace(sortUrl("followed"))}
           />
           <SortChip
-            label="많이 다녀온"
+            label="다녀온"
             active={sort === "completed"}
             onClick={() => router.replace(sortUrl("completed"))}
           />
@@ -262,7 +262,7 @@ function SortChip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-colors ${
+      className={`shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[12px] font-semibold transition-colors ${
         active ? "bg-ink text-paper" : "bg-muted text-ink-soft"
       }`}
     >

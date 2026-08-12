@@ -786,15 +786,42 @@ export default function RouteForm({
     : isDirectPlanCreate
       ? "/library"
       : "/";
-  const leaveForm = () => {
+  const dirtyGuardRef = useRef(false);
+  const leaveForm = (opts?: { forceReplace?: boolean }) => {
     setConfirmExit(false);
-    if (hasInAppHistory()) router.back();
-    else router.replace(leaveHref);
+    dirtyGuardRef.current = false;
+    if (opts?.forceReplace || !hasInAppHistory()) router.replace(leaveHref);
+    else router.back();
   };
   const requestExitForm = () => {
     if (isDirty) setConfirmExit(true);
     else leaveForm();
   };
+
+  // System/gesture back must confirm when dirty — X alone is not enough.
+  useEffect(() => {
+    if (!isDirty) return;
+    try {
+      window.history.pushState({ rdFormDirty: 1 }, "");
+      dirtyGuardRef.current = true;
+    } catch {
+      dirtyGuardRef.current = false;
+    }
+    const onPop = () => {
+      if (!dirtyGuardRef.current) return;
+      try {
+        window.history.pushState({ rdFormDirty: 1 }, "");
+      } catch {
+        /* ignore */
+      }
+      setConfirmExit(true);
+    };
+    window.addEventListener("popstate", onPop);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      dirtyGuardRef.current = false;
+    };
+  }, [isDirty]);
 
   // Close (X) confirms when there are unsaved edits (create / edit / planner).
   const formCloseButton = (
@@ -835,7 +862,7 @@ export default function RouteForm({
       description={exitConfirmDescription}
       primaryLabel="나가기"
       primaryTone="danger"
-      onPrimary={leaveForm}
+      onPrimary={() => leaveForm({ forceReplace: true })}
       secondaryLabel="계속 편집"
       onClose={() => setConfirmExit(false)}
       ariaLabel="저장하지 않고 나가기 확인"
