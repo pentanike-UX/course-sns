@@ -228,5 +228,6 @@
 | `/deliverables/planning` | 제품 정의·기능 목록 |
 | `COURSE-UX-DESIGN.md` | IA·화면 스펙·Phase |
 | `PERSONA-SCENARIO-PAINPOINTS.md` | 시나리오 walkthrough UX 점검 (정본) |
+| `PERSONA-P4-SCENARIO-AUDIT.md` | P4·교차·역할전환 단계별 OK/GAP 감사 |
 | `UX-PERSONA-PAINPOINTS.md` | 이전 컬러·페인 분석 |
 | `BRAND.md` | 브랜드 메시지와 시나리오 톤 정합 |

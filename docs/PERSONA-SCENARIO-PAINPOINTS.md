@@ -1,9 +1,9 @@
 # 페르소나 시나리오 UX 페인포인트 점검
 
-> **기준:** course-sns `v0.3.9-mvp` · 시나리오 정본 [`PERSONA-SCENARIOS.md`](PERSONA-SCENARIOS.md)  
+> **기준:** course-sns `v0.3.24-mvp` · 시나리오 정본 [`PERSONA-SCENARIOS.md`](PERSONA-SCENARIOS.md)  
 > **방법:** 시나리오 단계별로 현재 코드를 따라가며 불쾌감·이해도 저하·사용 실패를 수집  
 > **웹:** `/deliverables/scenario-painpoints`  
-> **날짜:** 2026-08-11
+> **날짜:** 2026-08-11 · P4 심층 감사 2026-08-12 → [`PERSONA-P4-SCENARIO-AUDIT.md`](PERSONA-P4-SCENARIO-AUDIT.md)
 
 심각도: **P0** 사용 막힘 · **P1** 높은 마찰 · **P2** 혼란·불쾌 · **P3** 폴리시
 
@@ -23,8 +23,11 @@
 | 6 | ~~STAT-01~~ | P3 | ✅ v0.3.13 팔로워·나 | fixed |
 | 7 | ~~FOL-01~~ | P4 | ✅ v0.3.14 「구독 코스」·팔로우 관리 demote | fixed |
 | 8 | ~~FOL-02~~ | P4 | ✅ v0.3.14 레일「전체 보기」→ `tab=subscribed` | fixed |
+| 9 | FOL-06 | P4/교차 | 프로덕션 `0014` 미적용 시 publish/copy 알림 무배달 | **P0** open |
+| 10 | FOL-04 | P4-b | 언팔 후 `/`·`/library` revalidate 부족 | P2 open |
+| 11 | FOL-05 | P4-c | 사람 목록 `followsMe` 미전달 → 맞팔 라벨 없음 | P2 open |
 
-> G1–G6 + v0.3.15 내비 스택까지 반영됨. 문서·loading 마감 `v0.3.18-mvp`.
+> G1–G6 + v0.3.15 내비 스택까지 반영됨. P4 심층 감사 `v0.3.24-mvp`.
 
 ---
 
@@ -262,6 +265,36 @@
 | **체감** | 빈 메이커에서 좌초 · 전이 알림이 좋아요와 섞임 |
 | **개선** | 「다른 코스 둘러보기」· 배지 풀네임 · 소셜 demoted mute |
 
+### FOL-04 — 언팔 후 스트림 스테일 (open)
+| | |
+|--|--|
+| **단계** | P4-b |
+| **심각도** | P2 · **사용실패** |
+| **파일** | `u/[handle]/actions.ts:28` |
+| **현상** | `revalidatePath("/u")`만 — 홈 레일·보관함 구독 스트림 RSC 캐시가 남을 수 있음 |
+| **체감** | 언팔했는데 구독 코스에 신작이 잠깐 남음 |
+| **개선** | `revalidatePath("/", "layout")` + `revalidatePath("/library")` |
+
+### FOL-05 — 사람 목록 맞팔 라벨 부재 (open)
+| | |
+|--|--|
+| **단계** | P4-c / P4-a |
+| **심각도** | P2 · **이해도저하** |
+| **파일** | `data.ts` `PersonSummary`, `PersonRow.tsx` |
+| **현상** | `followsMe`가 책장 `FollowToggle`에만 전달됨 |
+| **체감** | 팔로우 관리·following 목록에서 맞팔/서로 팔로우가「팔로우 중」으로만 보임 |
+| **개선** | hydrate 시 follows-me 조인 후 `PersonRow`에 전달 |
+
+### FOL-06 — `0014` 운영 미확인 (open)
+| | |
+|--|--|
+| **단계** | P4-5 · 교차 P3→P4 |
+| **심각도** | **P0** · **사용실패** |
+| **파일** | `0014_transfer_notifications.sql`, `docs/MVP-SETUP.md:10` |
+| **현상** | 코드·UI는 `course_publish`/`copy` 준비 · 프로덕션 push 여부가 ⚠️ |
+| **체감** | 팔로우해도 새 코스 알림이 안 옴 → 구독 루프 단절 |
+| **개선** | Supabase에 `0014` 적용 후 데모 publish 실측 · status ✅ |
+
 ---
 
 ## 시나리오 매핑 (빠른 색인)
@@ -280,7 +313,9 @@
 | P3-3~4 게시 | PUB-01, PUB-03 |
 | P3-5~6 영향 | PUB-02, STAT-01, STAT-02 |
 | P4-3~4 구독 | FOL-01, FOL-02 |
-| P4-1/5 | FOL-03 |
+| P4-1/5 | FOL-03, FOL-06 |
+| P4-b 언팔 | FOL-04 |
+| P4-c 맞팔 | FOL-05 |
 
 ---
 
