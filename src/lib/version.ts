@@ -30,5 +30,6 @@
  * v0.3.21 — UX/UI/GUI 검수 핫픽스 (지도 CTA·브랜드·IA 카피)
  * v0.3.22 — 전체 화면·플로우 검수 (AUTH/CREATE/DET/MAP)
  * v0.3.23 — 전체화면 재검수 (dirty back·설정 복귀·DET 순서)
+ * v0.3.24 — P2·P3 시나리오 단계별 코드 감사
  */
-export const APP_VERSION = "v0.3.23-mvp";
+export const APP_VERSION = "v0.3.24-mvp";

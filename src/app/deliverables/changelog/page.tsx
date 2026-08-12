@@ -13,6 +13,17 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.24-mvp — P2·P3 시나리오 심층 감사</H2>
+      <Ul>
+        <li>P2-1..6 · a/b/c · P3 기록/계획 · a/b/c 단계별 OK/GAP 표</li>
+        <li>
+          잔여: 카드→초안 완주 CTA · 플래너 FollowReadyHint · 통계 0명/카피
+        </li>
+        <li>
+          정본 <Code>docs/PERSONA-SCENARIO-P2P3-AUDIT-v0323.md</Code>
+        </li>
+      </Ul>
+
       <H2>v0.3.23-mvp — 전체화면 재검수</H2>
       <Ul>
         <li>작성 OS back dirty · 설정 로그인 후 드로어 · DET 후기→작성자</li>
