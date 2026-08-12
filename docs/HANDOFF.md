@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.3.17-mvp)
+### 현재 화면·내비 (v0.3.18-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -254,6 +254,9 @@
 
 ## 4. 남은 작업 (TODO)
 
+> **시나리오 Wave G1–G6** (`v0.3.11`–`v0.3.18`) + 로그인 히스토리 스택(`v0.3.15`)은 코드 반영 완료.  
+> 아래는 **대시보드·실기기·env** 운영 항목만 남음.
+
 ### 사진 업로드 (E2E 검증 완료, 서명URL 방식)
 - ⚠️ **핵심 함정**: 이 Supabase 프로젝트는 사용자 JWT를 **ES256(신규 비대칭 서명키)** 로 발급하는데, **Storage 서비스가 이 토큰을 검증 못 함** → 클라이언트 직접 업로드(`storage.upload`)는 RLS 403. (PostgREST·auth는 ES256 정상 검증, storage만 실패)
 - 해결: **서버 서명URL 방식**. `signPhotoUploads`(server action)가 사용자 검증 후 **경로를 본인 uid 아래로 강제**해 service-role로 presigned URL 발급 → 클라가 `uploadToSignedUrl`로 업로드(사용자 JWT 불필요)
@@ -468,7 +471,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.3.17-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.3.18-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: **`https://course-sns.vercel.app`** + `http://localhost:3000` (+ 필요 시 프리뷰). ⚠️ 도메인 미등록 시 **핀만 보이고 타일 공백**.
@@ -497,6 +500,12 @@ pnpm test:e2e     # Playwright 스모크
 ## 7. 작업 로그 (이어서 누적)
 
 > **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
+
+### 홈 loading·설계 문서 IA 마감 (Cursor, 2026-08-12 · v0.3.18-mvp)
+
+- **버전**: **`v0.3.18-mvp`** (PATCH).
+- **loading**: `(tabs)/loading.tsx` — 구 전체/팔로잉 세그먼트 제거 · BrandWordmark + 현재 툴바 스켈레톤.
+- **문서**: `COURSE-UX-DESIGN`·`PERSONA-SCENARIOS`「구독 코스」정합 · 페인포인트 MAP/DET ✅ · HANDOFF §4를 운영 항목만으로 축소.
 
 ### Wave G6 — 잔여 정합 (Cursor, 2026-08-12 · v0.3.17-mvp)
 

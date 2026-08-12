@@ -1,30 +1,34 @@
-import AppHeader from "@/components/AppHeader";
+import { BrandWordmark } from "@/components/BrandMark";
+import GlassCircle from "@/components/GlassCircle";
 import { RouteGridSkeleton } from "@/components/RouteCardSkeleton";
-import {
-  HeaderActionSkeleton,
-  SegmentedControlSkeleton,
-  Skeleton,
-} from "@/components/Skeleton";
+import { Skeleton } from "@/components/Skeleton";
 
-// landing tab = 둘러보기 (explore) feed
+/** Landing explore feed skeleton — matches FeedExplorer (no 전체/팔로잉 segment). */
 export default function HomeLoading() {
   return (
     <>
-      <AppHeader title="둘러보기" large right={<HeaderActionSkeleton />} />
-      <div className="px-4 pt-2">
-        <div className="mb-3 flex gap-2.5">
-          <SegmentedControlSkeleton className="flex-1" />
-          <Skeleton className="h-10 w-20 rounded-full bg-sunset-wash" />
+      <header className="flex h-[calc(env(safe-area-inset-top)+3.5rem)] items-center gap-2 bg-paper/90 px-3 pt-[env(safe-area-inset-top)] backdrop-blur">
+        <BrandWordmark markSize={30} className="pl-0.5" />
+        <div className="ml-auto flex items-center gap-0">
+          <span className="flex h-11 w-11 items-center justify-center">
+            <GlassCircle>
+              <Skeleton className="h-5 w-5 rounded-full" />
+            </GlassCircle>
+          </span>
+          <span className="flex h-11 w-11 items-center justify-center">
+            <GlassCircle>
+              <Skeleton className="h-5 w-5 rounded-full" />
+            </GlassCircle>
+          </span>
         </div>
+      </header>
+      <div className="bg-paper/95 px-4 pb-2 pt-2">
         <div className="flex items-center gap-2">
-          <Skeleton className="h-8 w-16 rounded-full" />
-          <Skeleton className="h-8 w-16 rounded-full" />
-          <Skeleton className="h-8 w-16 rounded-full" />
-          <div className="ml-auto flex rounded-full bg-muted p-1">
-            <Skeleton className="h-7 w-7 rounded-full bg-card" />
-            <Skeleton className="h-7 w-7 rounded-full" />
-            <Skeleton className="h-7 w-7 rounded-full" />
-          </div>
+          <Skeleton className="h-8 w-10 shrink-0 rounded-full" />
+          <Skeleton className="h-8 w-[4.5rem] shrink-0 rounded-full" />
+          <Skeleton className="h-8 w-20 shrink-0 rounded-full" />
+          <Skeleton className="h-8 w-20 shrink-0 rounded-full" />
+          <Skeleton className="ml-auto h-8 w-8 shrink-0 rounded-full" />
         </div>
       </div>
       <RouteGridSkeleton count={4} />

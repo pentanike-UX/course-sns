@@ -214,7 +214,7 @@ flowchart LR
 ### E3 — P4 구독 배달 (P4·P3, 침습 중) ✅ 코드 / ⚠️ DB push
 
 1. [x] 알림 타입 `course_publish` · `copy` (`0014_transfer_notifications.sql`)
-2. [x] 홈 `FollowingRail`「팔로잉의 새 코스」
+2. [x] 홈 `FollowingRail`「구독 중인 새 코스」
 3. [x] 메이커: 따라가기 수신 알림(`copy`)
 4. 성공 기준: Follow→Copy가 보관함 외 경로로도 성립 — **마이그레이션 적용 후**
 

@@ -13,6 +13,12 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.18-mvp — IA 마감 · 리뷰 준비</H2>
+      <Ul>
+        <li>홈 loading 스켈레톤을 현재 피드(브랜드·정렬 칩)에 맞춤</li>
+        <li>COURSE-UX / 시나리오 문서「구독 코스」정합 · HANDOFF §4 운영만 남김</li>
+      </Ul>
+
       <H2>v0.3.17-mvp — Wave G6 (잔여 정합)</H2>
       <Ul>
         <li>지도 viewport fetch 키에 전 필터 · 게스트 <Code>/api/map-points</Code> 허용</li>
