@@ -15,6 +15,7 @@ export default function AppHeader({
   closeButton,
   large,
   brand,
+  preferFallback,
 }: {
   title?: string;
   /** shows a back button; the value is the deep-link fallback (history pops otherwise) */
@@ -33,6 +34,8 @@ export default function AppHeader({
   large?: boolean;
   /** show the coursee wordmark — home only; every other screen drops it. */
   brand?: boolean;
+  /** after create etc. — back uses `back` via replace, not history.back() */
+  preferFallback?: boolean;
 }) {
   const isLarge = !!large && !!title && !back;
   const bg = transparent ? "bg-transparent" : "bg-paper/90 backdrop-blur";
@@ -49,7 +52,12 @@ export default function AppHeader({
       {left ? (
         left
       ) : back ? (
-        <BackButton fallback={back} glass={glass} icon={closeButton ? "close" : "back"} />
+        <BackButton
+          fallback={back}
+          glass={glass}
+          icon={closeButton ? "close" : "back"}
+          preferFallback={preferFallback}
+        />
       ) : brand ? (
         <BrandWordmark markSize={28} />
       ) : null}

@@ -18,13 +18,15 @@ export default function ProfileDrawerBody({
 }: {
   routes: RouteSummary[];
   profile: RouteAuthor | null;
-  counts: { saved: number; liked: number };
+  counts: { saved: number; liked: number; followers: number };
   defaultVisibility: Visibility;
 }) {
   const publicCount = routes.filter((r) => r.visibility === "public").length;
   const copyTotal = routes.reduce((sum, r) => sum + (r.copyCount ?? 0), 0);
   const completionTotal = routes.reduce((sum, r) => sum + (r.completionCount ?? 0), 0);
-  const displayName = profile?.displayName ?? "여행자";
+  // STAT-01: own drawer — avoid diary「여행자」fallback
+  const displayName = profile?.displayName?.trim() || "나";
+  const handle = profile?.handle;
 
   return (
     <>
@@ -37,7 +39,7 @@ export default function ProfileDrawerBody({
           )}
         </div>
         <h2 className="mt-3 text-lg font-bold text-ink">{displayName}</h2>
-        {profile?.handle && <p className="text-[13px] text-ink-faint">@{profile.handle}</p>}
+        {handle && <p className="text-[13px] text-ink-faint">@{handle}</p>}
         {copyTotal > 0 && (
           <p className="mt-2 text-center text-[12px] font-medium text-ink-soft">
             내 코스를 {copyTotal}명이 따라갔어요
@@ -51,12 +53,16 @@ export default function ProfileDrawerBody({
         </Link>
       </section>
 
-      {/* Transfer metrics first — likes live under 통계, not the front row */}
+      {/* Transfer / influence first — 저장 is not a front-row maker metric (STAT-01) */}
       <section className="mx-4 mt-4 grid grid-cols-4 divide-x divide-line rounded-[var(--radius-card)] border border-line bg-card py-4 text-center">
         <Stat label="따라감" value={copyTotal} />
         <Stat label="다녀옴" value={completionTotal} />
         <Stat label="공개" value={publicCount} />
-        <Stat label="저장" value={counts.saved} href="/library?tab=saved" />
+        <Stat
+          label="팔로워"
+          value={counts.followers}
+          href={handle ? `/u/${handle}/followers` : undefined}
+        />
       </section>
 
       <Link
@@ -72,12 +78,23 @@ export default function ProfileDrawerBody({
         </span>
       </Link>
 
+      {handle && (
+        <Link
+          href={`/u/${handle}`}
+          className="mx-4 mt-2 flex items-center justify-between rounded-[var(--radius-card)] border border-line bg-card px-4 py-3 text-[13px] font-semibold text-ink-soft"
+        >
+          <span>내 책장 보기</span>
+          <ChevronRightIcon />
+        </Link>
+      )}
+
       <section className="px-4 pt-6">
         <h3 className="text-[14px] font-bold text-ink">설정</h3>
         <ul className="mt-2 overflow-hidden rounded-[var(--radius-card)] border border-line bg-card">
           <ThemeToggle />
           <SettingLink href="/profile/account" label="계정 정보" />
           <DefaultVisibilitySetting initial={defaultVisibility} />
+          <SettingLink href="/library?tab=saved" label={`저장한 코스${counts.saved ? ` · ${counts.saved}` : ""}`} />
           <SettingLink href="/notifications" label="알림" />
           <SettingLink href="/profile/help" label="도움말" />
         </ul>
@@ -98,51 +115,56 @@ function ChartIcon() {
       <path
         d="M5 20V10m7 10V4m7 16v-7"
         stroke="var(--brand-primary)"
-        strokeWidth="2.4"
+        strokeWidth="2"
         strokeLinecap="round"
       />
     </svg>
-  );
-}
-
-function SettingLink({ href, label }: { href: string; label: string }) {
-  return (
-    <Link
-      href={href}
-      className="flex items-center justify-between border-b border-line px-4 py-3.5 text-[14px] text-ink last:border-0"
-    >
-      {label}
-      <ChevronRightIcon />
-    </Link>
   );
 }
 
 function ChevronRightIcon() {
   return (
-    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" className="shrink-0 text-ink-faint" aria-hidden>
-      <path
-        d="m9 5 7 7-7 7"
-        stroke="currentColor"
-        strokeWidth="2.1"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="m9 6 6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
 
-function Stat({ label, value, href }: { label: string; value: number; href?: string }) {
+function Stat({
+  label,
+  value,
+  href,
+}: {
+  label: string;
+  value: number;
+  href?: string;
+}) {
   const inner = (
     <>
-      <div className="text-lg font-black text-ink">{value}</div>
-      <div className="text-[12px] text-ink-faint">{label}</div>
+      <p className="text-[17px] font-black tabular-nums text-ink">{value}</p>
+      <p className="mt-0.5 text-[11px] font-medium text-ink-faint">{label}</p>
     </>
   );
-  return href ? (
-    <Link href={href} className="block">
-      {inner}
-    </Link>
-  ) : (
-    <div>{inner}</div>
+  if (href) {
+    return (
+      <Link href={href} className="px-1 transition-opacity active:opacity-70">
+        {inner}
+      </Link>
+    );
+  }
+  return <div className="px-1">{inner}</div>;
+}
+
+function SettingLink({ href, label }: { href: string; label: string }) {
+  return (
+    <li className="border-t border-line first:border-t-0">
+      <Link
+        href={href}
+        className="flex items-center justify-between px-4 py-3.5 text-[14px] font-medium text-ink"
+      >
+        {label}
+        <ChevronRightIcon />
+      </Link>
+    </li>
   );
 }

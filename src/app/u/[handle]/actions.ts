@@ -26,5 +26,7 @@ export async function toggleFollow(followeeId: string, next: boolean) {
   }
 
   revalidatePath("/u", "layout");
+  revalidatePath("/");
+  revalidatePath("/library");
   return { ok: true };
 }

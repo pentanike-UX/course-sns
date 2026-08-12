@@ -5,6 +5,7 @@ import type { RouteSummary } from "@/lib/types";
 /**
  * P4 home rail — following makers' new courses.
  * Always shows when the viewer is logged in (empty = learn the slot exists).
+ * FOL-02: stream CTA → subscribed; people only when empty / find makers.
  */
 export default function FollowingRail({
   courses,
@@ -17,9 +18,9 @@ export default function FollowingRail({
   if (courses.length === 0) {
     if (!signedIn) return null;
     return (
-      <section className="border-b border-line px-4 py-3" aria-label="팔로잉의 새 코스">
+      <section className="border-b border-line px-4 py-3" aria-label="구독 중인 새 코스">
         <div className="mb-2 flex items-baseline justify-between gap-2">
-          <h2 className="text-[13px] font-bold text-ink">팔로잉의 새 코스</h2>
+          <h2 className="text-[13px] font-bold text-ink">구독 중인 새 코스</h2>
           <Link
             href="/library?tab=people"
             className="text-[12px] font-semibold text-ink-soft underline-offset-2 hover:underline"
@@ -34,14 +35,8 @@ export default function FollowingRail({
           </p>
           <div className="mt-2.5 flex flex-wrap gap-2">
             <Link
-              href="/"
-              className="rounded-full bg-ink px-3.5 py-1.5 text-[12px] font-bold text-paper"
-            >
-              코스 둘러보기
-            </Link>
-            <Link
               href="/library?tab=people"
-              className="rounded-full border border-line bg-card px-3.5 py-1.5 text-[12px] font-semibold text-ink-soft"
+              className="rounded-full bg-sunset px-3.5 py-1.5 text-[12px] font-bold text-white"
             >
               메이커 찾아보기
             </Link>
@@ -54,11 +49,11 @@ export default function FollowingRail({
   const slice = courses.slice(0, 8);
 
   return (
-    <section className="border-b border-line px-4 py-3" aria-label="팔로잉의 새 코스">
+    <section className="border-b border-line px-4 py-3" aria-label="구독 중인 새 코스">
       <div className="mb-2 flex items-baseline justify-between gap-2">
-        <h2 className="text-[13px] font-bold text-ink">팔로잉의 새 코스</h2>
+        <h2 className="text-[13px] font-bold text-ink">구독 중인 새 코스</h2>
         <Link
-          href="/library?tab=people"
+          href="/library?tab=subscribed"
           className="text-[12px] font-semibold text-ink-soft underline-offset-2 hover:underline"
         >
           전체 보기

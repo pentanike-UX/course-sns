@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import FeedControls, {
@@ -18,6 +19,7 @@ import SlideDrawer from "@/components/SlideDrawer";
 import DiaryDrawerContent from "@/components/DiaryDrawerContent";
 import DiaryDrawerSkeleton from "@/components/DiaryDrawerSkeleton";
 import { useAuthGate } from "@/components/AuthGate";
+import { BrandWordmark } from "@/components/BrandMark";
 import type { HomeTab } from "@/app/(tabs)/HomeRoutesTabs";
 import { preloadRouteCovers } from "@/lib/preload-route-covers";
 import { scheduleIdleTask } from "@/lib/schedule-idle-task";
@@ -188,6 +190,25 @@ export default function FeedExplorer({
     openOverlay("profile");
   };
 
+  const settingsAuthNext = () => {
+    if (typeof window === "undefined") return "/?settings=1";
+    const u = new URL(window.location.href);
+    u.searchParams.set("settings", "1");
+    return `${u.pathname}${u.search}`;
+  };
+
+  // After login from settings AuthGate — reopen the profile drawer.
+  useEffect(() => {
+    if (!profile || typeof window === "undefined") return;
+    const u = new URL(window.location.href);
+    if (u.searchParams.get("settings") !== "1") return;
+    openProfile();
+    u.searchParams.delete("settings");
+    const qs = u.searchParams.toString();
+    router.replace(qs ? `${u.pathname}?${qs}` : u.pathname);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once after settings login
+  }, [profile]);
+
   const closeProfile = () => closeOverlay("profile");
 
   const closeDiary = () => {
@@ -197,7 +218,7 @@ export default function FeedExplorer({
 
   const diaryContent = (
     <DiaryDrawerContent
-      displayName={profile?.displayName ?? "여행자"}
+      displayName={profile?.displayName?.trim() || "나"}
       routes={myRoutes}
       initialTab={diaryTab}
       overlayUrl
@@ -366,13 +387,26 @@ export default function FeedExplorer({
   // Ask for the current position once 거리순 is chosen.
   useEffect(() => {
     if (sort !== "distance" || geo || geoDenied) return;
-    if (typeof navigator === "undefined" || !navigator.geolocation) return;
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      // async so we don't setState synchronously inside the effect body
+      const t = window.setTimeout(() => setGeoDenied(true), 0);
+      return () => window.clearTimeout(t);
+    }
     navigator.geolocation.getCurrentPosition(
       (p) => setGeo({ lat: p.coords.latitude, lng: p.coords.longitude }),
       () => setGeoDenied(true),
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
     );
   }, [sort, geo, geoDenied]);
+
+  // HOME-03: location denied → clear「가까운」chip + show notice (don't fake distance sort).
+  useEffect(() => {
+    if (sort !== "distance" || !geoDenied) return;
+    const params = new URLSearchParams();
+    if (q.trim()) params.set("q", q.trim());
+    appendFilterParams(params, filters);
+    router.replace(`/${params.toString() ? `?${params}` : ""}`);
+  }, [sort, geoDenied, q, filters, router]);
 
   // 거리순: re-order the prefetched list by distance from the user (client-side,
   // since location is only known here). Falls back to the server order until the
@@ -393,28 +427,58 @@ export default function FeedExplorer({
 
   const renderPanel = () =>
     routes.length === 0 ? (
-      <div className="px-4 py-16 text-center text-[14px] text-ink-faint">
+      <div className="flex flex-col items-center px-4 py-16 text-center text-[14px] text-ink-faint">
         {hasFilters ? (
           <>
-            조건에 맞는 코스가 없어요. 지역만 바꿔 보세요.
-            <br />
+            <p>조건에 맞는 코스가 없어요. 지역만 바꿔 보세요.</p>
             <button
               type="button"
               onClick={() => applyFilters(EMPTY_FILTERS)}
-              className="mt-3 rounded-full bg-sunset-wash px-4 py-2 text-[13px] font-semibold text-sunset"
+              className="mt-4 rounded-full bg-sunset px-5 py-2.5 text-[13px] font-semibold text-white"
             >
               필터 초기화
             </button>
           </>
         ) : q ? (
           <>
-            ‘{q}’에 맞는 코스를 찾지 못했어요.
-            <br />다른 검색어로 시도해 보세요.
+            <p>
+              ‘{q}’에 맞는 코스를 찾지 못했어요.
+              <br />
+              다른 검색어로 시도해 보세요.
+            </p>
+            <button
+              type="button"
+              onClick={() => router.replace(feedUrl("", sort, view, "list", filters))}
+              className="mt-4 rounded-full bg-sunset px-5 py-2.5 text-[13px] font-semibold text-white"
+            >
+              검색 지우기
+            </button>
           </>
         ) : (
           <>
-            아직 공개된 코스가 없어요.
-            <br />첫 번째 공개 코스의 주인공이 되어보세요!
+            <p>
+              아직 공개된 코스가 없어요.
+              <br />
+              첫 번째 공개 코스의 주인공이 되어보세요!
+            </p>
+            <Link
+              href="/routes/new"
+              onClick={(e) => {
+                if (
+                  !requireAuth({
+                    next: "/routes/new",
+                    title: "코스를 만들려면 로그인이 필요해요",
+                    description:
+                      "로그인하면 다녀온 코스를 기록하고 다른 사람이 따라갈 수 있게 공개할 수 있어요.",
+                  })
+                ) {
+                  e.preventDefault();
+                }
+              }}
+              className="mt-4 rounded-full bg-sunset px-5 py-2.5 text-[13px] font-semibold text-white"
+            >
+              코스 만들기
+            </Link>
           </>
         )}
       </div>
@@ -471,7 +535,12 @@ export default function FeedExplorer({
                 <span className="truncate text-[15px] font-bold text-ink">{profile.displayName}</span>
               </button>
             ) : (
-              <span className="pl-1 text-[17px] font-black text-ink">둘러보기</span>
+              <div className="min-w-0 pl-0.5">
+                <BrandWordmark markSize={38} />
+                <p className="mt-0.5 truncate text-[11px] font-medium leading-none text-ink-faint">
+                  좋은 코스 따라가 보세요
+                </p>
+              </div>
             )}
             <div className="ml-auto flex items-center">
               <button
@@ -488,7 +557,15 @@ export default function FeedExplorer({
                 type="button"
                 aria-label="설정"
                 onClick={() => {
-                  if (!requireAuth({ next: "/" })) return;
+                  if (
+                    !requireAuth({
+                      next: settingsAuthNext(),
+                      title: "설정을 보려면 로그인이 필요해요",
+                      description:
+                        "로그인하면 프로필·알림·기본 공개 범위를 관리할 수 있어요. 둘러보기는 계속해도 돼요.",
+                    })
+                  )
+                    return;
                   openProfile();
                 }}
                 className="flex h-11 w-11 items-center justify-center text-ink-soft"
@@ -508,6 +585,21 @@ export default function FeedExplorer({
             onOpenFilter={() => setFilterOpen(true)}
             onRemoveFilter={removeFilter}
           />
+          {geoDenied && (
+            <div className="mx-4 mb-2 flex items-start gap-2 rounded-2xl bg-muted/80 px-3.5 py-2.5 ring-1 ring-line/70">
+              <p className="min-w-0 flex-1 text-[12px] leading-snug text-ink-soft">
+                위치를 사용할 수 없어 <span className="font-bold text-ink">최신순</span>으로
+                보여드려요. 설정에서 위치 허용 후「가까운」을 다시 눌러 주세요.
+              </p>
+              <button
+                type="button"
+                onClick={() => setGeoDenied(false)}
+                className="shrink-0 text-[12px] font-semibold text-ink-faint underline-offset-2 hover:underline"
+              >
+                닫기
+              </button>
+            </div>
+          )}
         </div>
         {profile && (
           <FollowingRail courses={followingCourses} signedIn />
@@ -537,6 +629,7 @@ export default function FeedExplorer({
               fullscreen
               detent={mapDetent}
               onDetentChange={setMapDetent}
+              peekPx={hasFilters ? 148 : 108}
               onExit={() => router.replace(feedUrl(q, sort, view, "list", filters))}
               sheetHeader={
                 <MapTopControls
@@ -558,9 +651,8 @@ export default function FeedExplorer({
         open={filterOpen}
         value={filters}
         countFor={mapActive ? undefined : countFor}
-        // 루트 종류(루트일기/계획) only filters the list — map pins are fetched
-        // server-side without a purpose join, so hide the facet in 지도 모드.
-        showKind={!mapActive}
+        // kinds(코스 기록/계획) — list + map both filter via getFeedMapPoints / feed query
+        showKind
         onApply={applyFilters}
         onClose={() => setFilterOpen(false)}
       />
@@ -602,7 +694,15 @@ export default function FeedExplorer({
               <button
                 type="button"
                 onClick={() => {
-                  if (!requireAuth({ next: "/" })) return;
+                  if (
+                    !requireAuth({
+                      next: settingsAuthNext(),
+                      title: "설정을 보려면 로그인이 필요해요",
+                      description:
+                        "로그인하면 프로필·알림·기본 공개 범위를 관리할 수 있어요. 둘러보기는 계속해도 돼요.",
+                    })
+                  )
+                    return;
                   openProfile();
                 }}
                 aria-label="설정"
@@ -751,7 +851,7 @@ function MapTopControls({
               type="button"
               onClick={() => onRemoveFilter(kind, value)}
               aria-label={`${label} 필터 제거`}
-              className="flex shrink-0 items-center gap-1 rounded-full bg-ink py-1.5 pl-3 pr-2 text-[12px] font-semibold text-paper"
+              className="flex shrink-0 items-center gap-1 rounded-full bg-sunset py-1.5 pl-3 pr-2 text-[12px] font-semibold text-white"
             >
               {label}
               <MapChipX />

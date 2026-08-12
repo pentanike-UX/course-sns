@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import BottomSheet from "@/components/BottomSheet";
 import JellyButton from "@/components/JellyButton";
+import CopyRouteButton from "@/app/routes/[id]/CopyRouteButton";
 import RouteDetailSheet from "./RouteDetailSheet";
 import { loadNaverMaps, NAVER_MAP_KEY } from "@/lib/naver";
 import type { FeedMapPoint } from "@/lib/data";
@@ -29,6 +30,8 @@ type Props = {
    *  remount when the 전체/팔로잉 segment switches (key changes) */
   detent?: number;
   onDetentChange?: (i: number) => void;
+  /** peek height — bump when filter chips sit in the sheet header */
+  peekPx?: number;
 };
 
 // Default view when there are no points: central Seoul.
@@ -147,10 +150,10 @@ function boundsOf(map: any): Bounds | null {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const pinIcon = (naver: any, p: FeedMapPoint, highlighted: boolean) => {
   const size = highlighted ? 48 : 40;
-  const border = highlighted ? "3px solid #ef4444" : "3px solid #fff";
+  const border = highlighted ? "3px solid #dc2626" : "3px solid #fff";
   const thumb = p.coverPhotoUrl
     ? `<img src="${p.coverPhotoUrl}" alt="" style="width:100%;height:100%;object-fit:cover" />`
-    : `<div style="width:100%;height:100%;background:#ef4444"></div>`;
+    : `<div style="width:100%;height:100%;background:#dc2626"></div>`;
   return {
     content: `<div class="rd-mk" style="width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;border:${border};box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer">${thumb}</div>`,
     anchor: new naver.maps.Point(size / 2, size / 2),
@@ -161,7 +164,7 @@ const pinIcon = (naver: any, p: FeedMapPoint, highlighted: boolean) => {
 const clusterIcon = (naver: any, n: number) => {
   const size = n < 10 ? 38 : n < 30 ? 46 : 54;
   return {
-    content: `<div class="rd-mk" style="display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:50%;background:#ef4444;color:#fff;font-weight:700;font-size:13px;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer">${n}</div>`,
+    content: `<div class="rd-mk" style="display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:50%;background:#dc2626;color:#fff;font-weight:700;font-size:13px;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer">${n}</div>`,
     anchor: new naver.maps.Point(size / 2, size / 2),
   };
 };
@@ -185,6 +188,7 @@ export default function FeedMap({
   onExit,
   detent,
   onDetentChange,
+  peekPx = 108,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -215,7 +219,16 @@ export default function FeedMap({
   // re-pull pins for the current viewport.
   const filtersRef = useRef(filters);
   const refetchRef = useRef<(() => void) | null>(null);
-  const filterSig = `${filters.themes}|${filters.moods}|${filters.regions}`;
+  // Must include every facet that appendFilterParams sends — omitting purposes/
+  // difficulties left map pins stale when those chips changed (MAP-01).
+  const filterSig = [
+    filters.kinds.join(","),
+    filters.purposes.join(","),
+    filters.themes.join(","),
+    filters.moods.join(","),
+    filters.difficulties.join(","),
+    filters.regions.join(","),
+  ].join("|");
 
   useEffect(() => {
     filtersRef.current = filters;
@@ -387,9 +400,19 @@ export default function FeedMap({
               east: b.east + mLng,
             };
             const f = filtersRef.current;
+            // Must match filterSig facets — purpose/difficulty-only changes used to no-op (MAP-01).
             const key = [expanded.south, expanded.west, expanded.north, expanded.east]
               .map((v) => v.toFixed(2))
-              .concat(`${f.themes}|${f.moods}|${f.regions}`)
+              .concat(
+                [
+                  f.kinds.join(","),
+                  f.purposes.join(","),
+                  f.themes.join(","),
+                  f.moods.join(","),
+                  f.difficulties.join(","),
+                  f.regions.join(","),
+                ].join("|"),
+              )
               .join(",");
             if (key === lastFetchKey) return;
             lastFetchKey = key;
@@ -510,7 +533,7 @@ export default function FeedMap({
     polylineRef.current = new naver.maps.Polyline({
       map,
       path: selected.path.map((p) => new naver.maps.LatLng(p.lat, p.lng)),
-      strokeColor: "#ef4444",
+      strokeColor: "#dc2626",
       strokeWeight: 3,
       strokeOpacity: 0.75,
       strokeLineCap: "round",
@@ -706,7 +729,7 @@ export default function FeedMap({
             detent={detentIndex}
             onDetentChange={setDetentIndex}
             header={sheetHeader}
-            peekPx={74}
+            peekPx={peekPx}
           >
             <div className="pt-1">
               {selected && (
@@ -740,11 +763,22 @@ export default function FeedMap({
               </div>
 
               {bodyList.length === 0 ? (
-                <p className="whitespace-pre-line px-1 py-10 text-center text-[13px] text-ink-faint">
-                  {pts.length === 0
-                    ? "이 지역엔 좌표가 있는 공개 코스가 아직 없어요"
-                    : "이 화면엔 공개 코스가 없어요.\n지도를 움직여 보세요."}
-                </p>
+                <div className="flex flex-col items-center px-1 py-10 text-center">
+                  <p className="whitespace-pre-line text-[13px] text-ink-faint">
+                    {pts.length === 0
+                      ? "이 지역엔 좌표가 있는 공개 코스가 아직 없어요"
+                      : "이 화면엔 공개 코스가 없어요.\n지도를 움직여 보세요."}
+                  </p>
+                  {onExit && (
+                    <button
+                      type="button"
+                      onClick={onExit}
+                      className="mt-4 rounded-full bg-sunset px-5 py-2.5 text-[13px] font-semibold text-white"
+                    >
+                      목록으로 보기
+                    </button>
+                  )}
+                </div>
               ) : (
                 <ul className="space-y-1 pb-2">
                   {bodyList.map((p) => (
@@ -912,13 +946,16 @@ function SheetSelectedCard({
             </button>
           </div>
         )}
-        <button
-          type="button"
-          onClick={onOpenDetail}
-          className="ml-auto rounded-full bg-sunset px-4 py-2 text-[13px] font-semibold text-white shadow-[var(--shadow-brand)]"
-        >
-          상세 보기
-        </button>
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onOpenDetail}
+            className="rounded-full border border-line bg-card px-3.5 py-2 text-[13px] font-semibold text-ink-soft"
+          >
+            상세
+          </button>
+          <CopyRouteButton routeId={point.id} primary />
+        </div>
       </div>
     </div>
   );

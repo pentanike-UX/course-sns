@@ -39,6 +39,7 @@ export default function PersonRow({ person }: { person: PersonSummary }) {
         <FollowToggle
           followeeId={person.id}
           initialFollowing={person.isFollowing}
+          followsMe={person.followsMe}
           size="sm"
         />
       )}

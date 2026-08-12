@@ -18,7 +18,7 @@ type Props = {
  *  - not following + they follow me → 맞팔로우
  *  - not following                  → 팔로우
  *  - following + they follow me      → 서로 팔로우
- *  - following                       → 팔로잉
+ *  - following                       → 팔로우 중
  */
 export default function FollowToggle({
   followeeId,
@@ -34,7 +34,7 @@ export default function FollowToggle({
   const FOLLOW_AUTH = {
     title: "팔로우하려면 로그인이 필요해요",
     description:
-      "로그인하면 이 메이커의 새 코스를 보관함「팔로잉」에서 받아볼 수 있어요.",
+      "로그인하면 이 메이커의 새 코스를 보관함「구독 코스」에서 받아볼 수 있어요.",
   } as const;
 
   const onToggle = () => {
@@ -52,10 +52,11 @@ export default function FollowToggle({
     });
   };
 
+  // Avoid「팔로잉」— clashes with retired library tab vs「구독 코스」(FOL-01).
   const label = following
     ? followsMe
       ? "서로 팔로우"
-      : "팔로잉"
+      : "팔로우 중"
     : followsMe
       ? "맞팔로우"
       : "팔로우";

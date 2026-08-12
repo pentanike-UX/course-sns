@@ -391,7 +391,7 @@ export default function BottomNav() {
                       next: "/library",
                       title: "보관함을 보려면 로그인이 필요해요",
                       description:
-                        "따라가는 중·저장한 코스와 팔로잉 스트림은 로그인 후 이용할 수 있어요.",
+                        "따라가는 중·저장한 코스와 구독 코스는 로그인 후 이용할 수 있어요.",
                     })
                   ) {
                     e.preventDefault();

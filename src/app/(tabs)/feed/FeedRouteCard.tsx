@@ -262,17 +262,9 @@ function SpecLine({ route, className = "" }: { route: RouteSummary; className?: 
 function TransferPill({ route, compact = false }: { route: RouteSummary; compact?: boolean }) {
   const copies = route.copyCount ?? 0;
   const done = route.completionCount ?? 0;
+  // CARD-01: cold slot stays「첫 따라가기」— never lifestyle/difficulty filler.
   const label =
-    copies > 0
-      ? `${copies} 따라감`
-      : done > 0
-        ? `${done} 다녀옴`
-        : route.recommendedFor?.split(",")[0]?.trim() ||
-          (route.difficulty === "easy"
-            ? "가볍게"
-            : route.difficulty === "hard"
-              ? "많이 걸어요"
-              : "첫 따라가기");
+    copies > 0 ? `${copies} 따라감` : done > 0 ? `${done} 다녀옴` : "첫 따라가기";
 
   return (
     <span
@@ -289,7 +281,7 @@ function TransferPill({ route, compact = false }: { route: RouteSummary; compact
           <DoneGlyph /> <span className="truncate">{label}</span>
         </>
       ) : (
-        <span className="truncate font-bold text-ink-soft">{label}</span>
+        <span className="truncate font-bold text-sunset-ink">{label}</span>
       )}
     </span>
   );

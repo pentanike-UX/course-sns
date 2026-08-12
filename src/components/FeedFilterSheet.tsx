@@ -156,13 +156,7 @@ function Panel({ value, countFor, showKind, onApply, onClose }: Omit<Props, "ope
                 ))}
               </Section>
             )}
-            <Section title="테마">
-              {THEME_OPTIONS.map((t) => (
-                <Chip key={t} active={draft.themes.includes(t)} onClick={() => toggle("themes", t)}>
-                  {t}
-                </Chip>
-              ))}
-            </Section>
+            <ThemeSection draft={draft} toggle={toggle} />
             <MoodSection draft={draft} toggle={toggle} />
           </div>
 
@@ -186,6 +180,43 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
     <div className="border-b border-line py-4 last:border-0">
       <h4 className="mb-2.5 text-[13px] font-bold text-ink-soft">{title}</h4>
       <div className="flex flex-wrap gap-2">{children}</div>
+    </div>
+  );
+}
+
+/** HOME-02: theme is optional shopping facet — collapsed unless already selected. */
+function ThemeSection({
+  draft,
+  toggle,
+}: {
+  draft: FeedFilters;
+  toggle: (kind: keyof FeedFilters, v: string) => void;
+}) {
+  const hasTheme = draft.themes.length > 0;
+  const [open, setOpen] = useState(hasTheme);
+  return (
+    <div className="border-b border-line py-4 last:border-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="mb-2.5 flex w-full items-center justify-between text-left"
+        aria-expanded={open}
+      >
+        <h4 className="text-[13px] font-bold text-ink-soft">
+          테마 {hasTheme ? `(${draft.themes.length})` : ""}
+          <span className="ml-1.5 font-medium text-ink-faint">선택</span>
+        </h4>
+        <span className="text-[12px] font-semibold text-ink-faint">{open ? "접기" : "더보기"}</span>
+      </button>
+      {open && (
+        <div className="flex flex-wrap gap-2">
+          {THEME_OPTIONS.map((t) => (
+            <Chip key={t} active={draft.themes.includes(t)} onClick={() => toggle("themes", t)}>
+              {t}
+            </Chip>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

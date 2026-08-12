@@ -35,12 +35,6 @@ export default function RouteHeroMeta({
       <h1 className="mt-1 line-clamp-2 text-[24px] font-black leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
         {meta.title}
       </h1>
-      {(meta.theme || meta.mood) && (
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {meta.theme && <Chip># {meta.theme}</Chip>}
-          {meta.mood && <Chip>{meta.mood}</Chip>}
-        </div>
-      )}
       <div className="mt-2 flex items-center gap-2 text-[13px] text-white/85 drop-shadow-sm">
         {meta.author.handle ? (
           <Link
@@ -56,14 +50,6 @@ export default function RouteHeroMeta({
         <span>{formatDate(meta.createdAt)}</span>
       </div>
     </div>
-  );
-}
-
-function Chip({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="max-w-full truncate rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur">
-      {children}
-    </span>
   );
 }
 

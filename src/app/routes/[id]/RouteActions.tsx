@@ -11,6 +11,9 @@ type Props = {
   initialBookmarked: boolean;
 };
 
+/**
+ * DET-02: icon-only like/save — secondary to「따라가기」, not a competing CTA row.
+ */
 export default function RouteActions({
   routeId,
   initialLiked,
@@ -23,26 +26,30 @@ export default function RouteActions({
   const [bookmarked, setBookmarked] = useState(initialBookmarked);
   const [, startTransition] = useTransition();
 
+  const LIKE_AUTH = {
+    next: `/routes/${routeId}`,
+    title: "좋아요하려면 로그인이 필요해요",
+    description:
+      "좋아요는 가벼운 반응이에요. 이 앱의 핵심은 코스를 따라가는 거예요 — 둘러보기는 계속해도 돼요.",
+  } as const;
   const SAVE_AUTH = {
     next: `/routes/${routeId}`,
-    title: "저장·반응하려면 로그인이 필요해요",
+    title: "저장하려면 로그인이 필요해요",
     description:
-      "로그인하면 코스를 저장해 두고 나중에 따라갈 수 있어요. 이 앱의 핵심은 좋아요보다 따라가기예요.",
+      "로그인하면 코스를 저장해 두고 나중에 따라갈 수 있어요. 핵심은 좋아요보다 따라가기예요.",
   } as const;
 
   const onLike = () => {
-    if (!requireAuth(SAVE_AUTH)) return;
+    if (!requireAuth(LIKE_AUTH)) return;
     const next = !liked;
-    // optimistic
     setLiked(next);
     setLikeCount((c) => c + (next ? 1 : -1));
     startTransition(async () => {
       const res = await toggleLike(routeId, next);
       if (res?.error) {
-        // revert
         setLiked(!next);
         setLikeCount((c) => c + (next ? -1 : 1));
-        if (res.needsAuth) requireAuth(SAVE_AUTH);
+        if (res.needsAuth) requireAuth(LIKE_AUTH);
       }
     });
   };
@@ -61,34 +68,30 @@ export default function RouteActions({
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1">
       <button
         type="button"
         onClick={onLike}
         aria-pressed={liked}
-        className={`flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-[14px] font-semibold transition-colors ${
-          liked
-            ? "border-transparent bg-sunset-wash text-sunset-ink"
-            : "border-line bg-card text-ink-soft"
+        aria-label={liked ? "좋아요 취소" : "좋아요"}
+        className={`flex h-9 min-w-9 items-center justify-center gap-1 rounded-full px-2.5 text-[12px] font-semibold transition-colors ${
+          liked ? "bg-muted text-ink-soft" : "text-ink-faint hover:bg-muted/70"
         }`}
       >
         <HeartIcon filled={liked} />
-        {likeCount}
+        {likeCount > 0 && <span>{likeCount}</span>}
       </button>
 
       <button
         type="button"
         onClick={onBookmark}
         aria-pressed={bookmarked}
-        aria-label={bookmarked ? "즐겨찾기 해제" : "즐겨찾기"}
-        className={`flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-[14px] font-semibold transition-colors ${
-          bookmarked
-            ? "border-transparent bg-success-soft text-success"
-            : "border-line bg-card text-ink-soft"
+        aria-label={bookmarked ? "저장 해제" : "저장"}
+        className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${
+          bookmarked ? "bg-muted text-ink-soft" : "text-ink-faint hover:bg-muted/70"
         }`}
       >
         <BookmarkIcon filled={bookmarked} />
-        {bookmarked ? "저장됨" : "저장"}
       </button>
     </div>
   );
@@ -97,8 +100,8 @@ export default function RouteActions({
 function HeartIcon({ filled }: { filled: boolean }) {
   return (
     <svg
-      width="17"
-      height="17"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill={filled ? "currentColor" : "none"}
       stroke="currentColor"
@@ -112,8 +115,8 @@ function HeartIcon({ filled }: { filled: boolean }) {
 function BookmarkIcon({ filled }: { filled: boolean }) {
   return (
     <svg
-      width="17"
-      height="17"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill={filled ? "currentColor" : "none"}
       stroke="currentColor"

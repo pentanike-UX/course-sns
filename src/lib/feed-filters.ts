@@ -3,7 +3,7 @@ import type { RouteSummary } from "@/lib/types";
 /** Explore-feed facet filters. Applied client-side over the prefetched feed and
  *  mirrored to the URL (so sort/view navigation and refresh keep them). */
 export type FeedFilters = {
-  /** route kind: "record" (루트일기) | "plan" (계획) */
+  /** route kind: "record" (코스 기록) | "plan" (계획) */
   kinds: string[];
   /** who the course is for (recommended_for) — course-native purpose facet */
   purposes: string[];

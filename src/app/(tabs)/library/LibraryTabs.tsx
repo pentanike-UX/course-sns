@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import CollectionCard from "./CollectionCard";
 import FollowingPanel from "./FollowingPanel";
@@ -16,28 +17,40 @@ export type LibraryTab = "following" | "saved" | "followingPeople";
 
 const TAB_ORDER = ["following", "saved", "followingPeople"] as const;
 
-/** 따라가는 중 / 저장 / 팔로잉 — course-community library IA (Phase 2). */
+/** 따라가는 중 / 저장 / 구독 코스 — transfer vs subscribe IA (FOL-01). */
 export default function LibraryTabs({
   followed,
   saved,
   followingCourses,
   followingPeople,
   initialTab,
+  initialSubscribeMode = "courses",
 }: {
   followed: FollowedCourse[];
   saved: RouteSummary[];
   followingCourses: RouteSummary[];
   followingPeople: PersonSummary[];
   initialTab: LibraryTab;
+  /** people only via ?tab=people — stream defaults to courses (FOL-02). */
+  initialSubscribeMode?: "courses" | "people";
 }) {
   const { tab, select } = useSegTabs<LibraryTab>(initialTab, (t) =>
-    t === "following" ? "/library" : `/library?tab=${t === "followingPeople" ? "people" : t}`,
+    t === "following"
+      ? "/library"
+      : t === "followingPeople"
+        ? "/library?tab=subscribed"
+        : `/library?tab=${t}`,
   );
 
   const renderPanel = (t: LibraryTab) => {
     if (t === "followingPeople") {
       return (
-        <FollowingCoursesPanel courses={followingCourses} people={followingPeople} />
+        <FollowingCoursesPanel
+          key={initialSubscribeMode}
+          courses={followingCourses}
+          people={followingPeople}
+          initialMode={initialSubscribeMode}
+        />
       );
     }
     if (t === "following") {
@@ -57,7 +70,7 @@ export default function LibraryTabs({
       <ul className="space-y-4 px-4 pb-8 pt-4">
         {saved.map((r) => (
           <li key={r.id}>
-            <CollectionCard route={r} tab="saved" />
+            <CollectionCard route={r} />
           </li>
         ))}
       </ul>
@@ -71,7 +84,7 @@ export default function LibraryTabs({
           options={[
             { value: "following", label: "따라가는 중" },
             { value: "saved", label: "저장" },
-            { value: "followingPeople", label: "팔로잉" },
+            { value: "followingPeople", label: "구독 코스" },
           ]}
           value={tab}
           onChange={select}
@@ -90,13 +103,14 @@ export default function LibraryTabs({
 }
 
 function FollowedCourseCard({ course }: { course: FollowedCourse }) {
+  // Follow-loop language (LIB-02) — avoid diary「기록 중」
   const statusLabel =
     course.followStatus === "done"
       ? "다녀옴"
       : course.followStatus === "tuning"
         ? "다듬는 중"
-        : "기록 중";
-  // done = ink soft (not brand/success red); tuning = brand wash; recording = muted
+        : "실행 준비";
+  // done = ink soft (not brand/success red); tuning = brand wash; preparing = muted
   const statusClass =
     course.followStatus === "done"
       ? "bg-muted text-ink ring-1 ring-line"
@@ -108,11 +122,16 @@ function FollowedCourseCard({ course }: { course: FollowedCourse }) {
   const originalHref = course.originalRouteId
     ? `/routes/${course.originalRouteId}`
     : editHref;
+  // P2-CARD: incomplete + original → open original (다녀왔어요 CTA). ProgressBar keeps edit.
+  const cardHref =
+    course.followStatus !== "done" && course.originalRouteId
+      ? originalHref
+      : `/routes/${course.id}`;
 
   return (
     <div className="space-y-2">
       <div className="relative">
-        <RouteCard route={course} />
+        <RouteCard route={course} href={cardHref} />
         <span
           className={`absolute left-2.5 top-2.5 z-10 rounded-full px-2.5 py-1 text-[11px] font-bold shadow-sm ${statusClass}`}
         >
@@ -129,7 +148,7 @@ function FollowedCourseCard({ course }: { course: FollowedCourse }) {
   );
 }
 
-/** Persistent next-step checklist for P2 — steps reflect real draft data (Wave E4). */
+/** Persistent next-step checklist for P2 — steps reflect real draft data (Wave G2). */
 function FollowProgressBar({
   course,
   editHref,
@@ -142,38 +161,46 @@ function FollowProgressBar({
   hasOriginal: boolean;
 }) {
   const status = course.followStatus;
-  const spotsOk = course.spotCount >= 1 && course.title.trim().length > 0;
-  const moveOk =
-    status === "done" ||
-    status === "ready" ||
-    !!(course.transitLabel || (course.totalDurationMin && course.totalDurationMin > 0));
   const doneOk = status === "done";
+  // LIB-01: do not treat status===ready as move complete — require real transit data.
+  // After 다녀왔어요, keep the row visually complete even if draft legs are thin.
+  const spotsDataOk = course.spotCount >= 1 && course.title.trim().length > 0;
+  const moveDataOk = !!(
+    course.transitLabel ||
+    (course.totalDurationMin && course.totalDurationMin > 0)
+  );
+  const spotsOk = doneOk || spotsDataOk;
+  const moveOk = doneOk || moveDataOk;
 
   const steps = [
-    { label: "스팟 확인", done: spotsOk },
+    { label: "스팟·제목", done: spotsOk },
     { label: "이동 확인", done: moveOk },
     { label: "다녀왔어요", done: doneOk },
   ];
 
-  const nextHref =
-    status === "done"
+  // LIB-03: after completion, next = tip edit on original (not dead-end draft only).
+  const nextHref = doneOk
+    ? hasOriginal
+      ? originalHref
+      : editHref
+    : !spotsDataOk || !moveDataOk
       ? editHref
-      : !spotsOk || !moveOk
-        ? editHref
-        : hasOriginal
-          ? originalHref
-          : editHref;
+      : hasOriginal
+        ? originalHref
+        : editHref;
 
-  const nextLabel =
-    status === "done"
-      ? "내 초안 보기"
-      : !spotsOk
-        ? "스팟 다듬기"
-        : !moveOk
-          ? "이동 확인하기"
-          : hasOriginal
-            ? "원본에서 후기 남기기"
-            : "초안 열기";
+  // Align CTA with the incomplete step (not post-completion「후기」language).
+  const nextLabel = doneOk
+    ? hasOriginal
+      ? "후기 수정"
+      : "내 초안 보기"
+    : !spotsDataOk
+      ? "스팟 다듬기"
+      : !moveDataOk
+        ? "이동 확인하기"
+        : hasOriginal
+          ? "원본에서 다녀왔어요"
+          : "초안 열기";
 
   const nextIdx = steps.findIndex((s) => !s.done);
 
@@ -198,12 +225,22 @@ function FollowProgressBar({
           </li>
         ))}
       </ol>
-      <Link
-        href={nextHref}
-        className="mt-1.5 inline-flex text-[12px] font-bold text-sunset-ink underline-offset-2 hover:underline"
-      >
-        {nextLabel}
-      </Link>
+      <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+        <Link
+          href={nextHref}
+          className="inline-flex text-[12px] font-bold text-sunset-ink underline-offset-2 hover:underline"
+        >
+          {nextLabel}
+        </Link>
+        {doneOk && hasOriginal && (
+          <Link
+            href={editHref}
+            className="inline-flex text-[12px] font-medium text-ink-faint underline-offset-2 hover:underline"
+          >
+            내 초안 보기
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
@@ -211,59 +248,68 @@ function FollowProgressBar({
 function FollowingCoursesPanel({
   courses,
   people,
+  initialMode = "courses",
 }: {
   courses: RouteSummary[];
   people: PersonSummary[];
+  initialMode?: "courses" | "people";
 }) {
-  const [mode, setMode] = useState<"courses" | "people">("courses");
+  const router = useRouter();
+  const [mode, setMode] = useState<"courses" | "people">(initialMode);
+
+  const showCourses = () => {
+    setMode("courses");
+    router.replace("/library?tab=subscribed", { scroll: false });
+  };
+  const showPeople = () => {
+    setMode("people");
+    router.replace("/library?tab=people", { scroll: false });
+  };
 
   return (
     <div className="pb-8">
-      <div className="flex gap-2 px-4 pt-3">
-        <SubChip active={mode === "courses"} onClick={() => setMode("courses")}>
-          새 코스
-        </SubChip>
-        <SubChip active={mode === "people"} onClick={() => setMode("people")}>
-          사람
-        </SubChip>
-      </div>
       {mode === "people" ? (
-        <FollowingPanel following={people} />
-      ) : courses.length === 0 ? (
-        <EmptyFollowingCourses onFindPeople={() => setMode("people")} />
+        <>
+          <div className="flex items-center justify-between gap-2 px-4 pt-3">
+            <button
+              type="button"
+              onClick={showCourses}
+              className="text-[12px] font-semibold text-ink-soft underline-offset-2 hover:underline"
+            >
+              ← 구독 코스
+            </button>
+            <p className="text-[12px] font-bold text-ink">팔로우 관리</p>
+          </div>
+          <FollowingPanel following={people} />
+        </>
       ) : (
-        <ul className="mt-3 space-y-4 px-4">
-          {courses.map((r) => (
-            <li key={r.id}>
-              <RouteCard route={r} />
-            </li>
-          ))}
-        </ul>
+        <>
+          <div className="flex items-baseline justify-between gap-2 px-4 pt-3">
+            <p className="text-[12px] font-semibold text-ink-soft">
+              팔로우한 메이커의 새 코스
+            </p>
+            <button
+              type="button"
+              onClick={showPeople}
+              className="shrink-0 text-[12px] font-semibold text-ink-faint underline-offset-2 hover:underline"
+            >
+              팔로우 관리
+            </button>
+          </div>
+          {courses.length === 0 ? (
+            <EmptyFollowingCourses onFindPeople={showPeople} />
+          ) : (
+            <ul className="mt-3 space-y-4 px-4">
+              {courses.map((r) => (
+                <li key={r.id}>
+                  <RouteCard route={r} showOwner />
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </div>
-  );
-}
-
-function SubChip({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={`rounded-full px-3.5 py-1.5 text-[13px] font-bold transition-colors ${
-        active ? "bg-ink text-paper" : "bg-muted text-ink-soft"
-      }`}
-    >
-      {children}
-    </button>
   );
 }
 
@@ -272,9 +318,9 @@ function EmptyFollowed() {
     <div className="flex flex-col items-center px-8 py-16 text-center">
       <p className="text-[14px] font-semibold text-ink">아직 따라가는 코스가 없어요</p>
       <p className="mt-1 text-[13px] leading-relaxed text-ink-faint">
-        둘러보기에서 마음에 드는 코스를
+        둘러보기에서 따라갈 코스를 가져오면
         <br />
-        따라가면 여기 모여요.
+        초안이 여기 모여요.
       </p>
       <Link
         href="/"

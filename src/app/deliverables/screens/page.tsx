@@ -14,7 +14,7 @@ export default function ScreensPage() {
         rows={[
           ["/", "둘러보기(홈)", "공개", "랜딩. ?mode=map 지도, 필터 쿼리"],
           ["/?mode=map", "지도", "공개", "목록↔지도 슬라이드"],
-          ["/library", "보관함", "필요", "따라가는 중 · 저장 · 팔로잉"],
+          ["/library", "보관함", "필요", "따라가는 중 · 저장 · 구독 코스"],
           ["FAB → sheet", "새 코스", "필요", "기록/계획 → /routes/new"],
         ]}
       />
@@ -35,14 +35,14 @@ export default function ScreensPage() {
         rows={[
           ["/u/[handle]", "공개 책장", "공개", "팔로우 토글"],
           ["/u/[handle]/followers", "팔로워", "공개", ""],
-          ["/u/[handle]/following", "팔로잉", "공개", ""],
-          ["/feed", "내 코스(하드)", "필요", "주로 드로어로 대체"],
-          ["/profile", "설정 드로어", "필요", ""],
+          ["/u/[handle]/following", "팔로우 중", "공개", ""],
+          ["/feed", "내 코스(하드)", "필요", "주로 홈 드로어로 대체"],
+          ["/profile", "설정(풀페이지)", "필요", "드로어에서도 진입"],
           ["/profile/edit", "프로필 편집", "필요", ""],
           ["/profile/stats", "코스 통계", "필요", "전이·영향력 섹션"],
           ["/profile/account", "계정", "필요", "로그아웃·삭제"],
           ["/notifications", "알림", "필요", "전이·구독 / 소셜 그룹"],
-          ["/login", "로그인", "공개", "로그인 시 / 로 리다이렉트"],
+          ["/login", "로그인", "공개", "성공 시 ?next= 존중(replace)"],
         ]}
       />
 

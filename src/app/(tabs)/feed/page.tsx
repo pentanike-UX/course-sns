@@ -29,7 +29,7 @@ export default async function DiaryPage({
     getMyCollectionCounts(),
     getMyDefaultVisibility(),
   ]);
-  const displayName = profile?.displayName ?? "여행자";
+  const displayName = profile?.displayName?.trim() || "나";
 
   return (
     <FeedProfileStack

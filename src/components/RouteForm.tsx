@@ -254,13 +254,16 @@ export default function RouteForm({
   const [visibility, setVisibility] = useState<Visibility>(
     initial?.visibility ?? defaultVisibility ?? "private",
   );
-  // 완료(→상세) requires an explicit tap on 공개/비공개 — never infer from default
-  // or from merely scrolling to the share section.
-  const [visibilityChosen, setVisibilityChosen] = useState(false);
+  // PUB-01: create must explicitly pick 공개/비공개. Edit seeds from existing
+  // visibility so finish isn't blocked until the user re-taps the same choice.
+  const [visibilityChosen, setVisibilityChosen] = useState(mode === "edit");
   const [showMoreMeta, setShowMoreMeta] = useState(false);
   const [openInfoTick, setOpenInfoTick] = useState(0);
   const [confirmVisibility, setConfirmVisibility] = useState(false);
+  const [confirmReady, setConfirmReady] = useState(false);
   const saveIntentRef = useRef<"draft" | "finish">("finish");
+  /** Skip one readiness soft-gate after the user confirms「그래도 공개」. */
+  const readySkipRef = useRef(false);
 
   const [spots, setSpots] = useState<DraftSpot[]>(() =>
     isDirectPlanCreate ? [] : initialToSpots(initial),
@@ -594,6 +597,27 @@ export default function RouteForm({
   const allPhotos = spots.flatMap((s) => s.photos);
   const draftMap = useMemo(() => buildDraftRouteMap(spots), [spots]);
 
+  const readinessMissing = useMemo(() => {
+    const checks = [
+      { ok: !!region.trim(), label: "지역" },
+      { ok: !!recommendedFor.trim(), label: "추천 대상" },
+      { ok: !!difficulty, label: "난이도" },
+      { ok: spots.filter((s) => s.title.trim()).length >= 2, label: "스팟 2곳+" },
+      { ok: !!coverPhotoKey, label: "대표 사진" },
+    ];
+    return checks.filter((c) => !c.ok).map((c) => c.label);
+  }, [region, recommendedFor, difficulty, spots, coverPhotoKey]);
+
+  const requestFinishSubmit = () => {
+    saveIntentRef.current = "finish";
+    const form = document.getElementById("route-form") as HTMLFormElement | null;
+    const finishBtn = form?.querySelector<HTMLButtonElement>(
+      'button[type="submit"][name="intent"][value="finish"]',
+    );
+    if (finishBtn) form?.requestSubmit(finishBtn);
+    else form?.requestSubmit();
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (saving) return;
@@ -640,6 +664,19 @@ export default function RouteForm({
       setSaveError("스팟을 한 곳 이상 추가해 주세요.");
       return;
     }
+
+    // P3-SOFT: public finish with incomplete follow-ready checklist → soft confirm.
+    if (
+      saveIntent === "finish" &&
+      visibility === "public" &&
+      readinessMissing.length > 0 &&
+      !readySkipRef.current
+    ) {
+      setConfirmReady(true);
+      return;
+    }
+    readySkipRef.current = false;
+
     setSaving(true);
     setSaveError(null);
 
@@ -780,23 +817,54 @@ export default function RouteForm({
   const [initialSnapshot] = useState(formSnapshot);
   const isDirty = formSnapshot !== initialSnapshot;
 
-  const planBackHref = isDirectPlanCreate ? "/library?tab=following" : `/routes/${routeId}`;
-  const leavePlanner = () => {
+  // Plans land in「따라가는 중」(default /library). Create → home. Edit → detail.
+  const leaveHref = isEdit
+    ? `/routes/${routeId}`
+    : isDirectPlanCreate
+      ? "/library"
+      : "/";
+  const dirtyGuardRef = useRef(false);
+  const leaveForm = (opts?: { forceReplace?: boolean }) => {
     setConfirmExit(false);
-    if (hasInAppHistory()) router.back();
-    else router.replace(planBackHref);
+    dirtyGuardRef.current = false;
+    if (opts?.forceReplace || !hasInAppHistory()) router.replace(leaveHref);
+    else router.back();
   };
-  const requestExitPlanner = () => {
+  const requestExitForm = () => {
     if (isDirty) setConfirmExit(true);
-    else leavePlanner();
+    else leaveForm();
   };
 
-  // Planner header controls: a close (X) that confirms when there are unsaved
-  // edits, and a 임시저장 that submits the form (saves the draft).
-  const plannerCloseButton = (
+  // System/gesture back must confirm when dirty — X alone is not enough.
+  useEffect(() => {
+    if (!isDirty) return;
+    try {
+      window.history.pushState({ rdFormDirty: 1 }, "");
+      dirtyGuardRef.current = true;
+    } catch {
+      dirtyGuardRef.current = false;
+    }
+    const onPop = () => {
+      if (!dirtyGuardRef.current) return;
+      try {
+        window.history.pushState({ rdFormDirty: 1 }, "");
+      } catch {
+        /* ignore */
+      }
+      setConfirmExit(true);
+    };
+    window.addEventListener("popstate", onPop);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      dirtyGuardRef.current = false;
+    };
+  }, [isDirty]);
+
+  // Close (X) confirms when there are unsaved edits (create / edit / planner).
+  const formCloseButton = (
     <button
       type="button"
-      onClick={requestExitPlanner}
+      onClick={requestExitForm}
       aria-label="닫기"
       className="flex h-11 w-11 items-center justify-center"
     >
@@ -805,6 +873,7 @@ export default function RouteForm({
       </GlassCircle>
     </button>
   );
+  const plannerCloseButton = formCloseButton;
   const tempSaveButton = (
     <button
       form="route-form"
@@ -817,14 +886,20 @@ export default function RouteForm({
       {saving ? "저장 중…" : "임시저장"}
     </button>
   );
+  const exitConfirmDescription =
+    isDirectPlanCreate || isPlanDraft
+      ? "변경한 내용이 저장되지 않아요. 상단의 ‘임시저장’으로 보관할 수 있어요. 완료는 ‘제목과 일정’에서 하세요."
+      : isEdit
+        ? "저장하지 않은 수정 내용이 사라져요."
+        : "작성 중인 내용이 저장되지 않아요. 나가면 입력한 내용이 사라져요.";
   const exitConfirmSheet = (
     <ActionBottomSheet
       open={confirmExit}
       title="저장하지 않고 나가시겠습니까?"
-      description="변경한 내용이 저장되지 않아요. 상단의 ‘임시저장’으로 보관할 수 있어요. 완료는 ‘제목과 일정’에서 하세요."
+      description={exitConfirmDescription}
       primaryLabel="나가기"
       primaryTone="danger"
-      onPrimary={leavePlanner}
+      onPrimary={() => leaveForm({ forceReplace: true })}
       secondaryLabel="계속 편집"
       onClose={() => setConfirmExit(false)}
       ariaLabel="저장하지 않고 나가기 확인"
@@ -844,14 +919,7 @@ export default function RouteForm({
       onPrimary={() => {
         if (!visibilityChosen) return;
         setConfirmVisibility(false);
-        saveIntentRef.current = "finish";
-        const form = document.getElementById("route-form") as HTMLFormElement | null;
-        // Submit with finish intent even if the last click wasn't the header button.
-        const finishBtn = form?.querySelector<HTMLButtonElement>(
-          'button[type="submit"][name="intent"][value="finish"]',
-        );
-        if (finishBtn) form?.requestSubmit(finishBtn);
-        else form?.requestSubmit();
+        requestFinishSubmit();
       }}
       secondaryLabel="닫기"
       onClose={() => setConfirmVisibility(false)}
@@ -881,6 +949,22 @@ export default function RouteForm({
         )}
       </div>
     </ActionBottomSheet>
+  );
+  const readinessConfirmSheet = (
+    <ActionBottomSheet
+      open={confirmReady}
+      title="이대로 공개할까요?"
+      description={`따라가기 준비도가 아직 비어 있어요: ${readinessMissing.join("·")}. 채우면 남이 따라가기 쉬워져요.`}
+      primaryLabel="그래도 공개"
+      onPrimary={() => {
+        setConfirmReady(false);
+        readySkipRef.current = true;
+        requestFinishSubmit();
+      }}
+      secondaryLabel="더 채우기"
+      onClose={() => setConfirmReady(false)}
+      ariaLabel="따라가기 준비도 확인"
+    />
   );
 
   // ── shared render pieces ──────────────────────────────────────────────
@@ -1229,6 +1313,14 @@ export default function RouteForm({
         <span className="text-ink-faint">{showMoreMeta ? "−" : "+"}</span>
       </button>
       {showMoreMeta && secondaryMetaSelectors}
+      <FollowReadyHint
+        region={region}
+        recommendedFor={recommendedFor}
+        difficulty={difficulty}
+        spotCount={spots.length}
+        hasCover={!!coverPhotoKey}
+        visibility={visibility}
+      />
       <div className="mb-1 mt-2 text-[12px] font-medium text-ink-soft">공개 범위</div>
       {visibilityBox}
       {!visibilityChosen && (
@@ -1305,6 +1397,7 @@ export default function RouteForm({
         {sheets}
         {exitConfirmSheet}
         {visibilityConfirmSheet}
+        {readinessConfirmSheet}
       </PlannerFrame>
     );
   }
@@ -1350,6 +1443,7 @@ export default function RouteForm({
         {sheets}
         {exitConfirmSheet}
         {visibilityConfirmSheet}
+        {readinessConfirmSheet}
       </PlannerFrame>
     );
   }
@@ -1359,8 +1453,7 @@ export default function RouteForm({
     return (
       <MobileFrame shell>
         <AppHeader
-          back={`/routes/${routeId}`}
-          closeButton
+          left={formCloseButton}
           title="코스 수정"
           right={
             <button
@@ -1454,6 +1547,7 @@ export default function RouteForm({
               difficulty={difficulty}
               spotCount={spots.length}
               hasCover={!!coverPhotoKey}
+              visibility={visibility}
             />
             {visibilityBox}
             {!visibilityChosen && (
@@ -1469,7 +1563,9 @@ export default function RouteForm({
         </form>
         {savingOverlay}
         {sheets}
+        {exitConfirmSheet}
         {visibilityConfirmSheet}
+        {readinessConfirmSheet}
       </MobileFrame>
     );
   }
@@ -1479,7 +1575,7 @@ export default function RouteForm({
 
   return (
     <MobileFrame shell>
-      <AppHeader back="/" closeButton title="새 코스 만들기" />
+      <AppHeader left={formCloseButton} title="새 코스 만들기" />
       <Stepper steps={STEP_LABELS} current={step} optional={[1]} />
 
       <form id="route-form" onSubmit={handleSave} className="no-scrollbar flex-1 overflow-y-auto px-4 pb-4">
@@ -1583,6 +1679,7 @@ export default function RouteForm({
               difficulty={difficulty}
               spotCount={spots.length}
               hasCover={!!coverPhotoKey || allPhotos.length > 0}
+              visibility={visibility}
             />
             {visibilityBox}
             {!visibilityChosen && (
@@ -1637,6 +1734,9 @@ export default function RouteForm({
 
       {savingOverlay}
       {sheets}
+      {exitConfirmSheet}
+      {visibilityConfirmSheet}
+      {readinessConfirmSheet}
     </MobileFrame>
   );
 }
@@ -3248,19 +3348,21 @@ function StepHeading({ title, desc }: { title: string; desc: string }) {
   );
 }
 
-/** Soft checklist before publish — does not block save (Wave D / F4). */
+/** Soft checklist before publish — does not hard-block save (Wave D / F4 / G3). */
 function FollowReadyHint({
   region,
   recommendedFor,
   difficulty,
   spotCount,
   hasCover,
+  visibility,
 }: {
   region: string;
   recommendedFor: string;
   difficulty: string;
   spotCount: number;
   hasCover?: boolean;
+  visibility?: Visibility;
 }) {
   const checks = [
     { ok: !!region.trim(), label: "지역" },
@@ -3277,8 +3379,15 @@ function FollowReadyHint({
       </p>
     );
   }
+  const publicWarn = visibility === "public";
   return (
-    <div className="mb-3 rounded-xl bg-muted px-3 py-2.5 ring-1 ring-line/60">
+    <div
+      className={`mb-3 rounded-xl px-3 py-2.5 ring-1 ${
+        publicWarn
+          ? "bg-sunset-wash/50 ring-sunset/25"
+          : "bg-muted ring-line/60"
+      }`}
+    >
       <p className="text-[12px] font-bold text-ink">따라가기 준비도</p>
       <ul className="mt-1.5 flex flex-wrap gap-x-2 gap-y-1 text-[11px] font-semibold">
         {checks.map((c) => (
@@ -3287,8 +3396,14 @@ function FollowReadyHint({
           </li>
         ))}
       </ul>
-      <p className="mt-1.5 text-[11px] leading-relaxed text-ink-soft">
-        비워 둔 항목·대표 사진을 채우면 남이 따라가기 쉬워져요. 필수는 아니에요.
+      <p
+        className={`mt-1.5 text-[11px] leading-relaxed ${
+          publicWarn ? "font-semibold text-sunset-ink" : "text-ink-soft"
+        }`}
+      >
+        {publicWarn
+          ? `공개하면 남이 따라가요. 아직 ${missing.map((m) => m.label).join("·")}이(가) 비어 있어요 — 채우면 따라가기 쉬워집니다.`
+          : "비워 둔 항목·대표 사진을 채우면 남이 따라가기 쉬워져요. 필수는 아니에요."}
       </p>
     </div>
   );
@@ -3367,6 +3482,12 @@ function FollowNextStepsCard({
         <li>2. 이동·시간 맞추기</li>
         <li>3. {plan ? "다녀오면 ‘다녀왔어요’로 후기" : "사진·팁 채우고 공개"}</li>
       </ol>
+      <Link
+        href="/library"
+        className="mt-3 inline-flex rounded-full bg-sunset px-4 py-2 text-[12px] font-bold text-white"
+      >
+        보관함 · 따라가는 중
+      </Link>
     </div>
   );
 }

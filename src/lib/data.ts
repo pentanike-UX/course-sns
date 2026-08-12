@@ -38,7 +38,7 @@ function toAuthor(p: ProfileRow | null): RouteAuthor {
   return {
     id: p?.id ?? "",
     handle: p?.handle ?? "",
-    displayName: p?.display_name ?? "여행자",
+    displayName: p?.display_name ?? "메이커",
     avatarUrl: p?.avatar_url ?? undefined,
   };
 }
@@ -57,7 +57,7 @@ export async function getCurrentProfile(): Promise<RouteAuthor | null> {
   return data ? toAuthor(data) : toAuthor({
     id: user.id,
     handle: user.email?.split("@")[0] ?? "user",
-    display_name: user.email?.split("@")[0] ?? "여행자",
+    display_name: user.email?.split("@")[0] ?? "나",
     avatar_url: null,
   });
 }
@@ -267,6 +267,8 @@ type MapPointRow = {
   difficulty: string | null;
   spots: { lat: number | null; lng: number | null; order_index: number }[];
   legs: { transport: string | null; duration_min: number | null }[] | null;
+  /** present when this public route is itself a plan copy */
+  copy_source?: { purpose: CopyPurpose } | { purpose: CopyPurpose }[] | null;
 };
 
 /**
@@ -317,7 +319,7 @@ export async function getFeedMapPoints(opts?: {
   let query = supabase
     .from("routes")
     .select(
-      "id, title, region, cover_photo_url, like_count, copy_count, completion_count, difficulty, spots!spots_route_id_fkey(lat, lng, order_index), legs!legs_route_id_fkey(transport, duration_min)",
+      "id, title, region, cover_photo_url, like_count, copy_count, completion_count, difficulty, spots!spots_route_id_fkey(lat, lng, order_index), legs!legs_route_id_fkey(transport, duration_min), copy_source:route_copies!route_copies_copied_route_id_fkey(purpose)",
     )
     .eq("visibility", "public")
     .order("created_at", { ascending: false })
@@ -344,8 +346,16 @@ export async function getFeedMapPoints(opts?: {
     query = query.in("difficulty", f.difficulties.map((d) => san(d)));
 
   const { data } = await query;
+  const kindFilter = f?.kinds?.length ? new Set(f.kinds) : null;
   const points: FeedMapPoint[] = [];
   for (const r of (data as MapPointRow[] | null) ?? []) {
+    // kinds (코스 기록|계획) — same rule as routeMatchesFilters; applied post-query
+    // because purpose lives on route_copies, not routes.
+    if (kindFilter) {
+      const src = Array.isArray(r.copy_source) ? r.copy_source[0] : r.copy_source;
+      const kind = src?.purpose === "plan" ? "plan" : "record";
+      if (!kindFilter.has(kind)) continue;
+    }
     const spots = (r.spots ?? []).slice().sort((a, b) => a.order_index - b.order_index);
     const path = spots
       .filter((s) => typeof s.lat === "number" && typeof s.lng === "number")
@@ -709,11 +719,6 @@ export async function getBookmarkedRoutes(): Promise<RouteSummary[]> {
   return collectedRoutes("bookmarks");
 }
 
-/** Routes the current user has liked, most-recent first. */
-export async function getLikedRoutes(): Promise<RouteSummary[]> {
-  return collectedRoutes("likes");
-}
-
 export type FollowedCourseStatus = "tuning" | "ready" | "done";
 
 export type FollowedCourse = RouteSummary & {
@@ -784,7 +789,7 @@ export async function getMyFollowedCourses(): Promise<FollowedCourse[]> {
   });
 }
 
-/** Public courses from people I follow (보관함 팔로잉 코스 스트림). */
+/** Public courses from people I follow (보관함「구독 코스」스트림). */
 export async function getFollowingCourseStream(): Promise<RouteSummary[]> {
   return getFollowingFeed({ sort: "recent" });
 }
@@ -816,6 +821,8 @@ export type PersonSummary = {
   avatarUrl?: string;
   /** whether the current viewer follows this person */
   isFollowing: boolean;
+  /** whether this person follows the viewer back (맞팔 라벨) */
+  followsMe?: boolean;
   /** this row is the current viewer */
   isMe: boolean;
 };
@@ -973,7 +980,7 @@ async function hydratePeople(
   ids: string[],
 ): Promise<PersonSummary[]> {
   const user = await getAuthUser();
-  const [{ data: profs }, mine] = await Promise.all([
+  const [{ data: profs }, mine, theirs] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, handle, display_name, avatar_url")
@@ -985,9 +992,17 @@ async function hydratePeople(
           .eq("follower_id", user.id)
           .in("followee_id", ids)
       : Promise.resolve({ data: [] as { followee_id: string }[] }),
+    user
+      ? supabase
+          .from("follows")
+          .select("follower_id")
+          .eq("followee_id", user.id)
+          .in("follower_id", ids)
+      : Promise.resolve({ data: [] as { follower_id: string }[] }),
   ]);
 
   const followingIds = new Set((mine.data ?? []).map((r) => r.followee_id));
+  const followsMeIds = new Set((theirs.data ?? []).map((r) => r.follower_id));
   const byId = new Map((profs ?? []).map((p) => [p.id, p]));
 
   return ids
@@ -999,6 +1014,7 @@ async function hydratePeople(
       displayName: p.display_name,
       avatarUrl: p.avatar_url ?? undefined,
       isFollowing: followingIds.has(p.id),
+      followsMe: followsMeIds.has(p.id),
       isMe: user?.id === p.id,
     }));
 }
@@ -1071,17 +1087,25 @@ export async function getMyDefaultVisibility(): Promise<Visibility> {
   return (data?.default_visibility as Visibility) ?? "public";
 }
 
-/** Count of the current user's saved + liked routes (cheap head queries). */
-export async function getMyCollectionCounts(): Promise<{ saved: number; liked: number }> {
+/** Count of the current user's saved + liked routes + follower count (cheap head queries). */
+export async function getMyCollectionCounts(): Promise<{
+  saved: number;
+  liked: number;
+  followers: number;
+}> {
   const supabase = await getServerClient();
   const user = await getAuthUser();
-  if (!user) return { saved: 0, liked: 0 };
+  if (!user) return { saved: 0, liked: 0, followers: 0 };
 
-  const [bm, lk] = await Promise.all([
+  const [bm, lk, fol] = await Promise.all([
     supabase.from("bookmarks").select("*", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("likes").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+    supabase
+      .from("follows")
+      .select("*", { count: "exact", head: true })
+      .eq("followee_id", user.id),
   ]);
-  return { saved: bm.count ?? 0, liked: lk.count ?? 0 };
+  return { saved: bm.count ?? 0, liked: lk.count ?? 0, followers: fol.count ?? 0 };
 }
 
 async function collectedRoutes(

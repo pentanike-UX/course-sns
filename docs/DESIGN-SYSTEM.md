@@ -2,7 +2,7 @@
 
 > UI·인터페이스 일관성을 위한 정본 가이드. **코드 토큰 = 스펙** — 값을 바꿀 때는 `src/app/globals.css`를 먼저 수정하고, 이 문서와 `docs/HANDOFF.md` §7에 변경 이유를 남긴다.  
 > 브랜드 아이덴티티·메시지·로고 의미: [`BRAND.md`](BRAND.md) · `/deliverables/brand`  
-> 최종 업데이트: 2026-08-03 · course-sns MVP `v0.3.8-mvp` · **브랜드 = coursee** (공식 SVG 라이트/다크 락업 · C+모션 도트) · 포인트 레드 · 표면/잉크 뉴트럴 · success=teal · **error≠brand**
+> 최종 업데이트: 2026-08-03 · course-sns MVP `v0.3.13-mvp` · **브랜드 = coursee** (공식 SVG 라이트/다크 락업 · C+모션 도트) · 포인트 레드 · 표면/잉크 뉴트럴 · success=teal · **error≠brand**
 
 ---
 
@@ -80,7 +80,7 @@ bg-ink text-paper
 | `--sky` | 링크·지도·대중교통 |
 | `--accent-*` | 테마/감정 칩 등 메타 (`--accent-mint`는 soft coral `#fca5a5`, sky, sunshine, coral, lavender) |
 
-**상태 뱃지 (보관함「따라가는 중」):** `다녀옴` = `bg-muted text-ink ring-line` · `다듬는 중` = sunset-wash · `기록 중` = muted. 완료에 brand 레드를 쓰지 않는다.
+**상태 뱃지 (보관함「따라가는 중」):** `다녀옴` = `bg-muted text-ink ring-line` · `다듬는 중` = sunset-wash · `실행 준비` = muted. 완료에 brand 레드를 쓰지 않는다.
 
 **플래너 레드 예산:** 주 CTA(완료·따라가기 계열)만 `bg-sunset`. 섹션 칩·맵 모드·스텝퍼·시트 핸들·임시저장은 **ink/muted**. 지도 도보 라인은 brand가 아닌 slate (`TRANSPORT_COLOR.walk`).
 

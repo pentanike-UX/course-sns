@@ -5,8 +5,8 @@
 ## 1. 제품 개요
 
 **coursee (course-sns)** — 따라갈 수 있는 **이동 코스**를 발견·복제·완주·구독하는 커뮤니티. 브랜드 마크: `public/icons/`(심볼) · `logo-full`(워드마크).  
-정본 UX: [`COURSE-UX-DESIGN.md`](COURSE-UX-DESIGN.md) · 토큰: [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) · 페인포인트: [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md).  
-**공식 가이드(웹):** [`/deliverables`](https://course-sns.vercel.app/deliverables) — 기획·브랜드(BI·BX)·화면·아키텍처·DB·API·개발·현황·이력. 브랜드 정본 [`docs/BRAND.md`](BRAND.md).
+정본 UX: [`COURSE-UX-DESIGN.md`](COURSE-UX-DESIGN.md) · 토큰: [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) · 페인포인트: [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md) · 시나리오 단계 검수: [`PERSONA-SCENARIO-STEP-AUDIT-2026-08.md`](PERSONA-SCENARIO-STEP-AUDIT-2026-08.md).  
+**공식 가이드(웹):** [`/deliverables`](https://course-sns.vercel.app/deliverables) — 기획·시나리오·시나리오점검·브랜드(BI·BX)·화면·아키텍처·DB·API·개발·현황·이력. 브랜드 정본 [`docs/BRAND.md`](BRAND.md).
 
 - 한 **Route**(코드/DB명 유지) = 순서 있는 **Spot** + 스팟 간 **Leg**(수단/시간/주의)
 - 메타: 지역·추천 대상·난이도·테마·감정(보조)·공개여부
@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.3.8-mvp)
+### 현재 화면·내비 (v0.3.25-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -22,7 +22,7 @@
 |----|-----|--------|------|
 | 홈 | `/` | P1 | **코스 쇼핑** — 공개 코스 피드. 정렬: 최신·많이 따라간·많이 다녀온·가까운 |
 | 지도 | `/?mode=map` | P1 | 동선으로 고르기 (목록↔지도). peek = 따라감/다녀옴 |
-| 보관함 | `/library` | P2·P4 | **따라가는 중 · 저장 · 팔로잉**(새 코스 스트림 + 사람). 아이콘=스택 |
+| 보관함 | `/library` | P2·P4 | **따라가는 중 · 저장 · 구독 코스**(스트림 + 팔로우 관리). 아이콘=스택 |
 | FAB(+) | sheet → `/routes/new` | P3 | 코스 기록하기 / 코스 계획하기 |
 
 **드로어·오버레이 (라우트 전환 없이 클라이언트 스택)**:
@@ -36,7 +36,7 @@
 
 - `/` — 둘러보기. `?mode=map`, `?q=&sort=&kind=&theme=&mood=&region=` (`popular`→`followed` 매핑)
 - `/feed` — 내 코스(보호). `?tab=all|record|plan`
-- `/library` — `?tab=following|saved|…` (세그먼트: 따라가는 중 | 저장 | 팔로잉)
+- `/library` — `?tab=saved|subscribed|people` (세그먼트: 따라가는 중 | 저장 | 구독 코스)
 - `/routes/new`, `/routes/[id]`, `/routes/[id]/edit` — 작성·상세·수정 (완료 전 **공개/비공개 명시 선택**)
 - `/u/[handle]`, `/notifications`, `/login`, `/profile/*`
 
@@ -254,6 +254,9 @@
 
 ## 4. 남은 작업 (TODO)
 
+> **시나리오 Wave G1–G6** (`v0.3.11`–`v0.3.18`) + 로그인 히스토리 스택(`v0.3.15`)은 코드 반영 완료.  
+> 아래는 **대시보드·실기기·env** 운영 항목만 남음.
+
 ### 사진 업로드 (E2E 검증 완료, 서명URL 방식)
 - ⚠️ **핵심 함정**: 이 Supabase 프로젝트는 사용자 JWT를 **ES256(신규 비대칭 서명키)** 로 발급하는데, **Storage 서비스가 이 토큰을 검증 못 함** → 클라이언트 직접 업로드(`storage.upload`)는 RLS 403. (PostgREST·auth는 ES256 정상 검증, storage만 실패)
 - 해결: **서버 서명URL 방식**. `signPhotoUploads`(server action)가 사용자 검증 후 **경로를 본인 uid 아래로 강제**해 service-role로 presigned URL 발급 → 클라가 `uploadToSignedUrl`로 업로드(사용자 JWT 불필요)
@@ -270,26 +273,29 @@
       - 검증: `pnpm lint`/`pnpm build` ✅, 키 미설정 → 검색창 미노출·`{enabled:false}`, 실키로 "세화 해변"/"광안리 해수욕장" 검색→선택→제목·주소·핀 자동 채움 확인(스크린샷 검증), 잘못된 키 → `{enabled:true, places:[]}` graceful
       - 참고: dev 콘솔에서 ViewTransition 중복 이름 경고가 버퍼에 보였으나 **실플로우(카드→상세, 뒤로가기)로 재현 안 됨** — Fast Refresh 재마운트/Playwright 다중 워커가 dev 서버에 물린 시점의 dev 전용 아티팩트로 판단. 프로덕션 빌드에서 재관찰되면 그때 조사
 - [ ] (권장) Supabase 대시보드에서 **이메일 확인 끄기**(개발 편의) 또는 실제 이메일로 가입 플로우 점검
+- [ ] (권장) Vercel Production에 `NAVER_SEARCH_CLIENT_ID`/`SECRET` 등록(없으면 장소 검색 UI만 숨김)
+- [ ] (권장) Supabase `0014`/`0015` 적용 여부 확인 · 실기기에서 로그인→작성→Back≠로그인 재확인
+- [ ] (권장) `.env.local` 있는 환경에서 `pnpm test:e2e` (스모크는「구독 코스」IA에 맞춤)
 
 ### 2단계 (SNS)
 - [x] **좋아요/즐겨찾기 토글 UI + 액션** (E2E 검증 완료)
       - `routes/[id]/actions.ts` `toggleLike/toggleBookmark`(server action, insert/delete + revalidate)
       - `routes/[id]/RouteActions.tsx`(client, 낙관적 토글, 미로그인 시 /login 리다이렉트)
       - `getRoute`가 현재 사용자 `liked/bookmarked` 동봉, 카운터는 기존 트리거가 like_count/bookmark_count 유지
-- [x] **보관함(저장/좋아요 모아보기)** (E2E 검증 완료)
-      - 하단탭 **홈·지도·보관함** + 중앙 "기록" FAB(`ring-card`로 관통). (구 5탭 구조에서 개편됨)
-      - `(tabs)/library/page.tsx`: `?tab=saved|liked` 세그먼트, 빈 상태 + 둘러보기 CTA
-      - `getBookmarkedRoutes`·`getLikedRoutes`(data.ts) — 본인 bookmarks/likes ⨝ routes(LITE)
+- [x] **보관함(따라가는 중·저장·구독 코스)** (E2E 검증 완료 · IA는 FOL-01 이후)
+      - 하단탭 **홈·지도·보관함** + 중앙 FAB(`ring-card`로 관통)
+      - `(tabs)/library/page.tsx`: `?tab=saved|subscribed|people` · 기본=따라가는 중
+      - `getBookmarkedRoutes` · `getFollowingCourseStream` · `getMyFollowing`
       - 전역 **탭 피드백**: 버튼/링크 `:active` 시 95% 축소(globals.css, 토글 제외)
-      - 보관함 카드 **원탭 해제**(`CollectionCard`: 저장/좋아요 해제 → 즉시 제거 + `router.refresh`)
-      - 프로필 통계에 **저장·좋아요 카운트**(`getMyCollectionCounts`) + 탭하면 보관함으로 이동
+      - 저장 카드 **원탭 해제**(`CollectionCard` → `router.refresh`)
+      - 프로필 통계: 팔로워·전이 지표 우선 (`getMyCollectionCounts`)
 - [x] **팔로우** (E2E 검증) — `/u/[handle]` 공개 프로필 + `toggleFollow`, 작성자명 링크
 - [x] **댓글** (E2E 검증) — `supabase/migrations/0004_comments.sql`(comments 테이블·RLS·`comment_count` 트리거), `getComments`/`addComment`/`deleteComment`, 상세에 댓글 목록+입력폼+삭제. `database.types.ts` 재생성됨
 - [x] **공개 피드 정렬/탐색** (E2E 검증 완료)
       - `getPublicFeed({sort, q})` — 최신순/인기순(like_count) + 지역·제목 ilike 검색(or 필터, 입력 sanitize)
       - `feed/FeedControls`(client): 디바운스 검색 + 정렬 칩, URL 쿼리 동기화(`?q=&sort=`)
 - [x] **알림** (`0007`): like/comment/follow 트리거 → notifications, 홈 종 뱃지 + `/notifications`(자동 읽음)
-- [x] **팔로잉 피드**: ~~둘러보기 `전체/팔로잉` 세그먼트~~ → **보관함>팔로잉**(회원 관리·검색, v1.96). `getFollowingFeed`는 data.ts에 dead export로 잔존
+- [x] **팔로잉 피드**: ~~둘러보기 `전체/팔로잉` 세그먼트~~ → **보관함>구독 코스**(스트림 + 팔로우 관리). `getFollowingFeed`는 `getFollowingCourseStream`이 사용.
 - [x] **루트 공유**: `generateMetadata`(OG/Twitter + 커버 이미지) + 공개 루트 ShareButton(native share/clipboard)
 - [x] **스팟 드래그 정렬**: 작성/수정 폼 @dnd-kit 드래그 핸들
 - [x] **계정 삭제**: `/profile/account` 위험구역 → service-role 스토리지 정리 + auth 유저 삭제(전체 cascade). E2E 검증(임시 유저)
@@ -347,7 +353,7 @@
       - 공용화: `lib/use-seg-tabs.ts`(`useSegTabs` = 탭 상태+replaceState URL 동기화+스와이프+방향 클래스, `useSwipeTabs` = 제스처) + `components/SlidingSegments.tsx`(슬라이딩 필 세그먼트, 옵션 수 가변). 홈 `HomeRoutesTabs`도 이걸로 리팩터
       - 제스처 설계: **touch 전용**(마우스 무시), 화면 가장자리 24px 시작점 무시(브라우저 뒤로가기 스와이프와 충돌 방지), 첫 10px에서 축 잠금(세로면 스크롤에 양보), 48px 이상 플릭만 인정. 패널에 `touch-pan-y` 필수(가로 이동 중 포인터 이벤트 유지)
       - 패널 모션 (같은 날 푸시 전환으로 강화): `components/SegPanel.tsx` — 탭 전환 시 **나가는 패널 스냅샷을 absolute로 잠깐 유지**해 제스처 방향으로 밀어내고(`seg-panel-out-*`), 새 패널이 반대편에서 이어 들어옴(`seg-panel-in-*`, translateX ±100% 280ms 동일 easing → 이음새가 한 띠처럼 보임). adjust-state-during-render 패턴으로 스냅샷 캡처, `onAnimationEnd`(target===currentTarget 가드, 자식 애니 버블 무시)로 제거. 컨테이너 `overflow-hidden`+`touch-pan-y`. 첫 페인트는 무애니메이션(dir=0). **reduced-motion**: in은 animation none, out은 `display:none`(animationend가 안 와서 잔류 방지). ⚠️ 전환 중 ~280ms 동안 같은 루트 카드가 양쪽 패널에 중복 마운트됨(전체↔기록 등) — ViewTransition 이름 중복은 전환(네비게이션) 시점에만 문제라 실사용 무해, 전환 중 카드 탭이라는 엣지만 존재
-      - 보관함: `library/LibraryTabs.tsx`(client) — page가 `getBookmarkedRoutes`+`getLikedRoutes` **둘 다 병렬 fetch** 후 전달. CollectionCard 원탭 해제(router.refresh)는 그대로 동작
+      - 보관함: `library/LibraryTabs.tsx`(client) — 당시 page가 bookmark+liked 병렬 fetch. (현재 IA는 따라가는 중·저장·구독 코스)
       - 둘러보기: `feed/FeedExplorer.tsx`(client)가 view 상태 소유, page가 전체+팔로잉 피드(지도 모드면 양쪽 포인트) **둘 다 병렬 fetch**. 검색·정렬·지도 모드는 기존대로 router.replace(서버). FeedControls는 `onViewChange` controlled로 변경, 자체 Seg 제거. **지도 모드는 스와이프 없음**(지도 드래그와 충돌) — 세그먼트 탭만 즉시 전환
       - 트레이드오프: 피드/보관함 진입 시 양쪽 쿼리 실행(LITE select 2개) — 즉시 전환 대가로 수용
       - 검증: lint/build ✅, 목 데이터 SSR 프리뷰로 3화면 렌더(세그먼트 카운트·인디케이터 위치·빈 상태·`touch-pan-y`) 확인 후 삭제, dev 에러 0. **스와이프 제스처는 실기기(터치)에서만 동작하므로 다음 세션에서 확인 필수** (환경 제약: Supabase·Playwright 차단)
@@ -468,7 +474,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.3.8-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.3.25-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: **`https://course-sns.vercel.app`** + `http://localhost:3000` (+ 필요 시 프리뷰). ⚠️ 도메인 미등록 시 **핀만 보이고 타일 공백**.
@@ -497,6 +503,146 @@ pnpm test:e2e     # Playwright 스모크
 ## 7. 작업 로그 (이어서 누적)
 
 > **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
+
+### 공개 준비도 soft confirm · e2e 동기화 (Cursor, 2026-08-12 · v0.3.25-mvp)
+
+- **버전**: **`v0.3.25-mvp`** (PATCH).
+- **P3-SOFT**: 공개 완료 시 준비도 미충족 →「이대로 공개할까요?」soft confirm (그래도 공개 / 더 채우기).
+- **P2**: 체크리스트「스팟·제목」카피.
+- **e2e**: 정렬「많이 따라간/다녀온」· 통계「전이 · 영향력」「코스 지역」.
+- **status**: 시나리오 단계 검수·v0.3.25 반영.
+- **검증**: `pnpm lint` · `pnpm build`.
+
+### 페르소나 시나리오 단계별 심층 검수 (Cursor, 2026-08-12 · v0.3.24-mvp)
+
+- **버전**: **`v0.3.24-mvp`** (PATCH).
+- **범위**: G·P1·P2·P3·P4·교차 — 시나리오 표의 단계마다 코드 대조.
+- **P2**: 따라가는 중 카드→원본 · 초안 상세「원본에서 다녀왔어요」배너 · 가져왔어요→`/library`.
+- **P3**: 플래너 FollowReadyHint · 통계 전이 0명 노출 ·「코스 지역」.
+- **P1/G**: 정렬「많이 따라간/다녀온」· 게스트 태그라인.
+- **P4**: 언팔 revalidate 홈/보관함 · PersonRow 맞팔.
+- **문서**: [`docs/PERSONA-SCENARIO-STEP-AUDIT-2026-08.md`](PERSONA-SCENARIO-STEP-AUDIT-2026-08.md).
+- **ops 잔여**: Supabase `0014` (course_publish 알림).
+- **검증**: `pnpm lint` · `pnpm build`.
+
+### 전체화면 UX/UI/GUI 재검수 (Cursor, 2026-08-12 · v0.3.23-mvp)
+
+- **버전**: **`v0.3.23-mvp`** (PATCH).
+- **CREATE**: 시스템/제스처 back dirty 가드 · 프로필 편집 dirty confirm.
+- **AUTH**: `?settings=1` 로그인 후 설정 드로어 재오픈 · 댓글/완주 AuthGate 카피.
+- **DET**: 후기·댓글 → 작성자 순서 · 히어로 theme/mood demote →「코스 정보」.
+- **HOME/MAP**: 정렬 칩 밀도 · empty sunset CTA · 지도 빈 시트「목록으로」· 게스트 태그라인.
+- **문서**: [`docs/UX-UI-GUI-AUDIT-FULL-SCREEN-2026-08.md`](UX-UI-GUI-AUDIT-FULL-SCREEN-2026-08.md).
+- **검증**: `pnpm lint` · `pnpm build`.
+
+### 전체 화면·플로우 UX/UI/GUI 검수 (Cursor, 2026-08-12 · v0.3.22-mvp)
+
+- **버전**: **`v0.3.22-mvp`** (PATCH).
+- **배경**: HOME→MAP→DET→CREATE→AUTH→LIB→PROFILE→NOTIF 전 플로우 재검수.
+- **AUTH**: login `error=auth` ·「둘러보기」탈출 · 설정 AuthGate 카피 · create/update `?next=`.
+- **CREATE/EDIT**: dirty confirm on X (플래너 패턴 공유).
+- **MAP/DET**: 상세 시트 CTA 상단 · DET proof→CTA→summary · peek 148+필터 · kinds on map · pin `#dc2626`.
+- **LIB/HOME/NOTIF**: 저장 카드 primary 따라가기 · 레일/알림 empty CTA ·「여행자」제거.
+- **문서**: [`docs/UX-UI-GUI-AUDIT-FULL-FLOW-2026-08.md`](UX-UI-GUI-AUDIT-FULL-FLOW-2026-08.md).
+- **검증**: `pnpm lint` · `pnpm build`.
+
+### UX/UI/GUI 검수 핫픽스 (Cursor, 2026-08-12 · v0.3.21-mvp)
+
+- **버전**: **`v0.3.21-mvp`** (PATCH).
+- **배경**: 페르소나 시나리오·디자인 규칙 기준 HOME/MAP/DET/LIB/PROFILE 전면 검수.
+- **MAP**: peek `108` · 시트 헤더 패딩 · 선택 카드 primary「따라가기」(`CopyRouteButton primary`) +「상세」.
+- **브랜드/IA**: 게스트 wordmark 38 · Follow「팔로우 중」· 좋아요 AuthGate 분리 · 진척 CTA「다녀왔어요」· 레일/책장 empty CTA · 프로필 following 스탯.
+- **문서**: [`docs/UX-UI-GUI-AUDIT-2026-08.md`](UX-UI-GUI-AUDIT-2026-08.md).
+- **검증**: `pnpm lint` · `pnpm build`.
+
+### 지도 kinds·plan 뒤로가기·help IA (Cursor, 2026-08-12 · v0.3.20-mvp)
+
+- **버전**: **`v0.3.20-mvp`** (PATCH).
+- **MAP kinds**: `getFeedMapPoints`가 `route_copies.purpose`로 코스 기록/계획 필터.
+- **planBackHref**: 직접 계획 작성 종료 → `/library`(따라가는 중). `?tab=following` 오착지 제거.
+- **help/screens**: 보관함 FAQ·풀페이지 설정·login `?next=` 문서 정정.
+
+### e2e·운영 체크리스트 동기화 (Cursor, 2026-08-12 · v0.3.19-mvp)
+
+- **버전**: **`v0.3.19-mvp`** (PATCH).
+- **e2e**: 보관함「구독 코스」· 따라가기 시트 카피(`이 코스 따라가기` / `이 코스로 시작해 볼까요?`).
+- **HANDOFF §4**: 운영 체크리스트 구체화 · 보관함 IA 잔상(`liked`) 정리.
+- **deliverables/status**: G1–G6 완료 표기 + 인수 후 운영 항목.
+
+### 홈 loading·설계 문서 IA 마감 (Cursor, 2026-08-12 · v0.3.18-mvp)
+
+- **버전**: **`v0.3.18-mvp`** (PATCH).
+- **loading**: `(tabs)/loading.tsx` — 구 전체/팔로잉 세그먼트 제거 · BrandWordmark + 현재 툴바 스켈레톤.
+- **문서**: `COURSE-UX-DESIGN`·`PERSONA-SCENARIOS`「구독 코스」정합 · 페인포인트 MAP/DET ✅ · HANDOFF §4를 운영 항목만으로 축소.
+
+### Wave G6 — 잔여 정합 (Cursor, 2026-08-12 · v0.3.17-mvp)
+
+- **버전**: **`v0.3.17-mvp`** (PATCH).
+- **MAP-01 residual**: `FeedMap` viewport `lastFetchKey`에 kinds/purposes/difficulties 포함.
+- **게스트 map**: `/api/map-points` 공개 refetch 허용 (`view=following`만 auth).
+- **IA 카피**: AuthGate/BottomNav/deliverables「구독 코스」동기화 · 구독 스트림 `showOwner`.
+- **cleanup**: `getLikedRoutes`·liked CollectionCard 경로 제거 · 페인포인트 문서 G1–G5 ✅ 표기.
+
+### Wave G5 — 홈·카드·상세 P2 폴리시 (Cursor, 2026-08-12 · v0.3.16-mvp)
+
+- **버전**: **`v0.3.16-mvp`** (PATCH).
+- **HOME-01**: 게스트 홈 leading → `BrandWordmark`.
+- **HOME-02**: 정렬「많이 따라간/다녀온」· 레이아웃 오버플로 메뉴 · 필터 테마 기본 접기.
+- **HOME-03**: 「가까운」위치 거부 시 칩 해제(최신순) + 안내 배너.
+- **CARD-01**: TransferPill 콜드 = 고정「첫 따라가기」(라이프스타일 필러 제거).
+- **DET-02**: 좋아요·저장 아이콘만·CTA 아래 demote.
+- **G6**: 댓글 게스트 진입 → AuthGate 시트(전이 가치 카피).
+
+### 로그인→작성 후 뒤로가기 인증 스택 제거 (Cursor, 2026-08-12 · v0.3.15-mvp)
+
+- **버전**: **`v0.3.15-mvp`** (PATCH).
+- **문제**: FAB(+) → AuthGate → Google → 코스 등록 → 상세에서 Back 시 `/login`·Google로 복귀.
+- **수정**: Google `skipBrowserRedirect` + `location.replace` · 이메일 `RedirectType.replace` · callback HTML `location.replace` · proxy `/login`이 `?next=` 존중 · 생성 직후 헤더 Back은 `preferFallback`→홈.
+- **의도 스택**: (더하기 직전 화면) → 상세. AuthGate의 login push는 유지(로그인 취소 시 복귀).
+
+### Wave G4 — 구독 IA · 레일 · 알림 (Cursor, 2026-08-12 · v0.3.14-mvp)
+
+- **버전**: **`v0.3.14-mvp`** (PATCH).
+- **FOL-01**: 보관함 탭「팔로잉」→「구독 코스」· 새 코스/사람 동등 칩 제거 →「팔로우 관리」 demote.
+- **FOL-02**: 홈 레일「전체 보기」→ `/library?tab=subscribed` · 사람 찾기는 empty만 `?tab=people`.
+- **FOL-03**: 프로필 책장 empty「다른 코스 둘러보기」· 알림 배지 풀네임 · 소셜 그룹 더 mute.
+
+### Wave G3 — 메이커 게시·영향력 루프 (Cursor, 2026-08-12 · v0.3.13-mvp)
+
+- **버전**: **`v0.3.13-mvp`** (PATCH).
+- **PUB-01**: edit 시 `visibilityChosen` seed — 공개/비공개 재탭 강제 제거.
+- **PUB-02**: `SaveNotice` 공개/비공개 분기 + 책장·통계 링크.
+- **PUB-03**: 공개+미충족 시 FollowReadyHint 경고 강화.
+- **STAT-01**: 드로어 통계「팔로워」· fallback「나」· 저장은 설정 행.
+- **STAT-02**: `/profile/stats` 전이·영향력 섹션을 요약 바로 아래로.
+
+### Wave G2 — 완주 루프 마찰 해소 (Cursor, 2026-08-12 · v0.3.12-mvp)
+
+- **버전**: **`v0.3.12-mvp`** (PATCH).
+- **LIB-01**: `FollowProgressBar` 이동 확인 = transit/duration만 (`ready` 가짜 완료 제거).
+- **LIB-02/03**: 뱃지「실행 준비」· 완료 후 next「후기 수정」→ 원본 (+ 초안 soft 링크).
+- **CTA-01**: 「후기 수정」ink solid · 초안 링크 text soft · 시트「후기 저장」.
+- **LIB-04**: 저장 카드 footer 바 + 북마크 뱃지 (따라가는 중과 분리).
+
+### Wave G1 — 발견→따라가기 막힘 해소 (Cursor, 2026-08-11 · v0.3.11-mvp)
+
+- **버전**: **`v0.3.11-mvp`** (PATCH).
+- **MAP-01**: `FeedMap` `filterSig`에 kinds·purposes·difficulties 포함 — 지도 필터 재조회.
+- **MAP-02**: `RouteDetailSheet`에 `CopyRouteButton` primary · 「전체 페이지」secondary.
+- **MAP-03**: 시트 메타에 콜드「첫 따라가기」미러.
+- **DET-01**: 공개 상세 전이 슬롯 상시 — 콜드 시「첫 따라가기」.
+
+### 시나리오 walkthrough UX 페인포인트 (Cursor, 2026-08-11 · v0.3.10-mvp)
+
+- **버전**: **`v0.3.10-mvp`** (PATCH).
+- **내용**: P1–P4·게스트 시나리오 단계별 코드 점검. P0=지도 필터(MAP-01) 등. 정본 `docs/PERSONA-SCENARIO-PAINPOINTS.md`, 웹 `/deliverables/scenario-painpoints`.
+- **권장 Wave**: G1 발견 · G2 완주 · G3 메이커 · G4 구독.
+
+### 페르소나별 시나리오 가이드 (Cursor, 2026-08-11 · v0.3.9-mvp)
+
+- **버전**: **`v0.3.9-mvp`** (PATCH).
+- **내용**: P1–P4·게스트 happy path·변형·북스타 E2E·QA 스크립트. 정본 `docs/PERSONA-SCENARIOS.md`, 웹 `/deliverables/scenarios`.
+- **연결**: 시작하기 DocCard·내비·기획 §6 링크.
 
 ### deliverables 브랜드(BI·BX) 가이드 (Cursor, 2026-08-03 · v0.3.8-mvp)
 
@@ -576,7 +722,7 @@ pnpm test:e2e     # Playwright 스모크
 - **데이터(`src/lib/data.ts`)**: `searchPeople(q)` 추가 — `profiles`를 `display_name`/`handle` `ilike` OR 검색(or()/ilike 깨는 `%,()` 제거), 본인 제외, 이름순 20명, id만 뽑아 기존 `hydratePeople`로 뷰어 팔로우 상태까지 주입(PersonSummary). 피드 검색과 동일한 살균 규칙.
 - **API**: `src/app/api/people/route.ts`(GET `?q=`) 신설 — auth-gated, 2~60자만 조회, `{ people }` 반환(`/api/places` 타이프어헤드 패턴).
 - **UI**: `library/FollowingPanel.tsx`(신규, client) — 검색 인풋(이름/@아이디, 지우기)+디바운스 280ms fetch. 검색어<2글자=팔로잉 목록(서버 prop), ≥2글자=검색 결과. 행은 공용 `PersonRow`(인라인 `FollowToggle`, 낙관적). 상태: 스피너/무결과/빈 팔로잉. ⚠️ **린트 `set-state-in-effect` 회피**: effect 본문에서 동기 setState 금지라, 모든 setState를 디바운스 setTimeout 콜백 안에서만 호출(요청 경합은 `reqRef` 카운터로 최신만 반영).
-- **연결**: `LibraryTabs`에서 `루트/사람` 세그먼트·`FeedRouteCard`·`PersonRow`·`useState` 제거, 팔로잉 패널은 `<FollowingPanel following={followingPeople} />`로 단순화. `EmptyState`는 saved/liked 전용으로 축소. `library/page.tsx`는 `getFollowingFeed` fetch 제거(함수 자체는 data.ts에 dead export로 남겨둠 — 향후 둘러보기 '팔로잉' 필터 재사용 여지).
+- **연결**: 당시 `LibraryTabs` 팔로잉 패널을 `<FollowingPanel>`로 단순화. (현재:「구독 코스」스트림 + 팔로우 관리 · `getFollowingCourseStream`이 `getFollowingFeed` 사용)
 - **검증**: `pnpm lint` ✅ / `pnpm build` ✅(`/api/people` 라우트 생성). 실측 권장: 친구 검색→팔로우→팔로잉 목록 반영, 언팔 후 목록 갱신(router.refresh).
 
 ### 하단 회색 띠(콘텐츠 잘림) 수정 (Cursor, 2026-06-17 · v1.97)

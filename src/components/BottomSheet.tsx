@@ -297,7 +297,7 @@ export default function BottomSheet({
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
-        className="relative shrink-0 cursor-grab touch-none px-5 py-5 active:cursor-grabbing"
+        className="relative shrink-0 cursor-grab touch-none px-5 pb-3 pt-4 active:cursor-grabbing"
       >
         <div className="absolute left-1/2 top-2 h-1 w-9 -translate-x-1/2 rounded-full bg-ink-faint/45" />
         {header}

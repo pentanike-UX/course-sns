@@ -53,19 +53,19 @@ export default function DeliverablesHomePage() {
         rows={[
           [
             "기획·PM·운영",
-            "시작하기 → 기획 → 브랜드 → 현황 → 이력",
-            "서비스·브랜드 정의, 기능 범위·변경 이력, 운영 이슈 점검",
+            "시작하기 → 기획 → 시나리오 → 브랜드 → 현황 → 이력",
+            "서비스·시나리오·브랜드 정의, 기능 범위·변경 이력",
           ],
           [
             "프론트·풀스택",
-            "시작하기 → 기획 → 브랜드 → 화면 → 아키텍처 → 개발",
+            "시작하기 → 기획 → 시나리오 → 화면 → 아키텍처 → 개발",
             "로컬 실행, 화면·기능 수정, 배포 전 검증",
           ],
           ["백엔드·DB", "DB → API → 개발", "스키마·권한, API 연동, 마이그레이션"],
           [
             "디자인·BX",
-            "브랜드 → 기획 → 개발(디자인 시스템) → 화면",
-            "BI·로고·메시지, UI 토큰·화면 목록 준수",
+            "브랜드 → 시나리오 → 기획 → 개발(디자인 시스템) → 화면",
+            "BI·로고·페르소나 흐름, UI 토큰·화면 목록 준수",
           ],
         ]}
       />
@@ -77,6 +77,12 @@ export default function DeliverablesHomePage() {
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         <DocCard href="/deliverables/planning" title="기획" badge="제품">
           서비스 목적, 핵심 기능, 화면 구성, 사용자 이용 흐름
+        </DocCard>
+        <DocCard href="/deliverables/scenarios" title="시나리오" badge="페르소나">
+          P1–P4·게스트 happy path, 변형, 북스타 end-to-end 데모
+        </DocCard>
+        <DocCard href="/deliverables/scenario-painpoints" title="시나리오 점검" badge="UX">
+          시나리오 단계별 불쾌감·이해도저하·사용실패 (코드 점검)
         </DocCard>
         <DocCard href="/deliverables/brand" title="브랜드" badge="BI · BX">
           Coursee 개요·메시지·철학·포지셔닝, 로고·심볼 설계, 앱 BX
@@ -117,10 +123,17 @@ export default function DeliverablesHomePage() {
             기획
           </Link>
           ·{" "}
+          <Link
+            href="/deliverables/scenarios"
+            className="font-semibold text-sunset-ink hover:underline"
+          >
+            시나리오
+          </Link>
+          ·{" "}
           <Link href="/deliverables/brand" className="font-semibold text-sunset-ink hover:underline">
             브랜드
           </Link>
-          로 제품·BI 정의 확인
+          로 제품·페르소나·BI 정의 확인
         </li>
         <li>
           <Link href="/deliverables/status" className="font-semibold text-sunset-ink hover:underline">

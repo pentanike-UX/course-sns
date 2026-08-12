@@ -44,8 +44,12 @@ type Props = {
    *  external directions lookup never blocks the rest of the page. */
   mapSlot?: React.ReactNode;
   lineageSlot?: React.ReactNode;
+  /** Completions/comments — before author (COURSE-UX §2.3) */
+  socialProofSlot?: React.ReactNode;
   copyContext?: RouteCopyContext | null;
   viewerCompletion?: ViewerCompletionState | null;
+  /** post-create: header back → home (avoid auth stack) */
+  exitHome?: boolean;
 };
 
 const ROUTE_LAYOUT_EVENT = "course:route-layout";
@@ -80,8 +84,10 @@ export default function RouteView({
   isOwner,
   mapSlot,
   lineageSlot,
+  socialProofSlot,
   copyContext,
   viewerCompletion,
+  exitHome = false,
 }: Props) {
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
   const layout = useSyncExternalStore(
@@ -185,33 +191,67 @@ export default function RouteView({
 
   const followCount = route.copyCount ?? 0;
   const completionCount = route.completionCount ?? 0;
+  // DET-01: always reserve a transfer slot on public courses (never fall back to ♥-only).
   const transferProof =
-    route.visibility === "public" && (followCount > 0 || completionCount > 0) ? (
-      <div className="flex flex-wrap items-center gap-2">
-        {followCount > 0 && (
-          <span className="flex items-center gap-1.5 text-[13px] font-semibold text-sunset-ink">
-            <FollowIcon />
-            {followCount}명이 따라갔어요
-          </span>
-        )}
-        {completionCount > 0 && (
-          <span className="flex items-center gap-1 text-[13px] font-semibold text-sunset-ink">
-            <CheckBadgeIcon />
-            {completionCount}명이 다녀왔어요
-            {route.completionRatingAvg ? ` · ${route.completionRatingAvg}점` : ""}
-          </span>
-        )}
+    route.visibility === "public" ? (
+      followCount > 0 || completionCount > 0 ? (
+        <div className="flex flex-wrap items-center gap-2">
+          {followCount > 0 && (
+            <span className="flex items-center gap-1.5 text-[13px] font-semibold text-sunset-ink">
+              <FollowIcon />
+              {followCount}명이 따라갔어요
+            </span>
+          )}
+          {completionCount > 0 && (
+            <span className="flex items-center gap-1 text-[13px] font-semibold text-sunset-ink">
+              <CheckBadgeIcon />
+              {completionCount}명이 다녀왔어요
+              {route.completionRatingAvg ? ` · ${route.completionRatingAvg}점` : ""}
+            </span>
+          )}
+        </div>
+      ) : (
+        <p className="flex items-center gap-1.5 text-[13px] font-semibold text-sunset-ink">
+          <FollowIcon />
+          첫 따라가기
+          <span className="font-medium text-ink-soft">· 이 코스를 가져가 보세요</span>
+        </p>
+      )
+    ) : null;
+
+  // P2-CARD: own followed draft — surface path to original「다녀왔어요」.
+  const followDraftBanner =
+    isOwner && copyContext?.original ? (
+      <div className="mx-4 mt-4 rounded-2xl border border-sunset/25 bg-sunset-wash/50 px-4 py-3">
+        <p className="text-[13px] font-semibold text-ink">따라가는 초안이에요</p>
+        <p className="mt-0.5 text-[12px] leading-relaxed text-ink-soft">
+          다녀온 후기는 원본에 남기면 전이 프루프가 쌓여요.
+        </p>
+        <div className="mt-2.5 flex flex-wrap gap-2">
+          <Link
+            href={`/routes/${copyContext.original.id}`}
+            className="rounded-full bg-sunset px-3.5 py-1.5 text-[12px] font-bold text-white"
+          >
+            원본에서 다녀왔어요
+          </Link>
+          <Link
+            href={`/routes/${route.id}/edit`}
+            className="rounded-full border border-line bg-card px-3.5 py-1.5 text-[12px] font-semibold text-ink-soft"
+          >
+            초안 다듬기
+          </Link>
+        </div>
       </div>
     ) : null;
 
-  // Wave E1: transfer CTAs first; like/save are secondary below.
+  // COURSE-UX §2.3: transfer proof → follow CTA → demoted like/save.
   const social = !isOwner ? (
     <div className="space-y-3 px-4 pt-4">
+      {transferProof}
       {route.visibility === "public" && (
         <CourseFollowActions routeId={route.id} viewerCompletion={viewerCompletion} />
       )}
-      {transferProof}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex items-center justify-end border-t border-line/60 pt-2">
         <RouteActions
           routeId={route.id}
           initialLiked={route.liked ?? false}
@@ -222,7 +262,9 @@ export default function RouteView({
     </div>
   ) : route.visibility === "public" ? (
     <div className="space-y-1.5 px-4 pt-4">
-      {transferProof ?? (
+      {followCount > 0 || completionCount > 0 ? (
+        transferProof
+      ) : (
         <p className="text-[13px] font-medium text-ink-soft">
           아직 따라간 사람이 없어요. 추천 대상·난이도를 채우면 따라가기 쉬워져요.
         </p>
@@ -275,19 +317,32 @@ export default function RouteView({
     <>
       <RouteDetailChromeTone />
       <div className="fixed inset-x-0 top-0 z-30 h-[calc(env(safe-area-inset-top)+3.5rem)] w-full">
-        <AppHeader back="/" transparent glass right={controls(true)} />
+        <AppHeader
+          back="/"
+          preferFallback={exitHome}
+          transparent
+          glass
+          right={controls(true)}
+        />
       </div>
     </>
   );
 
-  // route meta moves to a "여행 정보" footer next to the map (passive reference
-  // info → bottom, keeping the hero → journey flow clean up top).
-  const hasInfo = !!(route.recommendedFor || route.bestSeason || route.estCostKrw);
+  // Passive meta (incl. theme/mood demoted from hero) — after spots/social proof.
+  const hasInfo = !!(
+    route.recommendedFor ||
+    route.bestSeason ||
+    route.estCostKrw ||
+    route.theme ||
+    route.mood
+  );
   const bottomInfo = hasInfo ? (
     <section className="px-4 pt-7">
       <h2 className="mb-3 text-[16px] font-bold text-ink">코스 정보</h2>
       <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line">
         <Info label="추천 대상" value={route.recommendedFor} wide />
+        <Info label="테마" value={route.theme} />
+        <Info label="분위기" value={route.mood} />
         <Info label="방문 시점" value={route.bestSeason} />
         <Info label="지출 비용" value={formatKrw(route.estCostKrw)} />
       </div>
@@ -341,7 +396,9 @@ export default function RouteView({
           />
         </div>
 
+        {followDraftBanner}
         {social}
+        {socialProofSlot}
         {authorCard}
 
         <section className="px-4 pt-5">
@@ -440,12 +497,13 @@ export default function RouteView({
           />
         </div>
 
-        {courseSummary}
+        {followDraftBanner}
         {social}
+        {courseSummary}
 
         <section className="pt-5">
           <h2 className="px-4 text-[16px] font-bold text-ink">
-            코스 따라가기
+            스팟 동선
             <span className="ml-1.5 text-[13px] font-medium text-ink-faint">
               스팟 {route.spots.length}곳
             </span>
@@ -466,6 +524,7 @@ export default function RouteView({
         </section>
 
         {mapSlot}
+        {socialProofSlot}
         {authorCard}
         {bottomInfo}
         {lineageSlot}
@@ -503,12 +562,13 @@ export default function RouteView({
         <RouteHeroMeta meta={heroMeta} className="absolute inset-x-0 bottom-0 z-[3] p-4 text-white" />
       </div>
 
-      {courseSummary}
+      {followDraftBanner}
       {social}
+      {courseSummary}
 
       <section className="px-4 pt-7">
         <h2 className="text-[16px] font-bold text-ink">
-          코스 따라가기
+          스팟 동선
           <span className="ml-1.5 text-[13px] font-medium text-ink-faint">
             스팟 {route.spots.length}곳
           </span>
@@ -536,6 +596,7 @@ export default function RouteView({
       </section>
 
       {mapSlot}
+      {socialProofSlot}
       {authorCard}
       {bottomInfo}
       {lineageSlot}

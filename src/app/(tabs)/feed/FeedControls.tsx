@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import JellyButton from "@/components/JellyButton";
 import type { FeedSort } from "@/lib/data";
@@ -42,13 +43,21 @@ export default function FeedControls({
   };
 
   const activeCount = filterCount(filters);
+  const [layoutOpen, setLayoutOpen] = useState(false);
+  const layoutRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!layoutOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      if (!layoutRef.current?.contains(e.target as Node)) setLayoutOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [layoutOpen]);
 
   return (
-    // The filter/sort/layout toolbar. It lives inside the explore header's sticky
-    // container (FeedExplorer), which pins it to the top while the identity row
-    // above it auto-hides on scroll — so the filters stay reachable throughout.
+    // HOME-02: clearer sort labels · layout tucked in overflow (less toolbar density).
     <div className="bg-paper/95 px-4 pb-2 pt-2 backdrop-blur">
-      {/* 필터 · 최신 · 따라간 · 다녀온 · 가까운 — 보기 유형 */}
       <div className="flex items-center gap-2">
         <FilterButton count={activeCount} onClick={onOpenFilter} />
         <div className="no-scrollbar flex min-w-0 items-center gap-1.5 overflow-x-auto">
@@ -58,12 +67,12 @@ export default function FeedControls({
             onClick={() => router.replace(sortUrl("recent"))}
           />
           <SortChip
-            label="따라간순"
+            label="많이 따라간"
             active={sort === "followed"}
             onClick={() => router.replace(sortUrl("followed"))}
           />
           <SortChip
-            label="다녀온순"
+            label="많이 다녀온"
             active={sort === "completed"}
             onClick={() => router.replace(sortUrl("completed"))}
           />
@@ -73,31 +82,60 @@ export default function FeedControls({
             onClick={() => router.replace(sortUrl("distance"))}
           />
         </div>
-        <div
-          className="ml-auto flex shrink-0 rounded-full bg-muted p-1"
-          aria-label="보기 방식"
-        >
-          <LayoutButton
-            label="그리드형"
-            active={layout === "grid"}
-            onClick={() => onLayoutChange("grid")}
+        <div className="relative ml-auto shrink-0" ref={layoutRef}>
+          <JellyButton
+            type="button"
+            aria-label="보기 방식"
+            aria-expanded={layoutOpen}
+            aria-haspopup="menu"
+            onClick={() => setLayoutOpen((v) => !v)}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-ink-soft"
           >
-            <GridIcon />
-          </LayoutButton>
-          <LayoutButton
-            label="작은 이미지 리스트"
-            active={layout === "small"}
-            onClick={() => onLayoutChange("small")}
-          >
-            <SmallListIcon />
-          </LayoutButton>
-          <LayoutButton
-            label="큰 이미지 리스트"
-            active={layout === "large"}
-            onClick={() => onLayoutChange("large")}
-          >
-            <LargeListIcon />
-          </LayoutButton>
+            {layout === "grid" ? (
+              <GridIcon />
+            ) : layout === "small" ? (
+              <SmallListIcon />
+            ) : (
+              <LargeListIcon />
+            )}
+          </JellyButton>
+          {layoutOpen && (
+            <div
+              role="menu"
+              className="absolute right-0 top-full z-30 mt-1.5 flex gap-0.5 rounded-2xl bg-card p-1 shadow-[var(--shadow-md)] ring-1 ring-line"
+            >
+              <LayoutButton
+                label="그리드형"
+                active={layout === "grid"}
+                onClick={() => {
+                  onLayoutChange("grid");
+                  setLayoutOpen(false);
+                }}
+              >
+                <GridIcon />
+              </LayoutButton>
+              <LayoutButton
+                label="작은 이미지 리스트"
+                active={layout === "small"}
+                onClick={() => {
+                  onLayoutChange("small");
+                  setLayoutOpen(false);
+                }}
+              >
+                <SmallListIcon />
+              </LayoutButton>
+              <LayoutButton
+                label="큰 이미지 리스트"
+                active={layout === "large"}
+                onClick={() => {
+                  onLayoutChange("large");
+                  setLayoutOpen(false);
+                }}
+              >
+                <LargeListIcon />
+              </LayoutButton>
+            </div>
+          )}
         </div>
       </div>
       {activeCount > 0 && <ActiveFilterChips filters={filters} onRemove={onRemoveFilter} />}
@@ -224,7 +262,7 @@ function SortChip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-colors ${
+      className={`shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[12px] font-semibold transition-colors ${
         active ? "bg-ink text-paper" : "bg-muted text-ink-soft"
       }`}
     >

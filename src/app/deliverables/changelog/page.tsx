@@ -13,6 +13,136 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.25-mvp — 공개 준비도 soft confirm</H2>
+      <Ul>
+        <li>공개 완료 시 따라가기 준비도 미충족 soft confirm</li>
+        <li>체크리스트「스팟·제목」· e2e 정렬/통계 IA 동기화</li>
+      </Ul>
+
+      <H2>v0.3.24-mvp — 시나리오 단계별 심층 검수</H2>
+      <Ul>
+        <li>P2: 따라가는 중→원본 · 초안 배너 · 가져왔어요→보관함</li>
+        <li>P3: 플래너 Hint · 통계 0명 · P4 언팔/맞팔 · 정렬 시나리오 동기</li>
+        <li>
+          정본 <Code>docs/PERSONA-SCENARIO-STEP-AUDIT-2026-08.md</Code>
+        </li>
+      </Ul>
+
+      <H2>v0.3.23-mvp — 전체화면 재검수</H2>
+      <Ul>
+        <li>작성 OS back dirty · 설정 로그인 후 드로어 · DET 후기→작성자</li>
+        <li>히어로 칩 demote · 정렬 칩·empty CTA · 게스트 태그라인</li>
+        <li>
+          정본 <Code>docs/UX-UI-GUI-AUDIT-FULL-SCREEN-2026-08.md</Code>
+        </li>
+      </Ul>
+
+      <H2>v0.3.22-mvp — 전체 화면·플로우 검수</H2>
+      <Ul>
+        <li>로그인 실패/탈출 · 작성·수정 dirty confirm · 지도/상세 CTA 위계</li>
+        <li>필터 peek · kinds on map · 저장 카드·알림 empty CTA ·「여행자」제거</li>
+        <li>
+          정본 <Code>docs/UX-UI-GUI-AUDIT-FULL-FLOW-2026-08.md</Code>
+        </li>
+      </Ul>
+
+      <H2>v0.3.21-mvp — UX/UI/GUI 검수 핫픽스</H2>
+      <Ul>
+        <li>지도 peek·선택 카드 primary「따라가기」· 시트 헤더 패딩</li>
+        <li>게스트 브랜드 · 팔로우 중 IA · 좋아요 AuthGate · 진척/빈 상태 CTA</li>
+        <li>
+          검수 정본 <Code>docs/UX-UI-GUI-AUDIT-2026-08.md</Code>
+        </li>
+      </Ul>
+
+      <H2>v0.3.20-mvp — 지도 kinds · plan 뒤로가기</H2>
+      <Ul>
+        <li>지도: 코스 기록/계획(kinds) 필터 서버 적용</li>
+        <li>계획 작성 종료 → 보관함「따라가는 중」· help/screens IA 정정</li>
+      </Ul>
+
+      <H2>v0.3.19-mvp — e2e · 운영 체크리스트</H2>
+      <Ul>
+        <li>스모크: 보관함「구독 코스」· 따라가기 시트 카피 동기화</li>
+        <li>
+          <Code>/deliverables/status</Code> 인수 후 운영 항목 · HANDOFF §4 정리
+        </li>
+      </Ul>
+
+      <H2>v0.3.18-mvp — IA 마감 · 리뷰 준비</H2>
+      <Ul>
+        <li>홈 loading 스켈레톤을 현재 피드(브랜드·정렬 칩)에 맞춤</li>
+        <li>COURSE-UX / 시나리오 문서「구독 코스」정합 · HANDOFF §4 운영만 남김</li>
+      </Ul>
+
+      <H2>v0.3.17-mvp — Wave G6 (잔여 정합)</H2>
+      <Ul>
+        <li>지도 viewport fetch 키에 전 필터 · 게스트 <Code>/api/map-points</Code> 허용</li>
+        <li>「구독 코스」카피·구독 스트림 작성자 표시 · liked 보관함 경로 제거</li>
+      </Ul>
+
+      <H2>v0.3.16-mvp — Wave G5 (P2 폴리시)</H2>
+      <Ul>
+        <li>게스트 홈 BrandWordmark · 정렬 라벨 · 레이아웃 오버플로 · 테마 접기</li>
+        <li>「가까운」위치 거부 안내 · TransferPill「첫 따라가기」고정</li>
+        <li>상세 좋아요·저장 아이콘 demote · 댓글 AuthGate</li>
+      </Ul>
+
+      <H2>v0.3.15-mvp — 로그인→작성 뒤로가기 스택</H2>
+      <Ul>
+        <li>Google/이메일 로그인 후 <Code>replace</Code>로 인증 화면을 히스토리에서 제거</li>
+        <li>OAuth callback <Code>location.replace</Code> · 생성 직후 헤더 Back→홈</li>
+        <li>의도: 더하기 직전 화면(또는 홈) ↔ 상세. 로그인으로 Back 금지</li>
+      </Ul>
+
+      <H2>v0.3.14-mvp — Wave G4 (구독 IA)</H2>
+      <Ul>
+        <li>보관함 탭「구독 코스」· 팔로우 관리 demote (FOL-01)</li>
+        <li>홈 레일「전체 보기」→ <Code>?tab=subscribed</Code> (FOL-02)</li>
+        <li>책장 empty CTA · 알림 배지 풀네임 · 소셜 mute (FOL-03)</li>
+      </Ul>
+
+      <H2>v0.3.13-mvp — Wave G3 (메이커)</H2>
+      <Ul>
+        <li>수정 시 공개 게이트 재선택 제거 · 공개 준비도 경고 강화</li>
+        <li>저장 토스트 공개/비공개 분기 + 책장·통계 링크</li>
+        <li>드로어 통계「팔로워」· 통계 페이지 전이 섹션 상단</li>
+      </Ul>
+
+      <H2>v0.3.12-mvp — Wave G2 (완주 루프)</H2>
+      <Ul>
+        <li>체크리스트: 이동 확인 실데이터만 · 완료 후「후기 수정」→ 원본</li>
+        <li>CTA: 「후기 수정」ink solid · 초안 링크 soft · 시트「후기 저장」</li>
+        <li>저장 카드: footer 바로 따라가는 중과 구분</li>
+      </Ul>
+
+      <H2>v0.3.11-mvp — Wave G1 (발견→따라가기)</H2>
+      <Ul>
+        <li>지도 필터: 누구와·난이도 등 전 패싯 재조회 (MAP-01)</li>
+        <li>지도 시트: 「이 코스 따라가기」primary + 콜드「첫 따라가기」메타</li>
+        <li>상세: 공개 코스 전이 슬롯 상시 (콜드「첫 따라가기」)</li>
+      </Ul>
+
+      <H2>v0.3.10-mvp — 시나리오 페인포인트 점검</H2>
+      <Ul>
+        <li>
+          <Code>/deliverables/scenario-painpoints</Code> — 단계별 사용실패·이해도저하·불쾌감
+        </li>
+        <li>
+          정본 <Code>docs/PERSONA-SCENARIO-PAINPOINTS.md</Code> · Top8 · Wave G1–G4
+        </li>
+      </Ul>
+
+      <H2>v0.3.9-mvp — 페르소나 시나리오</H2>
+      <Ul>
+        <li>
+          <Code>/deliverables/scenarios</Code> — P1–P4·게스트 happy path·변형·E2E 데모
+        </li>
+        <li>
+          정본 <Code>docs/PERSONA-SCENARIOS.md</Code> · 기획·시작하기 연결
+        </li>
+      </Ul>
+
       <H2>v0.3.8-mvp — 브랜드(BI·BX) 가이드</H2>
       <Ul>
         <li>

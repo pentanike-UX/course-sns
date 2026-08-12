@@ -54,7 +54,7 @@ export default function PlanningPage() {
         rows={[
           ["홈", "공개 코스 쇼핑 — 검색·필터·정렬", "없어도 됨"],
           ["지도", "동선으로 고르기 — 핀·클러스터·peek", "없어도 됨"],
-          ["보관함", "따라가는 중 · 저장 · 팔로잉", "필요"],
+          ["보관함", "따라가는 중 · 저장 · 구독 코스", "필요"],
           ["+ (FAB)", "코스 기록하기 / 코스 계획하기", "필요 (AuthGate)"],
         ]}
       />
@@ -70,7 +70,7 @@ export default function PlanningPage() {
         <li>공개 코스 피드 — 최신 · 많이 따라간 · 많이 다녀온 · 가까운</li>
         <li>필터: 지역 → 누구와 → 난이도 → 테마 → 감정(접기)</li>
         <li>지도 peek: 스펙 + 따라감/다녀옴 (좋아요 아님)</li>
-        <li>홈「팔로잉의 새 코스」레일 (로그인·데이터 있을 때)</li>
+        <li>홈「구독 중인 새 코스」레일 (로그인·데이터 있을 때)</li>
       </Ul>
       <H3>따라가기 루프</H3>
       <Ul>
@@ -86,12 +86,22 @@ export default function PlanningPage() {
       </Ul>
       <H3>구독·소통</H3>
       <Ul>
-        <li>팔로우 · 보관함 팔로잉 스트림</li>
+        <li>팔로우 · 보관함「구독 코스」스트림</li>
         <li>알림: 전이·구독 그룹 (완주·팔로·따라가기·새 코스) / 좋아요·댓글</li>
         <li>저장·좋아요는 보조 (상세에서 전이 CTA 아래)</li>
       </Ul>
 
       <H2>6. 대표 시나리오</H2>
+      <P>
+        단계별 happy path·변형·데모 스크립트는{" "}
+        <Link
+          href="/deliverables/scenarios"
+          className="font-semibold text-sunset-ink hover:underline"
+        >
+          페르소나 시나리오
+        </Link>
+        · <Code>docs/PERSONA-SCENARIOS.md</Code>가 정본입니다.
+      </P>
       <DocTable
         headers={["누가", "무엇을", "어떻게"]}
         rows={[
@@ -99,7 +109,7 @@ export default function PlanningPage() {
           ["탐색러", "따라갈 코스 고르기", "필터·정렬 → 따라가기 → 초안"],
           ["따라가이", "다녀온 후기", "보관함 따라가는 중 → 원본에서 다녀왔어요"],
           ["메이커", "공개 코스 올리기", "FAB → 기록/계획 → 공개 선택 → 완료"],
-          ["구독자", "좋아하는 메이커 받기", "책장 팔로우 → 팔로잉 새 코스 → 따라가기"],
+          ["구독자", "좋아하는 메이커 받기", "책장 팔로우 → 구독 코스 → 따라가기"],
         ]}
       />
 
@@ -122,6 +132,16 @@ export default function PlanningPage() {
           <Link href="/deliverables/screens" className="font-semibold text-sunset-ink hover:underline">
             화면
           </Link>
+        </li>
+        <li>
+          페르소나 시나리오 →{" "}
+          <Link
+            href="/deliverables/scenarios"
+            className="font-semibold text-sunset-ink hover:underline"
+          >
+            시나리오
+          </Link>
+          · <Code>docs/PERSONA-SCENARIOS.md</Code>
         </li>
         <li>
           브랜드(BI·BX) →{" "}

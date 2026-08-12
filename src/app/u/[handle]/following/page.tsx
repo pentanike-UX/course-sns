@@ -17,7 +17,7 @@ export default async function FollowingPage({
   return (
     <MobileFrame shell>
       <SlideOver fallback={`/u/${data.owner.handle}`}>
-        <AppHeader back={`/u/${data.owner.handle}`} title="팔로잉" />
+        <AppHeader back={`/u/${data.owner.handle}`} title="팔로우 중" />
         <main className="no-scrollbar min-h-0 flex-1 overflow-y-auto px-4 pb-10 pt-3">
           <PeopleList
             people={data.people}

@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { Suspense, useActionState, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { BrandLockup } from "@/components/BrandMark";
 import MobileFrame from "@/components/MobileFrame";
 import { createClient } from "@/lib/supabase/client";
+import { safeNextPath } from "@/lib/safe-next";
 import { signIn, signUp, type AuthState } from "./actions";
 
 export default function LoginPage() {
@@ -17,7 +19,8 @@ export default function LoginPage() {
 
 function LoginInner() {
   const params = useSearchParams();
-  const next = params.get("next") ?? "/";
+  const next = safeNextPath(params.get("next"));
+  const authError = params.get("error") === "auth";
   const [mode, setMode] = useState<"signin" | "signup">("signin");
 
   const action = mode === "signin" ? signIn : signUp;
@@ -27,14 +30,26 @@ function LoginInner() {
   );
 
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleError, setGoogleError] = useState<string | null>(null);
   const signInWithGoogle = async () => {
     setGoogleLoading(true);
+    setGoogleError(null);
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOAuth({
+    // skipBrowserRedirect + location.replace: drop /login from history so
+    // after OAuth → create → detail, Back never returns to the auth screen.
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(next)}` },
+      options: {
+        redirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+        skipBrowserRedirect: true,
+      },
     });
-    if (error) setGoogleLoading(false); // otherwise the browser is navigating away
+    if (error || !data.url) {
+      setGoogleLoading(false);
+      setGoogleError("Google 로그인을 시작하지 못했어요. 다시 시도해 주세요.");
+      return;
+    }
+    window.location.replace(data.url);
   };
 
   return (
@@ -48,6 +63,15 @@ function LoginInner() {
             다녀온 팁도 남겨 봐요
           </p>
         </div>
+
+        {(authError || googleError) && (
+          <p
+            role="alert"
+            className="mb-4 rounded-lg bg-error-soft px-3 py-2 text-center text-[13px] text-error"
+          >
+            {googleError ?? "로그인에 실패했어요. 다시 시도해 주세요."}
+          </p>
+        )}
 
         {/* mode tabs */}
         <div className="mb-5 flex rounded-full bg-line p-1">
@@ -127,6 +151,13 @@ function LoginInner() {
         <p className="mt-6 text-center text-[12px] text-ink-faint">
           coursee · 따라갈 수 있는 이동 코스
         </p>
+
+        <Link
+          href="/"
+          className="mt-4 block text-center text-[13px] font-semibold text-ink-soft underline-offset-2 hover:underline"
+        >
+          로그인 없이 둘러보기
+        </Link>
       </main>
     </MobileFrame>
   );

@@ -3,7 +3,7 @@ import { getAuthUser } from "@/lib/supabase/auth";
 import { searchPeople } from "@/lib/data";
 
 /**
- * GET /api/people?q=키워드 — member typeahead for 보관함>팔로잉 친구 찾기.
+ * GET /api/people?q=키워드 — member typeahead for 보관함>구독 코스 팔로우 관리.
  * Auth-gated; matches public profiles by display name or @handle.
  */
 export async function GET(request: NextRequest) {

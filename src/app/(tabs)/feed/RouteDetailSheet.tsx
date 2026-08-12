@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import RouteMap, { type MapLeg, type MapSpot } from "@/components/RouteMap";
 import JellyButton from "@/components/JellyButton";
+import CopyRouteButton from "@/app/routes/[id]/CopyRouteButton";
 import { TRANSPORT_LABEL, type Leg, type Route } from "@/lib/types";
 import { formatKrw, formatDate, formatDuration } from "@/lib/format";
 import type { FeedMapPoint } from "@/lib/data";
@@ -320,26 +321,27 @@ export default function RouteDetailSheet({
 
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-5 pt-3 text-[12px] text-ink-faint">
                 <span>스팟 {route.spots.length}</span>
-                {(route.copyCount ?? 0) > 0 && <span>{route.copyCount} 따라감</span>}
-                {(route.completionCount ?? 0) > 0 && <span>{route.completionCount} 다녀옴</span>}
+                {(route.copyCount ?? 0) > 0 && (
+                  <span className="font-semibold text-sunset-ink">{route.copyCount} 따라감</span>
+                )}
+                {(route.completionCount ?? 0) > 0 && (
+                  <span className="font-semibold text-sunset-ink">
+                    {route.completionCount} 다녀옴
+                  </span>
+                )}
+                {(route.copyCount ?? 0) === 0 && (route.completionCount ?? 0) === 0 && (
+                  <span className="font-semibold text-sunset-ink">첫 따라가기</span>
+                )}
                 <span>댓글 {route.commentCount}</span>
                 {typeof route.estCostKrw === "number" && route.estCostKrw > 0 && (
                   <span>{formatKrw(route.estCostKrw)}</span>
                 )}
               </div>
 
-              {(route.theme || route.mood || route.recommendedFor || route.bestSeason) && (
-                <div className="flex flex-wrap gap-1.5 px-5 pt-3">
-                  {[route.theme, route.mood, route.recommendedFor, route.bestSeason]
-                    .filter(Boolean)
-                    .map((chip, i) => (
-                      <span
-                        key={i}
-                        className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-ink-soft"
-                      >
-                        {chip}
-                      </span>
-                    ))}
+              {/* Follow CTA above map/spots — map「상세」path must not bury transfer */}
+              {route.visibility === "public" && (
+                <div className="px-5 pt-4">
+                  <CopyRouteButton routeId={route.id} prominent />
                 </div>
               )}
 
@@ -407,10 +409,25 @@ export default function RouteDetailSheet({
                 })}
               </ol>
 
+              {(route.recommendedFor || route.theme || route.mood || route.bestSeason) && (
+                <div className="flex flex-wrap gap-1.5 px-5 pt-4">
+                  {[route.recommendedFor, route.theme, route.mood, route.bestSeason]
+                    .filter(Boolean)
+                    .map((chip, i) => (
+                      <span
+                        key={i}
+                        className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-ink-soft"
+                      >
+                        {chip}
+                      </span>
+                    ))}
+                </div>
+              )}
+
               <div className="px-5 pt-6">
                 <Link
                   href={`/routes/${route.id}`}
-                  className="block rounded-full bg-sunset py-3 text-center text-[14px] font-semibold text-white shadow-[var(--shadow-brand)]"
+                  className="block rounded-full border border-line bg-card py-3 text-center text-[14px] font-semibold text-ink-soft transition-colors active:scale-[0.98]"
                 >
                   전체 페이지에서 보기
                 </Link>

@@ -72,13 +72,18 @@ export default async function RouteDetailPage({
 
   return (
     <MobileFrame shell immersive>
-      <SaveNotice kind={noticeKind} />
+      <SaveNotice
+        kind={noticeKind}
+        visibility={route.visibility}
+        handle={isOwner ? me?.handle : undefined}
+      />
       <main className="no-scrollbar min-h-0 flex-1 overflow-y-auto pb-10">
         <RouteView
           route={route}
           isOwner={isOwner}
           copyContext={copyContext}
           viewerCompletion={viewerCompletion}
+          exitHome={noticeKind === "created"}
           lineageSlot={
             isOwner ? (
               <Suspense fallback={<RouteCopyLineageFallback />}>
@@ -91,26 +96,28 @@ export default async function RouteDetailPage({
               <RouteMapSection route={route} />
             </Suspense>
           }
+          socialProofSlot={
+            <>
+              {route.visibility === "public" && route.completionCount > 0 && (
+                <Suspense fallback={<RouteCompletionsFallback />}>
+                  <RouteCompletionsSection
+                    routeId={route.id}
+                    completionCount={route.completionCount}
+                    completionRatingAvg={route.completionRatingAvg}
+                  />
+                </Suspense>
+              )}
+              <Suspense fallback={<RouteCommentsFallback commentCount={route.commentCount} />}>
+                <RouteCommentsSection
+                  routeId={route.id}
+                  commentCount={route.commentCount}
+                  me={me}
+                  isOwner={isOwner}
+                />
+              </Suspense>
+            </>
+          }
         />
-
-        {route.visibility === "public" && route.completionCount > 0 && (
-          <Suspense fallback={<RouteCompletionsFallback />}>
-            <RouteCompletionsSection
-              routeId={route.id}
-              completionCount={route.completionCount}
-              completionRatingAvg={route.completionRatingAvg}
-            />
-          </Suspense>
-        )}
-
-        <Suspense fallback={<RouteCommentsFallback commentCount={route.commentCount} />}>
-          <RouteCommentsSection
-            routeId={route.id}
-            commentCount={route.commentCount}
-            me={me}
-            isOwner={isOwner}
-          />
-        </Suspense>
       </main>
     </MobileFrame>
   );
