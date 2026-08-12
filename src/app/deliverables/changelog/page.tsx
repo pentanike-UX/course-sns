@@ -13,6 +13,12 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.20-mvp — 지도 kinds · plan 뒤로가기</H2>
+      <Ul>
+        <li>지도: 코스 기록/계획(kinds) 필터 서버 적용</li>
+        <li>계획 작성 종료 → 보관함「따라가는 중」· help/screens IA 정정</li>
+      </Ul>
+
       <H2>v0.3.19-mvp — e2e · 운영 체크리스트</H2>
       <Ul>
         <li>스모크: 보관함「구독 코스」· 따라가기 시트 카피 동기화</li>

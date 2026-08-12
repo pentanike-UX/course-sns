@@ -267,6 +267,8 @@ type MapPointRow = {
   difficulty: string | null;
   spots: { lat: number | null; lng: number | null; order_index: number }[];
   legs: { transport: string | null; duration_min: number | null }[] | null;
+  /** present when this public route is itself a plan copy */
+  copy_source?: { purpose: CopyPurpose } | { purpose: CopyPurpose }[] | null;
 };
 
 /**
@@ -317,7 +319,7 @@ export async function getFeedMapPoints(opts?: {
   let query = supabase
     .from("routes")
     .select(
-      "id, title, region, cover_photo_url, like_count, copy_count, completion_count, difficulty, spots!spots_route_id_fkey(lat, lng, order_index), legs!legs_route_id_fkey(transport, duration_min)",
+      "id, title, region, cover_photo_url, like_count, copy_count, completion_count, difficulty, spots!spots_route_id_fkey(lat, lng, order_index), legs!legs_route_id_fkey(transport, duration_min), copy_source:route_copies!route_copies_copied_route_id_fkey(purpose)",
     )
     .eq("visibility", "public")
     .order("created_at", { ascending: false })
@@ -344,8 +346,16 @@ export async function getFeedMapPoints(opts?: {
     query = query.in("difficulty", f.difficulties.map((d) => san(d)));
 
   const { data } = await query;
+  const kindFilter = f?.kinds?.length ? new Set(f.kinds) : null;
   const points: FeedMapPoint[] = [];
   for (const r of (data as MapPointRow[] | null) ?? []) {
+    // kinds (코스 기록|계획) — same rule as routeMatchesFilters; applied post-query
+    // because purpose lives on route_copies, not routes.
+    if (kindFilter) {
+      const src = Array.isArray(r.copy_source) ? r.copy_source[0] : r.copy_source;
+      const kind = src?.purpose === "plan" ? "plan" : "record";
+      if (!kindFilter.has(kind)) continue;
+    }
     const spots = (r.spots ?? []).slice().sort((a, b) => a.order_index - b.order_index);
     const path = spots
       .filter((s) => typeof s.lat === "number" && typeof s.lng === "number")

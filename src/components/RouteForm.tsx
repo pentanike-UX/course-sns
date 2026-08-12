@@ -780,7 +780,8 @@ export default function RouteForm({
   const [initialSnapshot] = useState(formSnapshot);
   const isDirty = formSnapshot !== initialSnapshot;
 
-  const planBackHref = isDirectPlanCreate ? "/library?tab=following" : `/routes/${routeId}`;
+  // Plans land in「따라가는 중」(default /library). ?tab=following aliases to 구독 코스.
+  const planBackHref = isDirectPlanCreate ? "/library" : `/routes/${routeId}`;
   const leavePlanner = () => {
     setConfirmExit(false);
     if (hasInAppHistory()) router.back();
