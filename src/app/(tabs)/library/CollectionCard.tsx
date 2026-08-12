@@ -53,7 +53,7 @@ export default function CollectionCard({ route }: Props) {
           <br />
           <span className="text-ink">따라가면 초안이 「따라가는 중」으로 옮겨요.</span>
         </p>
-        <CopyRouteButton routeId={route.id} short />
+        <CopyRouteButton routeId={route.id} short primary />
       </div>
     </div>
   );

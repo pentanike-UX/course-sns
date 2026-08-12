@@ -216,13 +216,13 @@ export default function RouteView({
       )
     ) : null;
 
-  // DET-02: follow CTA + proof first; like/save icon-only, visually demoted.
+  // COURSE-UX §2.3: transfer proof → follow CTA → demoted like/save.
   const social = !isOwner ? (
     <div className="space-y-3 px-4 pt-4">
+      {transferProof}
       {route.visibility === "public" && (
         <CourseFollowActions routeId={route.id} viewerCompletion={viewerCompletion} />
       )}
-      {transferProof}
       <div className="flex items-center justify-end border-t border-line/60 pt-2">
         <RouteActions
           routeId={route.id}
@@ -460,12 +460,12 @@ export default function RouteView({
           />
         </div>
 
-        {courseSummary}
         {social}
+        {courseSummary}
 
         <section className="pt-5">
           <h2 className="px-4 text-[16px] font-bold text-ink">
-            코스 따라가기
+            스팟 동선
             <span className="ml-1.5 text-[13px] font-medium text-ink-faint">
               스팟 {route.spots.length}곳
             </span>
@@ -523,12 +523,12 @@ export default function RouteView({
         <RouteHeroMeta meta={heroMeta} className="absolute inset-x-0 bottom-0 z-[3] p-4 text-white" />
       </div>
 
-      {courseSummary}
       {social}
+      {courseSummary}
 
       <section className="px-4 pt-7">
         <h2 className="text-[16px] font-bold text-ink">
-          코스 따라가기
+          스팟 동선
           <span className="ml-1.5 text-[13px] font-medium text-ink-faint">
             스팟 {route.spots.length}곳
           </span>

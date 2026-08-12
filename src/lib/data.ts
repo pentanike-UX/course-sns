@@ -38,7 +38,7 @@ function toAuthor(p: ProfileRow | null): RouteAuthor {
   return {
     id: p?.id ?? "",
     handle: p?.handle ?? "",
-    displayName: p?.display_name ?? "여행자",
+    displayName: p?.display_name ?? "메이커",
     avatarUrl: p?.avatar_url ?? undefined,
   };
 }
@@ -57,7 +57,7 @@ export async function getCurrentProfile(): Promise<RouteAuthor | null> {
   return data ? toAuthor(data) : toAuthor({
     id: user.id,
     handle: user.email?.split("@")[0] ?? "user",
-    display_name: user.email?.split("@")[0] ?? "여행자",
+    display_name: user.email?.split("@")[0] ?? "나",
     avatar_url: null,
   });
 }

@@ -13,6 +13,15 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.22-mvp — 전체 화면·플로우 검수</H2>
+      <Ul>
+        <li>로그인 실패/탈출 · 작성·수정 dirty confirm · 지도/상세 CTA 위계</li>
+        <li>필터 peek · kinds on map · 저장 카드·알림 empty CTA ·「여행자」제거</li>
+        <li>
+          정본 <Code>docs/UX-UI-GUI-AUDIT-FULL-FLOW-2026-08.md</Code>
+        </li>
+      </Ul>
+
       <H2>v0.3.21-mvp — UX/UI/GUI 검수 핫픽스</H2>
       <Ul>
         <li>지도 peek·선택 카드 primary「따라가기」· 시트 헤더 패딩</li>

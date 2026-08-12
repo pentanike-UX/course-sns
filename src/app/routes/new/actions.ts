@@ -100,7 +100,11 @@ export async function createRoute(input: CreateRouteInput) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  if (!user) {
+    const next =
+      input.copyPurpose === "plan" ? "/routes/new?type=plan" : "/routes/new";
+    redirect(`/login?next=${encodeURIComponent(next)}`);
+  }
 
   // 1. route
   const { data: route, error: routeErr } = await supabase
@@ -214,7 +218,9 @@ export async function updateRoute(input: UpdateRouteInput) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  if (!user) {
+    redirect(`/login?next=${encodeURIComponent(`/routes/${input.id}/edit`)}`);
+  }
 
   // ownership check
   const { data: existing } = await supabase

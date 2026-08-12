@@ -5,7 +5,7 @@
 ## 1. 제품 개요
 
 **coursee (course-sns)** — 따라갈 수 있는 **이동 코스**를 발견·복제·완주·구독하는 커뮤니티. 브랜드 마크: `public/icons/`(심볼) · `logo-full`(워드마크).  
-정본 UX: [`COURSE-UX-DESIGN.md`](COURSE-UX-DESIGN.md) · 토큰: [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) · 페인포인트: [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md) · GUI 검수: [`UX-UI-GUI-AUDIT-2026-08.md`](UX-UI-GUI-AUDIT-2026-08.md).  
+정본 UX: [`COURSE-UX-DESIGN.md`](COURSE-UX-DESIGN.md) · 토큰: [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) · 페인포인트: [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md) · GUI 검수: [`UX-UI-GUI-AUDIT-FULL-FLOW-2026-08.md`](UX-UI-GUI-AUDIT-FULL-FLOW-2026-08.md).  
 **공식 가이드(웹):** [`/deliverables`](https://course-sns.vercel.app/deliverables) — 기획·시나리오·시나리오점검·브랜드(BI·BX)·화면·아키텍처·DB·API·개발·현황·이력. 브랜드 정본 [`docs/BRAND.md`](BRAND.md).
 
 - 한 **Route**(코드/DB명 유지) = 순서 있는 **Spot** + 스팟 간 **Leg**(수단/시간/주의)
@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.3.21-mvp)
+### 현재 화면·내비 (v0.3.22-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -474,7 +474,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.3.21-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.3.22-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: **`https://course-sns.vercel.app`** + `http://localhost:3000` (+ 필요 시 프리뷰). ⚠️ 도메인 미등록 시 **핀만 보이고 타일 공백**.
@@ -503,6 +503,17 @@ pnpm test:e2e     # Playwright 스모크
 ## 7. 작업 로그 (이어서 누적)
 
 > **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
+
+### 전체 화면·플로우 UX/UI/GUI 검수 (Cursor, 2026-08-12 · v0.3.22-mvp)
+
+- **버전**: **`v0.3.22-mvp`** (PATCH).
+- **배경**: HOME→MAP→DET→CREATE→AUTH→LIB→PROFILE→NOTIF 전 플로우 재검수.
+- **AUTH**: login `error=auth` ·「둘러보기」탈출 · 설정 AuthGate 카피 · create/update `?next=`.
+- **CREATE/EDIT**: dirty confirm on X (플래너 패턴 공유).
+- **MAP/DET**: 상세 시트 CTA 상단 · DET proof→CTA→summary · peek 148+필터 · kinds on map · pin `#dc2626`.
+- **LIB/HOME/NOTIF**: 저장 카드 primary 따라가기 · 레일/알림 empty CTA ·「여행자」제거.
+- **문서**: [`docs/UX-UI-GUI-AUDIT-FULL-FLOW-2026-08.md`](UX-UI-GUI-AUDIT-FULL-FLOW-2026-08.md).
+- **검증**: `pnpm lint` · `pnpm build`.
 
 ### UX/UI/GUI 검수 핫픽스 (Cursor, 2026-08-12 · v0.3.21-mvp)
 

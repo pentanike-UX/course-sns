@@ -35,10 +35,18 @@ export default async function NotificationsPage() {
 
         <main className="no-scrollbar min-h-0 flex-1 overflow-y-auto pb-10">
           {items.length === 0 ? (
-            <div className="px-8 py-20 text-center text-[14px] text-ink-faint">
-              아직 알림이 없어요.
-              <br />
-              새 코스·따라가기·완주 후기가 생기면 여기 모여요.
+            <div className="flex flex-col items-center px-8 py-20 text-center">
+              <p className="text-[14px] text-ink-faint">
+                아직 알림이 없어요.
+                <br />
+                새 코스·따라가기·완주 후기가 생기면 여기 모여요.
+              </p>
+              <Link
+                href="/"
+                className="mt-5 rounded-full bg-sunset px-5 py-2.5 text-[13px] font-semibold text-white"
+              >
+                코스 둘러보기
+              </Link>
             </div>
           ) : (
             <>

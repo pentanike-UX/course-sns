@@ -110,7 +110,7 @@ export default function ProfileEditForm({ initial }: Props) {
         </div>
 
         <div className="mt-8">
-          <Field label="닉네임" value={displayName} onChange={setDisplayName} placeholder="여행자" required />
+          <Field label="닉네임" value={displayName} onChange={setDisplayName} placeholder="닉네임" required />
           <label className="mb-3 block">
             <span className="mb-1.5 block text-[12px] font-medium text-ink-soft">
               핸들<span className="text-sunset"> *</span>

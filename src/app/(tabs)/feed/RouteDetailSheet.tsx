@@ -338,6 +338,13 @@ export default function RouteDetailSheet({
                 )}
               </div>
 
+              {/* Follow CTA above map/spots — map「상세」path must not bury transfer */}
+              {route.visibility === "public" && (
+                <div className="px-5 pt-4">
+                  <CopyRouteButton routeId={route.id} prominent />
+                </div>
+              )}
+
               {(route.theme || route.mood || route.recommendedFor || route.bestSeason) && (
                 <div className="flex flex-wrap gap-1.5 px-5 pt-3">
                   {[route.theme, route.mood, route.recommendedFor, route.bestSeason]
@@ -417,10 +424,7 @@ export default function RouteDetailSheet({
                 })}
               </ol>
 
-              <div className="space-y-2 px-5 pt-6">
-                {route.visibility === "public" && (
-                  <CopyRouteButton routeId={route.id} prominent />
-                )}
+              <div className="px-5 pt-6">
                 <Link
                   href={`/routes/${route.id}`}
                   className="block rounded-full border border-line bg-card py-3 text-center text-[14px] font-semibold text-ink-soft transition-colors active:scale-[0.98]"

@@ -780,24 +780,27 @@ export default function RouteForm({
   const [initialSnapshot] = useState(formSnapshot);
   const isDirty = formSnapshot !== initialSnapshot;
 
-  // Plans land in「따라가는 중」(default /library). ?tab=following aliases to 구독 코스.
-  const planBackHref = isDirectPlanCreate ? "/library" : `/routes/${routeId}`;
-  const leavePlanner = () => {
+  // Plans land in「따라가는 중」(default /library). Create → home. Edit → detail.
+  const leaveHref = isEdit
+    ? `/routes/${routeId}`
+    : isDirectPlanCreate
+      ? "/library"
+      : "/";
+  const leaveForm = () => {
     setConfirmExit(false);
     if (hasInAppHistory()) router.back();
-    else router.replace(planBackHref);
+    else router.replace(leaveHref);
   };
-  const requestExitPlanner = () => {
+  const requestExitForm = () => {
     if (isDirty) setConfirmExit(true);
-    else leavePlanner();
+    else leaveForm();
   };
 
-  // Planner header controls: a close (X) that confirms when there are unsaved
-  // edits, and a 임시저장 that submits the form (saves the draft).
-  const plannerCloseButton = (
+  // Close (X) confirms when there are unsaved edits (create / edit / planner).
+  const formCloseButton = (
     <button
       type="button"
-      onClick={requestExitPlanner}
+      onClick={requestExitForm}
       aria-label="닫기"
       className="flex h-11 w-11 items-center justify-center"
     >
@@ -806,6 +809,7 @@ export default function RouteForm({
       </GlassCircle>
     </button>
   );
+  const plannerCloseButton = formCloseButton;
   const tempSaveButton = (
     <button
       form="route-form"
@@ -818,14 +822,20 @@ export default function RouteForm({
       {saving ? "저장 중…" : "임시저장"}
     </button>
   );
+  const exitConfirmDescription =
+    isDirectPlanCreate || isPlanDraft
+      ? "변경한 내용이 저장되지 않아요. 상단의 ‘임시저장’으로 보관할 수 있어요. 완료는 ‘제목과 일정’에서 하세요."
+      : isEdit
+        ? "저장하지 않은 수정 내용이 사라져요."
+        : "작성 중인 내용이 저장되지 않아요. 나가면 입력한 내용이 사라져요.";
   const exitConfirmSheet = (
     <ActionBottomSheet
       open={confirmExit}
       title="저장하지 않고 나가시겠습니까?"
-      description="변경한 내용이 저장되지 않아요. 상단의 ‘임시저장’으로 보관할 수 있어요. 완료는 ‘제목과 일정’에서 하세요."
+      description={exitConfirmDescription}
       primaryLabel="나가기"
       primaryTone="danger"
-      onPrimary={leavePlanner}
+      onPrimary={leaveForm}
       secondaryLabel="계속 편집"
       onClose={() => setConfirmExit(false)}
       ariaLabel="저장하지 않고 나가기 확인"
@@ -1360,8 +1370,7 @@ export default function RouteForm({
     return (
       <MobileFrame shell>
         <AppHeader
-          back={`/routes/${routeId}`}
-          closeButton
+          left={formCloseButton}
           title="코스 수정"
           right={
             <button
@@ -1471,6 +1480,7 @@ export default function RouteForm({
         </form>
         {savingOverlay}
         {sheets}
+        {exitConfirmSheet}
         {visibilityConfirmSheet}
       </MobileFrame>
     );
@@ -1481,7 +1491,7 @@ export default function RouteForm({
 
   return (
     <MobileFrame shell>
-      <AppHeader back="/" closeButton title="새 코스 만들기" />
+      <AppHeader left={formCloseButton} title="새 코스 만들기" />
       <Stepper steps={STEP_LABELS} current={step} optional={[1]} />
 
       <form id="route-form" onSubmit={handleSave} className="no-scrollbar flex-1 overflow-y-auto px-4 pb-4">
@@ -1640,6 +1650,8 @@ export default function RouteForm({
 
       {savingOverlay}
       {sheets}
+      {exitConfirmSheet}
+      {visibilityConfirmSheet}
     </MobileFrame>
   );
 }

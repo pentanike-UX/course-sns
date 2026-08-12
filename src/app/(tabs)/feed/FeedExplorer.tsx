@@ -502,7 +502,15 @@ export default function FeedExplorer({
                 type="button"
                 aria-label="설정"
                 onClick={() => {
-                  if (!requireAuth({ next: "/" })) return;
+                  if (
+                    !requireAuth({
+                      next: "/",
+                      title: "설정을 보려면 로그인이 필요해요",
+                      description:
+                        "로그인하면 프로필·알림·기본 공개 범위를 관리할 수 있어요. 둘러보기는 계속해도 돼요.",
+                    })
+                  )
+                    return;
                   openProfile();
                 }}
                 className="flex h-11 w-11 items-center justify-center text-ink-soft"
@@ -566,6 +574,7 @@ export default function FeedExplorer({
               fullscreen
               detent={mapDetent}
               onDetentChange={setMapDetent}
+              peekPx={hasFilters ? 148 : 108}
               onExit={() => router.replace(feedUrl(q, sort, view, "list", filters))}
               sheetHeader={
                 <MapTopControls
@@ -587,9 +596,8 @@ export default function FeedExplorer({
         open={filterOpen}
         value={filters}
         countFor={mapActive ? undefined : countFor}
-        // 루트 종류(루트일기/계획) only filters the list — map pins are fetched
-        // server-side without a purpose join, so hide the facet in 지도 모드.
-        showKind={!mapActive}
+        // kinds(코스 기록/계획) — list + map both filter via getFeedMapPoints / feed query
+        showKind
         onApply={applyFilters}
         onClose={() => setFilterOpen(false)}
       />
@@ -631,7 +639,15 @@ export default function FeedExplorer({
               <button
                 type="button"
                 onClick={() => {
-                  if (!requireAuth({ next: "/" })) return;
+                  if (
+                    !requireAuth({
+                      next: "/",
+                      title: "설정을 보려면 로그인이 필요해요",
+                      description:
+                        "로그인하면 프로필·알림·기본 공개 범위를 관리할 수 있어요. 둘러보기는 계속해도 돼요.",
+                    })
+                  )
+                    return;
                   openProfile();
                 }}
                 aria-label="설정"
@@ -780,7 +796,7 @@ function MapTopControls({
               type="button"
               onClick={() => onRemoveFilter(kind, value)}
               aria-label={`${label} 필터 제거`}
-              className="flex shrink-0 items-center gap-1 rounded-full bg-ink py-1.5 pl-3 pr-2 text-[12px] font-semibold text-paper"
+              className="flex shrink-0 items-center gap-1 rounded-full bg-sunset py-1.5 pl-3 pr-2 text-[12px] font-semibold text-white"
             >
               {label}
               <MapChipX />

@@ -28,5 +28,6 @@
  * v0.3.19 — e2e 스모크 IA 동기화 · 운영 체크리스트
  * v0.3.20 — 지도 kinds 필터 · plan 뒤로가기 · help IA
  * v0.3.21 — UX/UI/GUI 검수 핫픽스 (지도 CTA·브랜드·IA 카피)
+ * v0.3.22 — 전체 화면·플로우 검수 (AUTH/CREATE/DET/MAP)
  */
-export const APP_VERSION = "v0.3.21-mvp";
+export const APP_VERSION = "v0.3.22-mvp";
