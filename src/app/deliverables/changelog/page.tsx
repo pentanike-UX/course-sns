@@ -13,6 +13,13 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.16-mvp — Wave G5 (P2 폴리시)</H2>
+      <Ul>
+        <li>게스트 홈 BrandWordmark · 정렬 라벨 · 레이아웃 오버플로 · 테마 접기</li>
+        <li>「가까운」위치 거부 안내 · TransferPill「첫 따라가기」고정</li>
+        <li>상세 좋아요·저장 아이콘 demote · 댓글 AuthGate</li>
+      </Ul>
+
       <H2>v0.3.15-mvp — 로그인→작성 뒤로가기 스택</H2>
       <Ul>
         <li>Google/이메일 로그인 후 <Code>replace</Code>로 인증 화면을 히스토리에서 제거</li>

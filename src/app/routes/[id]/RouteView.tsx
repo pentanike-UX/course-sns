@@ -216,14 +216,14 @@ export default function RouteView({
       )
     ) : null;
 
-  // Wave E1: transfer CTAs first; like/save are secondary below.
+  // DET-02: follow CTA + proof first; like/save icon-only, visually demoted.
   const social = !isOwner ? (
     <div className="space-y-3 px-4 pt-4">
       {route.visibility === "public" && (
         <CourseFollowActions routeId={route.id} viewerCompletion={viewerCompletion} />
       )}
       {transferProof}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex items-center justify-end border-t border-line/60 pt-2">
         <RouteActions
           routeId={route.id}
           initialLiked={route.liked ?? false}

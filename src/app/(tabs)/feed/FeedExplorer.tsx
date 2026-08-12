@@ -18,6 +18,7 @@ import SlideDrawer from "@/components/SlideDrawer";
 import DiaryDrawerContent from "@/components/DiaryDrawerContent";
 import DiaryDrawerSkeleton from "@/components/DiaryDrawerSkeleton";
 import { useAuthGate } from "@/components/AuthGate";
+import { BrandWordmark } from "@/components/BrandMark";
 import type { HomeTab } from "@/app/(tabs)/HomeRoutesTabs";
 import { preloadRouteCovers } from "@/lib/preload-route-covers";
 import { scheduleIdleTask } from "@/lib/schedule-idle-task";
@@ -366,13 +367,26 @@ export default function FeedExplorer({
   // Ask for the current position once 거리순 is chosen.
   useEffect(() => {
     if (sort !== "distance" || geo || geoDenied) return;
-    if (typeof navigator === "undefined" || !navigator.geolocation) return;
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      // async so we don't setState synchronously inside the effect body
+      const t = window.setTimeout(() => setGeoDenied(true), 0);
+      return () => window.clearTimeout(t);
+    }
     navigator.geolocation.getCurrentPosition(
       (p) => setGeo({ lat: p.coords.latitude, lng: p.coords.longitude }),
       () => setGeoDenied(true),
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
     );
   }, [sort, geo, geoDenied]);
+
+  // HOME-03: location denied → clear「가까운」chip + show notice (don't fake distance sort).
+  useEffect(() => {
+    if (sort !== "distance" || !geoDenied) return;
+    const params = new URLSearchParams();
+    if (q.trim()) params.set("q", q.trim());
+    appendFilterParams(params, filters);
+    router.replace(`/${params.toString() ? `?${params}` : ""}`);
+  }, [sort, geoDenied, q, filters, router]);
 
   // 거리순: re-order the prefetched list by distance from the user (client-side,
   // since location is only known here). Falls back to the server order until the
@@ -471,7 +485,7 @@ export default function FeedExplorer({
                 <span className="truncate text-[15px] font-bold text-ink">{profile.displayName}</span>
               </button>
             ) : (
-              <span className="pl-1 text-[17px] font-black text-ink">둘러보기</span>
+              <BrandWordmark markSize={30} className="pl-0.5" />
             )}
             <div className="ml-auto flex items-center">
               <button
@@ -508,6 +522,21 @@ export default function FeedExplorer({
             onOpenFilter={() => setFilterOpen(true)}
             onRemoveFilter={removeFilter}
           />
+          {geoDenied && (
+            <div className="mx-4 mb-2 flex items-start gap-2 rounded-2xl bg-muted/80 px-3.5 py-2.5 ring-1 ring-line/70">
+              <p className="min-w-0 flex-1 text-[12px] leading-snug text-ink-soft">
+                위치를 사용할 수 없어 <span className="font-bold text-ink">최신순</span>으로
+                보여드려요. 설정에서 위치 허용 후「가까운」을 다시 눌러 주세요.
+              </p>
+              <button
+                type="button"
+                onClick={() => setGeoDenied(false)}
+                className="shrink-0 text-[12px] font-semibold text-ink-faint underline-offset-2 hover:underline"
+              >
+                닫기
+              </button>
+            </div>
+          )}
         </div>
         {profile && (
           <FollowingRail courses={followingCourses} signedIn />

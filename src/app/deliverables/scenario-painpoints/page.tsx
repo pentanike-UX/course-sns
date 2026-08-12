@@ -68,8 +68,8 @@ export default function ScenarioPainpointsPage() {
           <Code>RouteDetailSheet</Code> CTA가「전체 페이지에서 보기」뿐 → 따라가기 경로 단절
         </li>
         <li>
-          <strong className="font-semibold text-ink">HOME-03 (P2)</strong> — 「가까운」위치
-          거부 시 칩만 활성, 안내 없음
+          <strong className="font-semibold text-ink">HOME-03 (✅ v0.3.16)</strong> — 「가까운」위치
+          거부 시 최신순 복귀 + 안내 배너
         </li>
       </Ul>
       <H3>이해도저하</H3>
@@ -79,23 +79,23 @@ export default function ScenarioPainpointsPage() {
           노출 → 좋아요 SNS로 오인
         </li>
         <li>
-          <strong className="font-semibold text-ink">CARD-01 (P2)</strong> — 콜드 TransferPill이
-          라이프스타일 태그로 대체
+          <strong className="font-semibold text-ink">CARD-01 (✅ v0.3.16)</strong> — 콜드
+          TransferPill「첫 따라가기」고정
         </li>
         <li>
-          <strong className="font-semibold text-ink">HOME-01 (P2)</strong> — 게스트 홈 헤더
-          「둘러보기」만 (브랜드 약함)
+          <strong className="font-semibold text-ink">HOME-01 (✅ v0.3.16)</strong> — 게스트 홈
+          BrandWordmark
         </li>
         <li>
-          <strong className="font-semibold text-ink">HOME-02 / MAP-03 (P2)</strong> — 정렬 카피·필터
-          밀도 · peek↔시트 콜드 카피 불일치
+          <strong className="font-semibold text-ink">HOME-02 (✅ v0.3.16) / MAP-03</strong> — 정렬
+          라벨·레이아웃 오버플로·테마 접기 · peek↔시트 콜드(G1)
         </li>
       </Ul>
       <H3>불쾌감</H3>
       <Ul>
         <li>
-          <strong className="font-semibold text-ink">DET-02 (P2)</strong> — 따라가기 CTA 직하단
-          하트·저장 경쟁
+          <strong className="font-semibold text-ink">DET-02 (✅ v0.3.16)</strong> — 좋아요·저장
+          아이콘 demote
         </li>
       </Ul>
 
@@ -159,6 +159,7 @@ export default function ScenarioPainpointsPage() {
           ["G2 완주", "✅ LIB-01 · LIB-03 · CTA-01 · LIB-04 (v0.3.12)", "Copy→Completion"],
           ["G3 메이커", "✅ PUB-01 · STAT-01 · PUB-02 · PUB-03 · STAT-02 (v0.3.13)", "게시·영향력 루프"],
           ["G4 구독", "✅ FOL-01 · FOL-02 · FOL-03 (v0.3.14)", "팔로우→따라가기"],
+          ["G5 폴리시", "✅ HOME · CARD-01 · DET-02 · 댓글 AuthGate (v0.3.16)", "첫인상·P2"],
         ]}
       />
 

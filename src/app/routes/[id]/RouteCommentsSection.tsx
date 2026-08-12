@@ -4,6 +4,7 @@ import { getComments } from "@/lib/data";
 import type { RouteAuthor } from "@/lib/types";
 import { formatDate } from "@/lib/format";
 import CommentForm from "./CommentForm";
+import CommentLoginButton from "./CommentLoginButton";
 import DeleteCommentButton from "./DeleteCommentButton";
 
 type Props = {
@@ -81,12 +82,7 @@ export default async function RouteCommentsSection({
           <CommentForm routeId={routeId} />
         </div>
       ) : (
-        <Link
-          href={`/login?next=/routes/${routeId}`}
-          className="block rounded-2xl border border-line bg-card py-3 text-center text-[13px] text-ink-faint"
-        >
-          로그인하고 댓글 남기기
-        </Link>
+        <CommentLoginButton routeId={routeId} />
       )}
     </section>
   );

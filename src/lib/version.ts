@@ -22,5 +22,6 @@
  * v0.3.13 — Wave G3: 메이커 공개 게이트·통계·토스트
  * v0.3.14 — Wave G4: 구독 IA·레일 CTA·알림 배지
  * v0.3.15 — 로그인→작성 후 뒤로가기 시 인증 스택 제거
+ * v0.3.16 — Wave G5: 홈·카드·상세 P2 폴리시
  */
-export const APP_VERSION = "v0.3.15-mvp";
+export const APP_VERSION = "v0.3.16-mvp";
