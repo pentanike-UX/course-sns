@@ -18,7 +18,7 @@ type Props = {
  *  - not following + they follow me → 맞팔로우
  *  - not following                  → 팔로우
  *  - following + they follow me      → 서로 팔로우
- *  - following                       → 팔로잉
+ *  - following                       → 팔로우 중
  */
 export default function FollowToggle({
   followeeId,
@@ -52,10 +52,11 @@ export default function FollowToggle({
     });
   };
 
+  // Avoid「팔로잉」— clashes with retired library tab vs「구독 코스」(FOL-01).
   const label = following
     ? followsMe
       ? "서로 팔로우"
-      : "팔로잉"
+      : "팔로우 중"
     : followsMe
       ? "맞팔로우"
       : "팔로우";

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import BottomSheet from "@/components/BottomSheet";
 import JellyButton from "@/components/JellyButton";
+import CopyRouteButton from "@/app/routes/[id]/CopyRouteButton";
 import RouteDetailSheet from "./RouteDetailSheet";
 import { loadNaverMaps, NAVER_MAP_KEY } from "@/lib/naver";
 import type { FeedMapPoint } from "@/lib/data";
@@ -725,7 +726,7 @@ export default function FeedMap({
             detent={detentIndex}
             onDetentChange={setDetentIndex}
             header={sheetHeader}
-            peekPx={74}
+            peekPx={108}
           >
             <div className="pt-1">
               {selected && (
@@ -931,13 +932,16 @@ function SheetSelectedCard({
             </button>
           </div>
         )}
-        <button
-          type="button"
-          onClick={onOpenDetail}
-          className="ml-auto rounded-full bg-sunset px-4 py-2 text-[13px] font-semibold text-white shadow-[var(--shadow-brand)]"
-        >
-          상세 보기
-        </button>
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onOpenDetail}
+            className="rounded-full border border-line bg-card px-3.5 py-2 text-[13px] font-semibold text-ink-soft"
+          >
+            상세
+          </button>
+          <CopyRouteButton routeId={point.id} primary />
+        </div>
       </div>
     </div>
   );

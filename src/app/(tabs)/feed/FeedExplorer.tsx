@@ -485,7 +485,7 @@ export default function FeedExplorer({
                 <span className="truncate text-[15px] font-bold text-ink">{profile.displayName}</span>
               </button>
             ) : (
-              <BrandWordmark markSize={30} className="pl-0.5" />
+              <BrandWordmark markSize={38} className="pl-0.5" />
             )}
             <div className="ml-auto flex items-center">
               <button

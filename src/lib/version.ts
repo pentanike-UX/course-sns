@@ -27,5 +27,6 @@
  * v0.3.18 — 홈 loading·설계 문서 IA 마감 · PR 리뷰 준비
  * v0.3.19 — e2e 스모크 IA 동기화 · 운영 체크리스트
  * v0.3.20 — 지도 kinds 필터 · plan 뒤로가기 · help IA
+ * v0.3.21 — UX/UI/GUI 검수 핫픽스 (지도 CTA·브랜드·IA 카피)
  */
-export const APP_VERSION = "v0.3.20-mvp";
+export const APP_VERSION = "v0.3.21-mvp";

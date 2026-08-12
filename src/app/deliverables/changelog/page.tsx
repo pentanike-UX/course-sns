@@ -13,6 +13,15 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.21-mvp — UX/UI/GUI 검수 핫픽스</H2>
+      <Ul>
+        <li>지도 peek·선택 카드 primary「따라가기」· 시트 헤더 패딩</li>
+        <li>게스트 브랜드 · 팔로우 중 IA · 좋아요 AuthGate · 진척/빈 상태 CTA</li>
+        <li>
+          검수 정본 <Code>docs/UX-UI-GUI-AUDIT-2026-08.md</Code>
+        </li>
+      </Ul>
+
       <H2>v0.3.20-mvp — 지도 kinds · plan 뒤로가기</H2>
       <Ul>
         <li>지도: 코스 기록/계획(kinds) 필터 서버 적용</li>

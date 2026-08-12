@@ -8,7 +8,7 @@ export default function HomeLoading() {
   return (
     <>
       <header className="flex h-[calc(env(safe-area-inset-top)+3.5rem)] items-center gap-2 bg-paper/90 px-3 pt-[env(safe-area-inset-top)] backdrop-blur">
-        <BrandWordmark markSize={30} className="pl-0.5" />
+        <BrandWordmark markSize={38} className="pl-0.5" />
         <div className="ml-auto flex items-center gap-0">
           <span className="flex h-11 w-11 items-center justify-center">
             <GlassCircle>

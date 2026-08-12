@@ -23,17 +23,20 @@ export default function CopyRouteButton({
   prominent = false,
   /** Shorter label for tight surfaces (e.g. library saved cards). */
   short = false,
+  /** Compact sunset CTA (map selected card) — not full-width. */
+  primary = false,
 }: {
   routeId: string;
   prominent?: boolean;
   short?: boolean;
+  primary?: boolean;
 }) {
   const { requireAuth } = useAuthGate();
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [purpose, setPurpose] = useState<CopyPurpose | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const idleLabel = short ? "따라가기" : "이 코스 따라가기";
+  const idleLabel = short || primary ? "따라가기" : "이 코스 따라가기";
 
   const startCopy = () => {
     if (!purpose) {
@@ -54,6 +57,12 @@ export default function CopyRouteButton({
     });
   };
 
+  const buttonClass = prominent
+    ? "flex w-full items-center justify-center gap-2 rounded-full bg-sunset px-4 py-3.5 text-[15px] font-bold text-white shadow-[var(--shadow-brand)] transition-transform active:scale-[0.98] disabled:opacity-60"
+    : primary
+      ? "flex items-center gap-1.5 rounded-full bg-sunset px-3.5 py-2 text-[13px] font-bold text-white shadow-[var(--shadow-brand)] transition-transform active:scale-[0.98] disabled:opacity-60"
+      : "flex items-center gap-1.5 rounded-full border border-line bg-card/95 px-3.5 py-2 text-[13px] font-bold text-ink shadow-sm backdrop-blur transition-colors disabled:opacity-60";
+
   return (
     <>
       <button
@@ -65,11 +74,7 @@ export default function CopyRouteButton({
           setOpen(true);
         }}
         disabled={pending}
-        className={
-          prominent
-            ? "flex w-full items-center justify-center gap-2 rounded-full bg-sunset px-4 py-3.5 text-[15px] font-bold text-white shadow-[var(--shadow-brand)] transition-transform active:scale-[0.98] disabled:opacity-60"
-            : "flex items-center gap-1.5 rounded-full border border-line bg-card/95 px-3.5 py-2 text-[13px] font-bold text-ink shadow-sm backdrop-blur transition-colors disabled:opacity-60"
-        }
+        className={buttonClass}
       >
         <RouteIcon />
         {pending ? "가져오는 중…" : idleLabel}

@@ -26,6 +26,12 @@ export default function RouteActions({
   const [bookmarked, setBookmarked] = useState(initialBookmarked);
   const [, startTransition] = useTransition();
 
+  const LIKE_AUTH = {
+    next: `/routes/${routeId}`,
+    title: "좋아요하려면 로그인이 필요해요",
+    description:
+      "좋아요는 가벼운 반응이에요. 이 앱의 핵심은 코스를 따라가는 거예요 — 둘러보기는 계속해도 돼요.",
+  } as const;
   const SAVE_AUTH = {
     next: `/routes/${routeId}`,
     title: "저장하려면 로그인이 필요해요",
@@ -34,7 +40,7 @@ export default function RouteActions({
   } as const;
 
   const onLike = () => {
-    if (!requireAuth(SAVE_AUTH)) return;
+    if (!requireAuth(LIKE_AUTH)) return;
     const next = !liked;
     setLiked(next);
     setLikeCount((c) => c + (next ? 1 : -1));
@@ -43,7 +49,7 @@ export default function RouteActions({
       if (res?.error) {
         setLiked(!next);
         setLikeCount((c) => c + (next ? -1 : 1));
-        if (res.needsAuth) requireAuth(SAVE_AUTH);
+        if (res.needsAuth) requireAuth(LIKE_AUTH);
       }
     });
   };

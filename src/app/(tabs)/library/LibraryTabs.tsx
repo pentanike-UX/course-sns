@@ -184,6 +184,7 @@ function FollowProgressBar({
         ? originalHref
         : editHref;
 
+  // Align CTA with the incomplete step (not post-completion「후기」language).
   const nextLabel = doneOk
     ? hasOriginal
       ? "후기 수정"
@@ -193,7 +194,7 @@ function FollowProgressBar({
       : !moveDataOk
         ? "이동 확인하기"
         : hasOriginal
-          ? "원본에서 후기 남기기"
+          ? "원본에서 다녀왔어요"
           : "초안 열기";
 
   const nextIdx = steps.findIndex((s) => !s.done);

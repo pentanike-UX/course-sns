@@ -36,7 +36,7 @@ export default function FollowingRail({
           <div className="mt-2.5 flex flex-wrap gap-2">
             <Link
               href="/"
-              className="rounded-full bg-ink px-3.5 py-1.5 text-[12px] font-bold text-paper"
+              className="rounded-full bg-sunset px-3.5 py-1.5 text-[12px] font-bold text-white"
             >
               코스 둘러보기
             </Link>
