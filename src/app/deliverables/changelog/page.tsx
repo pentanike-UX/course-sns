@@ -13,6 +13,17 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.4.0-mvp — Photo-first 기록 작성</H2>
+      <Ul>
+        <li>기록 생성 4화면: 올리기 → 순서(스팟 카드) → 이동 → 공개. 제목·본문 없이 등록 가능</li>
+        <li>
+          위치 메타로 스팟 묶음·자동 제목·레그 시간. UI는 점 스텝퍼·히어로 카드·여백 중심
+        </li>
+        <li>
+          정본 <Code>docs/PHOTO-FIRST-CREATE.md</Code> G1–G3. 수정/따라가기 셸 통일은 후속
+        </li>
+      </Ul>
+
       <H2>v0.3.9-mvp — Photo-first 코스 등록 설계</H2>
       <Ul>
         <li>

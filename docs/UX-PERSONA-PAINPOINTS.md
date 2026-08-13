@@ -1,9 +1,9 @@
 # 브랜드 컬러 · 페르소나 시나리오 재채점 (Wave A–D 이후)
 
-> **범위:** course-sns MVP `v0.3.9-mvp` (코드 + DESIGN-SYSTEM · COURSE-UX)  
-> **목적:** Playwright 실측 후 **Wave F 구현**까지 반영 · Wave G는 설계 정본  
+> **범위:** course-sns MVP `v0.4.0-mvp` (코드 + DESIGN-SYSTEM · COURSE-UX)  
+> **목적:** Playwright 실측 후 **Wave F 구현**까지 반영 · Wave G 기록 생성 4화면  
 > **기준일:** 2026-08-13  
-> **상태:** Wave A–E ✅ · Wave F ✅ 코드 (지도 도메인·`0015` 시드는 운영 push 필요) · **Wave G 설계** [`PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md)
+> **상태:** Wave A–E ✅ · Wave F ✅ 코드 · **Wave G G1–G3** 기록 생성 [`PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md)
 
 ---
 
@@ -253,7 +253,7 @@ flowchart LR
 | `docs/DESIGN-SYSTEM.md` | 컬러·컴포넌트 |
 | `docs/COURSE-UX-DESIGN.md` | 페르소나·북스타·Phase |
 | `docs/HANDOFF.md` §1·§7 | 현행 IA · 버전 로그 |
-| `src/lib/version.ts` | `v0.3.9-mvp` |
+| `src/lib/version.ts` | `v0.4.0-mvp` |
 | `docs/PHOTO-FIRST-CREATE.md` | Wave G 기록 작성 설계 |
 | `src/app/(tabs)/feed/FeedMap.tsx` | 타일 실패 UX |
 | `src/app/(tabs)/feed/FollowingRail.tsx` | P4 레일 |

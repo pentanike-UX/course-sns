@@ -10,22 +10,23 @@ export default function RouteFormLoadingShell({
   back: string;
 }) {
   const isEdit = mode === "edit";
-  // WAVE-G D5: 기록 생성 스켈레톤은 4스텝 + 큰 드롭존으로.
+  // WAVE-G D5: 기록 생성 스켈레톤은 4점 스텝 + 큰 올리기 화면.
 
   return (
     <MobileFrame shell>
       <AppHeader
         back={back}
         closeButton
-        title={isEdit ? "코스 수정" : "새 코스 만들기"}
+        title={isEdit ? "코스 수정" : "새 코스"}
         right={isEdit ? <Skeleton className="h-8 w-16 rounded-full bg-sunset-wash" /> : undefined}
       />
 
       {!isEdit && (
-        <div className="flex items-center gap-2 border-b border-line px-4 py-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className={`h-2 flex-1 rounded-full ${i === 0 ? "bg-sunset-wash" : ""}`} />
-          ))}
+        <div className="flex items-center justify-center gap-1.5 py-3">
+          <Skeleton className="h-1.5 w-5 rounded-full bg-ink/20" />
+          <Skeleton className="h-1.5 w-1.5 rounded-full" />
+          <Skeleton className="h-1.5 w-1.5 rounded-full" />
+          <Skeleton className="h-1.5 w-1.5 rounded-full" />
         </div>
       )}
 
@@ -38,64 +39,27 @@ export default function RouteFormLoadingShell({
       )}
 
       <main className="no-scrollbar flex-1 overflow-y-auto px-4 pb-28">
-        <section className="pt-6">
-          <Skeleton className="h-6 w-56 rounded-full" />
-          <Skeleton className="mt-2 h-4 w-full rounded-full" />
-          <Skeleton className="mt-1.5 h-4 w-4/5 rounded-full" />
-        </section>
-
-        <section className="mt-6 space-y-4">
-          <FormFieldSkeleton />
-          <FormFieldSkeleton />
-          <div className="rounded-[var(--radius-card)] border border-line bg-card p-4">
-            <Skeleton className="h-4 w-24 rounded-full" />
-            <div className="mt-3 space-y-2.5">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <SpotRowSkeleton key={i} />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-9 border-t border-line pt-6">
-          <Skeleton className="h-5 w-36 rounded-full" />
-          <div className="mt-4 space-y-3">
-            {Array.from({ length: 2 }).map((_, i) => (
-              <div key={i} className="rounded-[var(--radius-card)] border border-line bg-card p-4">
-                <div className="flex items-center gap-3">
-                  <Skeleton className="h-10 w-10 rounded-full bg-sunset-wash" />
-                  <div className="flex-1">
-                    <Skeleton className="h-4 w-32 rounded-full" />
-                    <Skeleton className="mt-2 h-3 w-24 rounded-full" />
-                  </div>
-                </div>
+        {isEdit ? (
+          <>
+            <section className="pt-6">
+              <Skeleton className="h-6 w-56 rounded-full" />
+              <Skeleton className="mt-2 h-4 w-full rounded-full" />
+            </section>
+            <section className="mt-6 space-y-4">
+              <div className="rounded-[22px] border border-line bg-card p-4">
+                <Skeleton className="aspect-[16/10] w-full rounded-xl" />
               </div>
-            ))}
-          </div>
-        </section>
+            </section>
+          </>
+        ) : (
+          <section className="flex min-h-[70%] flex-col items-center justify-center pt-10">
+            <Skeleton className="h-[88px] w-[88px] rounded-full bg-sunset-wash" />
+            <Skeleton className="mt-8 h-8 w-48 rounded-full" />
+            <Skeleton className="mt-3 h-4 w-56 rounded-full" />
+            <Skeleton className="mt-8 h-12 w-40 rounded-full bg-sunset-wash" />
+          </section>
+        )}
       </main>
     </MobileFrame>
-  );
-}
-
-function FormFieldSkeleton() {
-  return (
-    <label className="block">
-      <Skeleton className="mb-2 h-3 w-16 rounded-full" />
-      <Skeleton className="h-11 w-full rounded-xl bg-card" />
-    </label>
-  );
-}
-
-function SpotRowSkeleton() {
-  return (
-    <div className="flex items-center gap-3 rounded-xl bg-muted/70 p-3">
-      <Skeleton className="h-10 w-10 rounded-xl bg-card" />
-      <div className="min-w-0 flex-1">
-        <Skeleton className="h-4 w-3/4 rounded-full" />
-        <Skeleton className="mt-2 h-3 w-1/2 rounded-full" />
-      </div>
-      <Skeleton className="h-5 w-5 rounded-full" />
-    </div>
   );
 }

@@ -195,6 +195,7 @@ export async function copyRoute(routeId: string, purpose: CopyPurpose) {
 }
 
 export async function convertPlanDraftToRecord(routeId: string) {
+  // WAVE-G E6: 전환 후 클라가 `/edit?photos=1`로 올리기 화면을 열도록 (구현 G5).
   const supabase = await createClient();
   const {
     data: { user },

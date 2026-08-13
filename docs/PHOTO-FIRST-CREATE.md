@@ -1,6 +1,6 @@
 # Photo-first 코스 등록 — UX·구현 설계 (Wave G)
 
-> **상태:** 설계 정본 (구현 전) · `v0.3.9-mvp`  
+> **상태:** G0 설계 ✅ · G1–G3 기록 생성 4화면 구현 (`v0.4.0-mvp`)  
 > **주인공:** P3 메이커 — “사진은 이미 코스다. 글은 선택이다.”  
 > **관련:** [`COURSE-UX-DESIGN.md`](COURSE-UX-DESIGN.md) §2.6 · [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md) P3-E · [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md)  
 > **범위:** 기록(record) 작성·수정·계획→기록 전환. 계획(plan) 지도 플래너는 **유지**하되 같은 카드/레그 언어로 맞춤.

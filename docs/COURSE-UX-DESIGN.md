@@ -42,7 +42,7 @@
 - [x] 공개/비공개 명시 선택 게이트 (`visibilityChosen`)
 - [x] **Wave E** — 상세 전이 위계 · 콜드/지도 패리티 · 체크리스트 진정성 · P4 구독 배달(알림+홈 레일) · error≠brand ([`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md) §6)
   - ⚠️ `0014_transfer_notifications.sql` — Supabase에 `db push` 필요 (`copy` · `course_publish`)
-- [ ] **Wave G** — Photo-first 기록 작성 ([`PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md)) · G0 설계 ✅ · G1–G6 구현 대기
+- [x] **Wave G** — Photo-first 기록 작성 ([`PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md)) · G0 설계 ✅ · G1–G3 기록 생성 4화면 ✅ · G4–G6 수정/복제 랜딩 대기
 
 ---
 
@@ -50,7 +50,7 @@
 
 > **포지션:** 따라갈 수 있는 이동 코스 커뮤니티  
 > **북스타 루프:** 발견 → 따라가기 → 다녀왔어요 → 영향력(복제·완주·팔로우)  
-> **기준 코드:** course-sns MVP (`v0.3.9-mvp`, routdiary fork) · 브랜드 **coursee**  
+> **기준 코드:** course-sns MVP (`v0.4.0-mvp`, routdiary fork) · 브랜드 **coursee**  
 > **관련:** 페르소나 P1–P4 · Wave F 구현 · [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md)
 
 이 문서는 “무엇을 만들지”가 아니라 **어디에·어떤 순서로·어떤 멘탈모델로 심을지**를 고정한다.  
