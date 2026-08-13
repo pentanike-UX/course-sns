@@ -48,6 +48,7 @@ export default async function TravelStatsPage() {
           아직 기록한 코스가 없어요.
           <br />첫 코스를 남기면 통계가 쌓이기 시작해요.
           <div className="mt-5">
+            {/* WAVE-G C3 */}
             <Link
               href="/routes/new"
               className="inline-block rounded-full bg-sunset px-5 py-2.5 text-[14px] font-semibold text-white"

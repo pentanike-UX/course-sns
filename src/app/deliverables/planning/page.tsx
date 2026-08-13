@@ -80,7 +80,11 @@ export default function PlanningPage() {
       </Ul>
       <H3>만들기·영향력</H3>
       <Ul>
-        <li>기록 위자드 / 지도 플래너</li>
+        <li>
+          기록: 사진 올리기 → 스팟 카드 순서 → 사이 이동 → 공개 (글 없이 등록 가능). 정본{" "}
+          <Code>docs/PHOTO-FIRST-CREATE.md</Code>
+        </li>
+        <li>계획: 지도 플래너 (아직 안 간 동선)</li>
         <li>게시 전 따라가기 준비도 · 공개/비공개 명시 선택</li>
         <li>프로필·통계의 따라감·다녀옴 지표</li>
       </Ul>
@@ -98,7 +102,7 @@ export default function PlanningPage() {
           ["처음 방문", "서비스 구경", "홈 둘러보기 → 상세 → 마음에 들면 로그인"],
           ["탐색러", "따라갈 코스 고르기", "필터·정렬 → 따라가기 → 초안"],
           ["따라가이", "다녀온 후기", "보관함 따라가는 중 → 원본에서 다녀왔어요"],
-          ["메이커", "공개 코스 올리기", "FAB → 기록/계획 → 공개 선택 → 완료"],
+          ["메이커", "공개 코스 올리기", "FAB → 사진만 올리기 → 카드 순서·이동 확인 → 공개 선택"],
           ["구독자", "좋아하는 메이커 받기", "책장 팔로우 → 팔로잉 새 코스 → 따라가기"],
         ]}
       />
@@ -132,6 +136,7 @@ export default function PlanningPage() {
         </li>
         <li>
           UX 정본 → 저장소 <Code>docs/COURSE-UX-DESIGN.md</Code> ·{" "}
+          <Code>docs/PHOTO-FIRST-CREATE.md</Code> ·{" "}
           <Code>docs/UX-PERSONA-PAINPOINTS.md</Code>
         </li>
         <li>

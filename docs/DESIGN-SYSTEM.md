@@ -2,7 +2,7 @@
 
 > UI·인터페이스 일관성을 위한 정본 가이드. **코드 토큰 = 스펙** — 값을 바꿀 때는 `src/app/globals.css`를 먼저 수정하고, 이 문서와 `docs/HANDOFF.md` §7에 변경 이유를 남긴다.  
 > 브랜드 아이덴티티·메시지·로고 의미: [`BRAND.md`](BRAND.md) · `/deliverables/brand`  
-> 최종 업데이트: 2026-08-03 · course-sns MVP `v0.3.8-mvp` · **브랜드 = coursee** (공식 SVG 라이트/다크 락업 · C+모션 도트) · 포인트 레드 · 표면/잉크 뉴트럴 · success=teal · **error≠brand**
+> 최종 업데이트: 2026-08-13 · course-sns MVP `v0.3.9-mvp` · **브랜드 = coursee** (공식 SVG 라이트/다크 락업 · C+모션 도트) · 포인트 레드 · 표면/잉크 뉴트럴 · success=teal · **error≠brand**
 
 ---
 
@@ -235,6 +235,7 @@ safe-area: pt-[env(safe-area-inset-top)], pb-[max(16px,env(safe-area-inset-botto
 | `RoutePlanThumbnail` | | 계획 SVG 썸네일 — `preserveAspectRatio="xMidYMid slice"` |
 | `PersonRow` / `PeopleList` | | 회원 목록 |
 | `CollectionCard` | | 보관함 |
+| *(Wave G)* `SpotTimelineCard` / `LegConnector` | `components/create/` (예정) | 기록 작성 스팟 카드·사이 이동. 정본 [`PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md) |
 
 ### 4.5 Skeleton
 

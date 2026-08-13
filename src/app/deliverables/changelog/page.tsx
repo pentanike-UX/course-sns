@@ -13,6 +13,18 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.3.9-mvp — Photo-first 코스 등록 설계</H2>
+      <Ul>
+        <li>
+          기록 작성 멘탈모델: 사진만 올리면 같은 위치는 스팟 카드로 묶이고, 카드 사이 이동만
+          확인하면 등록 (제목·본문 필수 아님)
+        </li>
+        <li>
+          정본 <Code>docs/PHOTO-FIRST-CREATE.md</Code> — 진입점 전수 체크 · 4화면 one-task ·
+          메타 자동채움 · 구현 단계 G1–G6 (코드 교체는 후속)
+        </li>
+      </Ul>
+
       <H2>v0.3.8-mvp — 브랜드(BI·BX) 가이드</H2>
       <Ul>
         <li>
@@ -125,7 +137,7 @@ export default function ChangelogPage() {
         rows={[
           ["/deliverables", "개발·운영 가이드 (이 사이트)"],
           ["아이콘·favicon·OG", "코스 C 마크 통일 (그린 routdiary 잔상 제거)"],
-          ["정본 docs", "HANDOFF · DESIGN-SYSTEM · COURSE-UX · UX-PERSONA"],
+          ["정본 docs", "HANDOFF · DESIGN-SYSTEM · COURSE-UX · PHOTO-FIRST-CREATE · UX-PERSONA"],
         ]}
       />
 

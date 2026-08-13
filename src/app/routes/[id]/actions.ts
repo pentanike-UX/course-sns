@@ -191,7 +191,7 @@ export async function copyRoute(routeId: string, purpose: CopyPurpose) {
   revalidatePath("/");
   revalidatePath("/feed");
   revalidatePath(`/routes/${routeId}`);
-  redirect(`/routes/${newRoute.id}/edit?followed=1`);
+  redirect(`/routes/${newRoute.id}/edit?followed=1`); // WAVE-G E2: 기록 복제는 4화면 순서부터
 }
 
 export async function convertPlanDraftToRecord(routeId: string) {

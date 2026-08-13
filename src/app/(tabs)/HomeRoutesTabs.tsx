@@ -88,6 +88,7 @@ export default function HomeRoutesTabs({
             </>
           ) : (
             <li>
+              {/* WAVE-G C2: 기록 생성 진입 — PHOTO-FIRST-CREATE.md */}
               <Link
                 href="/routes/new"
                 className="flex items-center justify-center gap-2 rounded-[var(--radius-card)] border-2 border-dashed border-line py-7 text-[14px] font-semibold text-ink-soft"

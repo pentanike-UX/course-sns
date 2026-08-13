@@ -146,6 +146,9 @@ pnpm test:e2e      # 스모크 — 읽기 전용`}
         <li>
           <Code>docs/COURSE-UX-DESIGN.md</Code> — UX Phase·Wave
         </li>
+        <li>
+          <Code>docs/PHOTO-FIRST-CREATE.md</Code> — 기록 작성 photo-first 4화면 (Wave G)
+        </li>
       </Ul>
     </>
   );

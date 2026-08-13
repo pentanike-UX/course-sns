@@ -5,7 +5,7 @@
 ## 1. 제품 개요
 
 **coursee (course-sns)** — 따라갈 수 있는 **이동 코스**를 발견·복제·완주·구독하는 커뮤니티. 브랜드 마크: `public/icons/`(심볼) · `logo-full`(워드마크).  
-정본 UX: [`COURSE-UX-DESIGN.md`](COURSE-UX-DESIGN.md) · 토큰: [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) · 페인포인트: [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md).  
+정본 UX: [`COURSE-UX-DESIGN.md`](COURSE-UX-DESIGN.md) · 작성: [`PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md) · 토큰: [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) · 페인포인트: [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md).  
 **공식 가이드(웹):** [`/deliverables`](https://course-sns.vercel.app/deliverables) — 기획·브랜드(BI·BX)·화면·아키텍처·DB·API·개발·현황·이력. 브랜드 정본 [`docs/BRAND.md`](BRAND.md).
 
 - 한 **Route**(코드/DB명 유지) = 순서 있는 **Spot** + 스팟 간 **Leg**(수단/시간/주의)
@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.3.8-mvp)
+### 현재 화면·내비 (v0.3.9-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -23,7 +23,7 @@
 | 홈 | `/` | P1 | **코스 쇼핑** — 공개 코스 피드. 정렬: 최신·많이 따라간·많이 다녀온·가까운 |
 | 지도 | `/?mode=map` | P1 | 동선으로 고르기 (목록↔지도). peek = 따라감/다녀옴 |
 | 보관함 | `/library` | P2·P4 | **따라가는 중 · 저장 · 팔로잉**(새 코스 스트림 + 사람). 아이콘=스택 |
-| FAB(+) | sheet → `/routes/new` | P3 | 코스 기록하기 / 코스 계획하기 |
+| FAB(+) | sheet → `/routes/new` | P3 | 코스 기록하기(사진 먼저) / 코스 계획하기. Wave G: `docs/PHOTO-FIRST-CREATE.md` |
 
 **드로어·오버레이 (라우트 전환 없이 클라이언트 스택)**:
 
@@ -468,7 +468,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.3.8-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.3.9-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: **`https://course-sns.vercel.app`** + `http://localhost:3000` (+ 필요 시 프리뷰). ⚠️ 도메인 미등록 시 **핀만 보이고 타일 공백**.
@@ -497,6 +497,14 @@ pnpm test:e2e     # Playwright 스모크
 ## 7. 작업 로그 (이어서 누적)
 
 > **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
+
+### Photo-first 코스 등록 UX 설계 (Cursor, 2026-08-13 · v0.3.9-mvp)
+
+- **버전**: **`v0.3.9-mvp`** (PATCH — 설계 문서. 위자드 코드 교체는 후속 G1–G6).
+- **무엇을/왜**: 기록 작성이 “스팟마다 제목·본문”처럼 느껴짐 (P3-E). 멘탈모델은 **사진 더미 = 코스**. 글 0회로 등록, 위치 메타로 스팟 카드 묶음, 카드 사이 이동만 확인. one screen one task.
+- **정본**: [`docs/PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md) — as-is 분석, 진입점 C1–C8 / P1–P3 / E1–E7 체크리스트, 4화면 스펙, 자동채움 매트릭스, 구현 단계 G0–G6.
+- **주요 파일**: `PHOTO-FIRST-CREATE.md` · `COURSE-UX-DESIGN.md` §2.6 · deliverables 기획/화면/현황/이력 · `version.ts`
+- **검증**: 문서 교차 링크·버전 표기. 구현은 G1 엔진 추출부터.
 
 ### deliverables 브랜드(BI·BX) 가이드 (Cursor, 2026-08-03 · v0.3.8-mvp)
 

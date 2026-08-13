@@ -201,6 +201,7 @@ function draftSpotsToThumbnailPoints(spots: DraftSpot[]): RouteThumbnailPoint[] 
 }
 
 const STEP_LABELS = ["사진", "장소", "이동", "이야기", "공개"];
+// WAVE-G: 기록 생성 5스텝은 docs/PHOTO-FIRST-CREATE.md 4화면(올리기·순서·이동·공개)으로 교체 예정.
 
 // Edit mode mirrors the wizard's section order on one scrollable page.
 // 사진(photo ingest) is create-only — in edit, photos live inside each spot

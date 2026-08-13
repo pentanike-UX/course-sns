@@ -24,8 +24,8 @@ export default function ScreensPage() {
         headers={["주소", "화면", "로그인", "비고"]}
         rows={[
           ["/routes/[id]", "코스 상세", "공개", "쓰기는 AuthGate. 전이 CTA 우선"],
-          ["/routes/new", "새 코스", "필요", "기록 위자드 / 계획 플래너"],
-          ["/routes/[id]/edit", "수정", "필요", "소유자. 공개 게이트 적용"],
+          ["/routes/new", "새 코스", "필요", "기록: photo-first 4화면(설계 Wave G) / 계획: 지도 플래너"],
+          ["/routes/[id]/edit", "수정", "필요", "소유자. 기록은 동일 4화면 셸(설계). 공개 게이트"],
         ]}
       />
 

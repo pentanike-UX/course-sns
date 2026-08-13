@@ -1,9 +1,9 @@
 # 브랜드 컬러 · 페르소나 시나리오 재채점 (Wave A–D 이후)
 
-> **범위:** course-sns MVP `v0.3.3-mvp` (코드 + DESIGN-SYSTEM · COURSE-UX)  
-> **목적:** Playwright 실측 후 **Wave F 구현**까지 반영  
-> **기준일:** 2026-07-27  
-> **상태:** Wave A–E ✅ · Wave F ✅ 코드 (지도 도메인·`0015` 시드는 운영 push 필요)
+> **범위:** course-sns MVP `v0.3.9-mvp` (코드 + DESIGN-SYSTEM · COURSE-UX)  
+> **목적:** Playwright 실측 후 **Wave F 구현**까지 반영 · Wave G는 설계 정본  
+> **기준일:** 2026-08-13  
+> **상태:** Wave A–E ✅ · Wave F ✅ 코드 (지도 도메인·`0015` 시드는 운영 push 필요) · **Wave G 설계** [`PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md)
 
 ---
 
@@ -118,7 +118,7 @@ FAB → 기록/계획 → (기록) 사진·장소·이동·이야기·공개 →
 | P3-B | **통계 타이틀 `여행 통계`** — 코스 톤 잔상 | `profile/stats` |
 | P3-C | **소유 상세에 영향력 부재** — 팔로워 액션 스킵 후 지표는 드로어/통계뿐 | 게시 직후 보상감 약 |
 | P3-D | **에러 ≈ 브랜드 레드** — `--error`와 `--brand-primary` 동일 `#ef4444` | Wave C 잔여 (C1) |
-| P3-E | **작성 5스텝 + 게이트** — 안전↑, 첫 메이커 완료 비용↑ | 드롭 리스크 |
+| P3-E | **작성 5스텝 + 게이트** — 안전↑, 첫 메이커 완료 비용↑ | 드롭 리스크. **Wave G 설계**로 4화면·글 0회 기본 경로 ([`PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md)) |
 | P3-F | **따라가기 수신 알림 없음** — completion/follow만, copy 수신 푸시 없음 | P3↔P4 피드백 구멍 |
 
 ---
@@ -253,7 +253,8 @@ flowchart LR
 | `docs/DESIGN-SYSTEM.md` | 컬러·컴포넌트 |
 | `docs/COURSE-UX-DESIGN.md` | 페르소나·북스타·Phase |
 | `docs/HANDOFF.md` §1·§7 | 현행 IA · 버전 로그 |
-| `src/lib/version.ts` | `v0.3.3-mvp` |
+| `src/lib/version.ts` | `v0.3.9-mvp` |
+| `docs/PHOTO-FIRST-CREATE.md` | Wave G 기록 작성 설계 |
 | `src/app/(tabs)/feed/FeedMap.tsx` | 타일 실패 UX |
 | `src/app/(tabs)/feed/FollowingRail.tsx` | P4 레일 |
 | `supabase/migrations/0015_demo_loop_seed.sql` | 데모 루프 시드 |

@@ -10,6 +10,7 @@ export default function RouteFormLoadingShell({
   back: string;
 }) {
   const isEdit = mode === "edit";
+  // WAVE-G D5: 기록 생성 스켈레톤은 4스텝 + 큰 드롭존으로.
 
   return (
     <MobileFrame shell>

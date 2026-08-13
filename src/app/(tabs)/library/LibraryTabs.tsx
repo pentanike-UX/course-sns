@@ -104,7 +104,7 @@ function FollowedCourseCard({ course }: { course: FollowedCourse }) {
         ? "bg-sunset-wash text-sunset-ink"
         : "bg-muted text-ink-soft";
 
-  const editHref = `/routes/${course.id}/edit`;
+  const editHref = `/routes/${course.id}/edit`; // WAVE-G E4
   const originalHref = course.originalRouteId
     ? `/routes/${course.originalRouteId}`
     : editHref;

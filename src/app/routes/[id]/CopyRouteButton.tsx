@@ -11,6 +11,7 @@ import type { CopyPurpose } from "@/lib/types";
  * lands on its edit page (the server action redirects on success). This is the
  * hero action of the 코스 mental model, so it can render as a full-width primary
  * CTA (`prominent`) or the compact inline pill (default).
+ * WAVE-G E2/E7: 기록 목적 복제는 순서 화면 + “사진만 채우면 끝” (PHOTO-FIRST-CREATE.md).
  */
 const FOLLOW_AUTH = {
   title: "따라가려면 로그인이 필요해요",

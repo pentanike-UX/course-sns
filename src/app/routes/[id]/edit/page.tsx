@@ -59,6 +59,7 @@ export default async function EditRoutePage({
   };
 
   return (
+    // WAVE-G: 기록 수정은 같은 4화면 셸로. 계획 수정은 플래너 유지. 진입 E1–E5.
     <RouteForm
       mode="edit"
       routeId={id}

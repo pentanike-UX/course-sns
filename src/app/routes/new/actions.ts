@@ -96,6 +96,7 @@ export type CreateRouteInput = {
 };
 
 export async function createRoute(input: CreateRouteInput) {
+  // WAVE-G C7: 클라가 자동 제목을 넣어 보냄. 스키마 title NOT NULL은 유지.
   const supabase = await createClient();
   const {
     data: { user },
