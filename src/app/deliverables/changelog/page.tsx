@@ -13,6 +13,14 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.4.3-mvp — 설정 다운로드 버튼</H2>
+      <Ul>
+        <li>
+          설정 헤더 다운로드(앱 설치)가 눌러도 안 보이던 문제 수정. 설치 가능 브라우저에서는
+          바로 설치 대화상자, 아니면 홈 화면 추가 안내 시트
+        </li>
+      </Ul>
+
       <H2>v0.4.2-mvp — 작업 완료 시 프로덕션 머지</H2>
       <Ul>
         <li>
