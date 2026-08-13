@@ -235,7 +235,8 @@ safe-area: pt-[env(safe-area-inset-top)], pb-[max(16px,env(safe-area-inset-botto
 | `RoutePlanThumbnail` | | 계획 SVG 썸네일 — `preserveAspectRatio="xMidYMid slice"` |
 | `PersonRow` / `PeopleList` | | 회원 목록 |
 | `CollectionCard` | | 보관함 |
-| `SpotTimelineCard` / `LegConnector` | `components/create/` | 기록 작성 스팟 히어로 카드·사이 이동. 정본 [`PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md) |
+| `SpotTimelineCard` / `LegConnector` | `components/create/` | 기록 작성 스팟 히어로 카드·사이 이동 |
+| `PhotoIngestScreen` / `CreateDotStepper` | `components/create/` | 올리기 화면 · 4점 스텝퍼 |
 
 ### 4.5 Skeleton
 
