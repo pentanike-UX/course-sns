@@ -13,6 +13,14 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.4.5-mvp — Safari 공유 버튼 위치</H2>
+      <Ul>
+        <li>
+          아이폰 설치 안내: Safari 탭 설정(콤팩트 · 하단 · 상단)마다 다른 공유 위치를 그림으로 안내.
+          콤팩트는 주소창 옆 ••• → 공유
+        </li>
+      </Ul>
+
       <H2>v0.4.4-mvp — 아이폰 홈 화면 추가 안내</H2>
       <Ul>
         <li>

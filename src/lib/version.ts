@@ -21,5 +21,6 @@
  * v0.4.2 — 작업 완료 시 main 머지까지 (AGENTS.md)
  * v0.4.3 — 설정 다운로드(PWA 설치) 시트 미표시 수정
  * v0.4.4 — 아이폰 홈 화면 추가 안내(그림 단계)
+ * v0.4.5 — Safari 공유 버튼 위치(콤팩트·하단·상단)
  */
-export const APP_VERSION = "v0.4.4-mvp";
+export const APP_VERSION = "v0.4.5-mvp";
