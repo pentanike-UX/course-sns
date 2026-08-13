@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import ActionBottomSheet from "@/components/ActionBottomSheet";
 import JellyButton from "@/components/JellyButton";
 
@@ -52,12 +53,14 @@ export default function ProfileActions() {
       return;
     }
 
-    if (!installPrompt) {
-      setInstallSheet("manual");
+    if (installPrompt) {
+      // Native install dialog — must call prompt() from this tap.
+      // A second confirmation sheet hid itself (mount-open transition bug).
+      void installApp();
       return;
     }
 
-    setInstallSheet("install");
+    setInstallSheet("manual");
   };
 
   const installApp = async () => {
@@ -169,13 +172,16 @@ export default function ProfileActions() {
         onClose={() => setInstallSheet(null)}
         onInstall={installApp}
       />
-      {notice && (
-        <div className="fixed inset-x-0 top-[calc(env(safe-area-inset-top)+4rem)] z-50 flex justify-center">
-          <div className="rounded-full bg-ink px-4 py-2 text-[12px] font-semibold text-paper shadow-lg">
-            {notice}
-          </div>
-        </div>
-      )}
+      {notice && typeof document !== "undefined"
+        ? createPortal(
+            <div className="pointer-events-none fixed inset-x-0 top-[calc(env(safe-area-inset-top)+4rem)] z-[90] flex justify-center">
+              <div className="rounded-full bg-ink px-4 py-2 text-[12px] font-semibold text-paper shadow-lg">
+                {notice}
+              </div>
+            </div>,
+            document.getElementById("app-shell") ?? document.body,
+          )
+        : null}
     </>
   );
 }
@@ -196,34 +202,35 @@ function InstallSheet({
   onClose: () => void;
   onInstall: () => void;
 }) {
-  if (!kind) return null;
   const isApple = isAppleDevice();
+  const installed = kind === "installed";
+  const manual = kind === "manual";
+  const native = kind === "install";
 
-  if (kind === "installed") {
-    return (
-      <ActionBottomSheet
-        open
-        title="이미 앱으로 설치돼 있어요"
-        description="홈 화면의 코스 아이콘으로 열면 주소창 없이 앱처럼 사용할 수 있어요."
-        primaryLabel="확인"
-        onPrimary={onClose}
-        onClose={onClose}
-        ariaLabel="앱 설치 상태 안내"
-      />
-    );
-  }
-
-  if (kind === "manual") {
-    return (
-      <ActionBottomSheet
-        open
-        title="홈 화면에 추가해 주세요"
-        description="현재 브라우저는 자동 설치 버튼을 제공하지 않아요. 아래 경로로 한 번만 추가하면 다음부터 앱처럼 바로 열 수 있어요."
-        primaryLabel="확인"
-        onPrimary={onClose}
-        onClose={onClose}
-        ariaLabel="홈 화면 앱 설치 안내"
-      >
+  return (
+    <ActionBottomSheet
+      open={kind !== null}
+      title={
+        installed
+          ? "이미 앱으로 설치돼 있어요"
+          : manual
+            ? "홈 화면에 추가해 주세요"
+            : "홈 화면에 앱으로 설치할까요?"
+      }
+      description={
+        installed
+          ? "홈 화면의 코스 아이콘으로 열면 주소창 없이 앱처럼 사용할 수 있어요."
+          : manual
+            ? "현재 브라우저는 자동 설치 버튼을 제공하지 않아요. 아래 경로로 한 번만 추가하면 다음부터 앱처럼 바로 열 수 있어요."
+            : "설치하면 홈 화면 아이콘으로 바로 열 수 있고, 주소창 없이 더 앱처럼 사용할 수 있어요."
+      }
+      primaryLabel={native ? "설치하기" : "확인"}
+      secondaryLabel={native ? "나중에" : undefined}
+      onPrimary={native ? onInstall : onClose}
+      onClose={onClose}
+      ariaLabel={installed ? "앱 설치 상태 안내" : native ? "홈 화면 앱 설치 확인" : "홈 화면 앱 설치 안내"}
+    >
+      {manual && (
         <ul className="mt-4 space-y-2 text-[13px] text-ink-soft">
           {isApple ? (
             <>
@@ -237,25 +244,13 @@ function InstallSheet({
             </>
           )}
         </ul>
-      </ActionBottomSheet>
-    );
-  }
-
-  return (
-    <ActionBottomSheet
-      open
-      title="홈 화면에 앱으로 설치할까요?"
-      description="설치하면 홈 화면 아이콘으로 바로 열 수 있고, 주소창 없이 더 앱처럼 사용할 수 있어요."
-      primaryLabel="설치하기"
-      secondaryLabel="나중에"
-      onPrimary={onInstall}
-      onClose={onClose}
-      ariaLabel="홈 화면 앱 설치 확인"
-    >
-      <ul className="mt-4 space-y-2 text-[13px] text-ink-soft">
-        <SheetGuideItem>프로필, 작성, 둘러보기를 홈 화면에서 바로 실행할 수 있어요</SheetGuideItem>
-        <SheetGuideItem>설치해도 계정과 기록은 그대로 유지돼요</SheetGuideItem>
-      </ul>
+      )}
+      {native && (
+        <ul className="mt-4 space-y-2 text-[13px] text-ink-soft">
+          <SheetGuideItem>프로필, 작성, 둘러보기를 홈 화면에서 바로 실행할 수 있어요</SheetGuideItem>
+          <SheetGuideItem>설치해도 계정과 기록은 그대로 유지돼요</SheetGuideItem>
+        </ul>
+      )}
     </ActionBottomSheet>
   );
 }

@@ -21,7 +21,10 @@ export function useSheetTransition(
 ) {
   const [render, setRender] = useState(open || keepAlive);
   const [show, setShow] = useState(false);
-  const prevOpenRef = useRef(open);
+  // Always start "was closed" so a sheet that *mounts already open*
+  // (e.g. settings 설치 시트) still runs the enter animation. Initializing
+  // to `open` skipped enter, left `show=false`, and the sheet stayed off-screen.
+  const prevOpenRef = useRef(false);
   const prevKeepAliveRef = useRef(keepAlive);
 
   useEffect(() => {

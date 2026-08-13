@@ -19,5 +19,6 @@
  * v0.4.0 — Wave G: 기록 작성 4화면 (올리기·순서·이동·공개)
  * v0.4.1 — Wave G4: 기록 수정도 같은 4화면
  * v0.4.2 — 작업 완료 시 main 머지까지 (AGENTS.md)
+ * v0.4.3 — 설정 다운로드(PWA 설치) 시트 미표시 수정
  */
-export const APP_VERSION = "v0.4.2-mvp";
+export const APP_VERSION = "v0.4.3-mvp";
