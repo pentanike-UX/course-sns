@@ -64,7 +64,7 @@ export default function ActionBottomSheet({
           role="dialog"
           aria-modal="true"
           aria-label={ariaLabel ?? title}
-          className={`relative w-full max-w-[430px] rounded-t-3xl bg-card px-4 pb-[max(env(safe-area-inset-bottom),20px)] pt-3 shadow-[0_-12px_40px_rgba(0,0,0,0.2)] transition-transform duration-200 ease-out ${
+          className={`relative max-h-[min(92dvh,720px)] w-full max-w-[430px] overflow-y-auto rounded-t-3xl bg-card px-4 pb-[max(env(safe-area-inset-bottom),20px)] pt-3 shadow-[0_-12px_40px_rgba(0,0,0,0.2)] transition-transform duration-200 ease-out ${
             show ? "translate-y-0" : "translate-y-full"
           }`}
         >
