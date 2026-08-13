@@ -13,6 +13,13 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.4.4-mvp — 아이폰 홈 화면 추가 안내</H2>
+      <Ul>
+        <li>
+          아이폰 설정 다운로드: Safari 공유 → 홈 화면에 추가 → 추가 확인을 그림과 순서대로 안내
+        </li>
+      </Ul>
+
       <H2>v0.4.3-mvp — 설정 다운로드 버튼</H2>
       <Ul>
         <li>

@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.4.3-mvp)
+### 현재 화면·내비 (v0.4.4-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -468,7 +468,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.4.3-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.4.4-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: **`https://course-sns.vercel.app`** + `http://localhost:3000` (+ 필요 시 프리뷰). ⚠️ 도메인 미등록 시 **핀만 보이고 타일 공백**.
@@ -497,6 +497,13 @@ pnpm test:e2e     # Playwright 스모크
 ## 7. 작업 로그 (이어서 누적)
 
 > **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
+
+### 아이폰 홈 화면 추가 안내 (Cursor, 2026-08-13 · v0.4.4-mvp)
+
+- **버전**: **`v0.4.4-mvp`** (PATCH).
+- **무엇을/왜**: iPhone은 PWA 자동 설치가 없어 글 두 줄만으로는 따라가기 어려움. Safari 공유 → 홈 화면에 추가 → 추가 확인을 그림 단계로 안내.
+- **주요 파일**: `IosHomeScreenGuide.tsx` · `ProfileActions.tsx` · `ActionBottomSheet.tsx`(긴 시트 스크롤)
+- **검증**: 설정 → 다운로드. iPhone/Safari UA면 3단계 그림 시트. Android Chrome은 기존 자동 설치.
 
 ### 설정 다운로드(PWA 설치) 버튼 수정 (Cursor, 2026-08-13 · v0.4.3-mvp)
 

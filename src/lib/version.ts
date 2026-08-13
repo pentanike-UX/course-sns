@@ -20,5 +20,6 @@
  * v0.4.1 — Wave G4: 기록 수정도 같은 4화면
  * v0.4.2 — 작업 완료 시 main 머지까지 (AGENTS.md)
  * v0.4.3 — 설정 다운로드(PWA 설치) 시트 미표시 수정
+ * v0.4.4 — 아이폰 홈 화면 추가 안내(그림 단계)
  */
-export const APP_VERSION = "v0.4.3-mvp";
+export const APP_VERSION = "v0.4.4-mvp";
