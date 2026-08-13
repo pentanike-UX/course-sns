@@ -444,12 +444,13 @@ export default function BottomNav() {
       <ActionBottomSheet
         open={createOpen}
         title="어떤 코스를 만들까요?"
-        description="동선과 스팟부터 잡고, 마지막에 제목·공개를 확인해요."
+        description="다녀온 사진만 올리면 동선이 만들어져요. 계획은 지도에서 짜요."
         primaryLabel={createIntent === "plan" ? "계획 시작하기" : "코스 만들기"}
         secondaryLabel="취소"
         onClose={() => setCreateOpen(false)}
         onPrimary={() => {
           setCreateOpen(false);
+          // WAVE-G C1: record → /routes/new (4화면). plan → ?type=plan 플래너 유지.
           router.push(createIntent === "plan" ? "/routes/new?type=plan" : "/routes/new");
         }}
       >
@@ -457,7 +458,7 @@ export default function BottomNav() {
           <CreateOption
             selected={createIntent === "record"}
             title="코스 기록하기"
-            body="다녀온 스팟·이동·팁을 하나의 코스로 남겨요."
+            body="다녀온 사진을 올리면 같은 곳은 한 스팟으로 묶여요. 글은 안 써도 돼요."
             icon={<RecordIcon />}
             onClick={() => setCreateIntent("record")}
           />

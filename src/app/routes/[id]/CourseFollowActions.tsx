@@ -10,6 +10,7 @@ import type { ViewerCompletionState } from "@/lib/types";
  * - not copied → Primary brand「따라가기」
  * - copied, not completed → Primary brand-outline「다녀왔어요」+ Secondary 내 초안
  * - completed → Primary neutral「후기 수정」+ Secondary 내 초안
+ * WAVE-G E3: 내 초안 `/edit`는 기록이면 4화면 셸 (PHOTO-FIRST-CREATE.md).
  */
 export default function CourseFollowActions({
   routeId,

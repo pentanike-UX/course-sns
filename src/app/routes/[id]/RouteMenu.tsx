@@ -128,6 +128,7 @@ export default function RouteMenu({
                 </button>
               )}
               {isOwner && (
+                // WAVE-G E1
                 <Link
                   role="menuitem"
                   href={`/routes/${routeId}/edit`}

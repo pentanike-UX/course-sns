@@ -191,10 +191,11 @@ export async function copyRoute(routeId: string, purpose: CopyPurpose) {
   revalidatePath("/");
   revalidatePath("/feed");
   revalidatePath(`/routes/${routeId}`);
-  redirect(`/routes/${newRoute.id}/edit?followed=1`);
+  redirect(`/routes/${newRoute.id}/edit?followed=1`); // WAVE-G E2: 기록 복제는 4화면 순서부터
 }
 
 export async function convertPlanDraftToRecord(routeId: string) {
+  // WAVE-G E6: 전환 후 클라가 `/edit?photos=1`로 올리기 화면을 열도록 (구현 G5).
   const supabase = await createClient();
   const {
     data: { user },

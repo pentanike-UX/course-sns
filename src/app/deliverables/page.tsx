@@ -144,7 +144,8 @@ export default function DeliverablesHomePage() {
         <li>아키텍처 + DB + API로 수정 위치 확인</li>
         <li>
           저장소 정본: <Code>docs/HANDOFF.md</Code>, <Code>docs/BRAND.md</Code>,{" "}
-          <Code>docs/DESIGN-SYSTEM.md</Code>, <Code>docs/COURSE-UX-DESIGN.md</Code>
+          <Code>docs/DESIGN-SYSTEM.md</Code>, <Code>docs/COURSE-UX-DESIGN.md</Code>,{" "}
+          <Code>docs/PHOTO-FIRST-CREATE.md</Code>
         </li>
         <li>
           변경 후 <Code>pnpm lint</Code> → <Code>pnpm build</Code> → <Code>pnpm test:e2e</Code>

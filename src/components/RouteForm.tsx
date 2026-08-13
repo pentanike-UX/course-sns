@@ -47,6 +47,21 @@ import {
 } from "@/lib/types";
 import { haversineMeters, formatDistance } from "@/lib/geo";
 import { hasInAppHistory } from "@/lib/nav-history";
+import {
+  autoCourseTitle,
+  clusterPhotosByGeo,
+  deriveRegion,
+  fillLegsFromMetadata,
+  formatPhotoClock,
+  formatVisit,
+  inferDifficulty,
+  shortRegionName,
+  estimateLegMinutes,
+} from "@/lib/course-meta";
+import CreateDotStepper from "@/components/create/CreateDotStepper";
+import PhotoIngestScreen from "@/components/create/PhotoIngestScreen";
+import SpotTimelineCard from "@/components/create/SpotTimelineCard";
+import LegConnector from "@/components/create/LegConnector";
 
 type DraftLeg = { transport: TransportMode; durationMin: string; caution: string };
 
@@ -56,6 +71,7 @@ type DraftPhoto = {
   preview: string;
   file?: File;
   existingPath?: string;
+  takenAt?: number;
 };
 
 type DraftSpot = {
@@ -69,6 +85,8 @@ type DraftSpot = {
   body: string;
   photos: DraftPhoto[];
   legToNext: DraftLeg;
+  firstTakenAt?: number;
+  lastTakenAt?: number;
 };
 
 type PlaceHit = {
@@ -200,7 +218,8 @@ function draftSpotsToThumbnailPoints(spots: DraftSpot[]): RouteThumbnailPoint[] 
     }));
 }
 
-const STEP_LABELS = ["사진", "장소", "이동", "이야기", "공개"];
+const CREATE_STEPS = 4;
+// WAVE-G: 기록 생성은 4화면(올리기·순서·이동·공개). docs/PHOTO-FIRST-CREATE.md
 
 // Edit mode mirrors the wizard's section order on one scrollable page.
 // 사진(photo ingest) is create-only — in edit, photos live inside each spot
@@ -274,6 +293,8 @@ export default function RouteForm({
   const [sheet, setSheet] = useState<"theme" | "mood" | "recommend" | null>(null);
   const [step, setStep] = useState(1); // wizard step (create mode)
   const [confirmExit, setConfirmExit] = useState(false); // "저장 안 하고 나가기?" sheet
+  const [ingestPreviews, setIngestPreviews] = useState<string[]>([]);
+  const [peekSpotKey, setPeekSpotKey] = useState<string | null>(null);
 
   // edit-mode section-jump nav (single page, scrollspy). MobileFrame is
   // min-h-dvh, so the document (viewport) scrolls — observe against it (root:null).
@@ -334,11 +355,6 @@ export default function RouteForm({
     e.currentTarget.value = "";
   };
 
-  const handleBulkPhotoInput = (e: ChangeEvent<HTMLInputElement>) => {
-    void buildFromPhotos(e.currentTarget.files);
-    e.currentTarget.value = "";
-  };
-
   const setVisitFromTime = (takenAt: number) =>
     setBestSeason((prev) => prev || formatVisit(takenAt));
 
@@ -392,81 +408,34 @@ export default function RouteForm({
   const buildFromPhotos = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     const list = Array.from(files);
-    // One DraftPhoto per file, shared by the instant preview and any spots we
-    // build below (so we don't create a second object URL for the same blob).
     const draftFor = new Map<File, DraftPhoto>(list.map((f) => [f, draftPhotoFromFile(f)]));
-
-    // Show the photos right away. Selecting must always give visible feedback —
-    // previously we only added them after reading every photo's EXIF, so on a
-    // large Android/HEIF batch (slow or memory-heavy to parse) the picker looked
-    // like it did nothing. Read metadata afterward.
-    setSpots((prev) => {
-      const base = prev.length ? prev : [emptySpot()];
-      return base.map((spot, index) =>
-        index === 0
-          ? { ...spot, photos: [...spot.photos, ...list.map((f) => draftFor.get(f)!)] }
-          : spot,
-      );
-    });
-
+    setIngestPreviews(list.map((f) => draftFor.get(f)!.preview));
     setBulkBusy(true);
     setBulkNote(null);
     try {
-      // Bounded concurrency: decoding many large photos at once can OOM a mobile tab.
       const read = await mapWithConcurrency(list, 4, async (f) => ({
         file: f,
         ...(await readPhotoGeo(f)),
       }));
+      for (const r of read) {
+        const draft = draftFor.get(r.file);
+        if (draft) draft.takenAt = r.takenAt;
+      }
       const minT = Math.min(...read.map((r) => r.takenAt));
-      if (Number.isFinite(minT)) setBestSeason((prev) => prev || formatVisit(minT));
+      const season = Number.isFinite(minT) ? formatVisit(minT) : "";
+      if (season) setVisitFromTime(minT);
 
-      const geo = read
-        .filter((r) => typeof r.lat === "number" && typeof r.lng === "number")
-        .sort((a, b) => a.takenAt - b.takenAt);
-      const noGeo = read.filter((r) => typeof r.lat !== "number");
-
-      if (geo.length === 0) {
-        // The photos are already on the first spot — just explain the manual step.
-        setBulkNote(
-          `사진 ${list.length}장을 추가했어요. 위치 정보가 없어 다음 단계에서 장소를 직접 지정해 주세요.`,
-        );
-        return;
-      }
-
-      type Cluster = { lat: number; lng: number; t: number; files: File[] };
-      const clusters: Cluster[] = [];
-      for (const r of geo) {
-        const last = clusters[clusters.length - 1];
-        if (last && distMeters(last, { lat: r.lat!, lng: r.lng! }) < 120) {
-          last.files.push(r.file);
-        } else {
-          clusters.push({ lat: r.lat!, lng: r.lng!, t: r.takenAt, files: [r.file] });
-        }
-      }
-
-      for (const r of noGeo) {
-        let best = clusters[0];
-        let bestGap = Infinity;
-        for (const c of clusters) {
-          const gap = Math.abs(c.t - r.takenAt);
-          if (gap < bestGap) {
-            bestGap = gap;
-            best = c;
-          }
-        }
-        best?.files.push(r.file);
-      }
+      const { clusters, unlocated } = clusterPhotosByGeo(read);
 
       await loadNaverMaps().catch(() => {});
       const built: DraftSpot[] = [];
       const regionParts: { area1?: string; area2?: string }[] = [];
+
       for (const c of clusters) {
         const detail = await reverseGeocodeDetail(c.lat, c.lng);
         regionParts.push({ area1: detail.area1, area2: detail.area2 });
         built.push({
           key: crypto.randomUUID(),
-          // building/landmark name when available, else fall back to the
-          // 시·군·구 (or 시·도) so a located spot is never left title-less
           title: detail.place || detail.area2 || detail.area1 || "",
           address: detail.address ?? "",
           lat: c.lat,
@@ -475,19 +444,55 @@ export default function RouteForm({
           body: "",
           photos: c.files.map((f) => draftFor.get(f)!),
           legToNext: emptyLeg(),
+          firstTakenAt: c.firstTakenAt,
+          lastTakenAt: c.lastTakenAt,
         });
       }
 
-      setSpots(built);
+      if (unlocated.length) {
+        const times = unlocated
+          .map((f) => draftFor.get(f)?.takenAt)
+          .filter((t): t is number => typeof t === "number");
+        built.push({
+          key: crypto.randomUUID(),
+          title: clusters.length ? "" : "",
+          address: "",
+          body: "",
+          photos: unlocated.map((f) => draftFor.get(f)!),
+          legToNext: emptyLeg(),
+          firstTakenAt: times.length ? Math.min(...times) : undefined,
+          lastTakenAt: times.length ? Math.max(...times) : undefined,
+        });
+      }
+
+      if (built.length === 0) {
+        setBulkNote("사진을 읽지 못했어요. 다시 선택해 주세요.");
+        return;
+      }
+
+      const withLegs = fillLegsFromMetadata(built);
+      setSpots(withLegs);
       const r = deriveRegion(regionParts);
       if (r) setRegion((prev) => prev || r);
-      const skipped = noGeo.length;
-      setBulkNote(
-        `사진 ${list.length}장에서 스팟 ${built.length}곳을 만들었어요.` +
-          (skipped ? ` (위치 없는 ${skipped}장은 가까운 스팟에 묶었어요)` : ""),
+      setTitle((prev) =>
+        prev.trim()
+          ? prev
+          : autoCourseTitle({
+              region: r,
+              bestSeason: season,
+              firstSpot: withLegs[0]?.title,
+              lastSpot: withLegs[withLegs.length - 1]?.title,
+            }),
       );
+      const totalMin = withLegs
+        .slice(0, -1)
+        .reduce((sum, s) => sum + (Number(s.legToNext.durationMin) || 0), 0);
+      setDifficulty((prev) => prev || inferDifficulty(totalMin));
+      setBulkNote(null);
+      setStep(2);
     } finally {
       setBulkBusy(false);
+      setIngestPreviews([]);
     }
   };
 
@@ -589,8 +594,18 @@ export default function RouteForm({
     return null;
   }, [spots]);
 
-  const spotsValid = spots.some((s) => s.title.trim());
-  const canSave = title.trim() && region.trim() && spotsValid;
+  const spotsValid = spots.some(
+    (s) => s.title.trim() || s.photos.length > 0 || typeof s.lat === "number",
+  );
+  const resolvedTitle =
+    title.trim() ||
+    autoCourseTitle({
+      region,
+      bestSeason,
+      firstSpot: spots[0]?.title,
+      lastSpot: spots[spots.length - 1]?.title,
+    });
+  const canSave = spotsValid && spots.length >= 1;
   const allPhotos = spots.flatMap((s) => s.photos);
   const draftMap = useMemo(() => buildDraftRouteMap(spots), [spots]);
 
@@ -622,18 +637,14 @@ export default function RouteForm({
       }
       setSaveError("공개할지 비공개할지 골라 주세요.");
       if (isPlanDraft) setOpenInfoTick((n) => n + 1);
-      else setStep(5);
+      else setStep(4);
       return;
     }
 
     // Tell the user exactly what's missing instead of silently doing nothing.
-    if (!title.trim() || !region.trim()) {
-      setSaveError(
-        isPlanDraft
-          ? "제목이랑 지역을 ‘제목과 일정’에서 확인해 주세요."
-          : "제목과 지역을 입력해 주세요.",
-      );
-      if (isPlanDraft) setOpenInfoTick((n) => n + 1);
+    if (isPlanDraft && (!title.trim() || !region.trim())) {
+      setSaveError("제목이랑 지역을 ‘제목과 일정’에서 확인해 주세요.");
+      setOpenInfoTick((n) => n + 1);
       return;
     }
     if (!spotsValid) {
@@ -697,8 +708,8 @@ export default function RouteForm({
 
       const afterSave = saveIntent === "draft" ? ("edit" as const) : ("detail" as const);
       const payload = {
-        title: title.trim(),
-        region: region.trim(),
+        title: resolvedTitle,
+        region: region.trim() || "미정",
         theme: theme.trim() || undefined,
         mood: mood.trim() || undefined,
         recommendedFor: recommendedFor.trim() || undefined,
@@ -710,7 +721,7 @@ export default function RouteForm({
         copyPurpose: isDirectPlanCreate ? ("plan" as const) : undefined,
         afterSave,
         spots: spots.map((s, i) => ({
-          title: s.title.trim(),
+          title: s.title.trim() || `스팟 ${i + 1}`,
           body: s.body.trim(),
           address: s.address.trim(),
           lat: s.lat,
@@ -1474,166 +1485,299 @@ export default function RouteForm({
     );
   }
 
-  // ── CREATE: 5-step wizard ─────────────────────────────────────────────
-  const canNext = step === 2 ? region.trim() && spotsValid : step === 4 ? !!title.trim() : true;
+  // ── CREATE: 4-step photo-first wizard ─────────────────────────────────
+  const canNext = step === 2 ? spotsValid : true;
+  const peekSpot = spots.find((s) => s.key === peekSpotKey) ?? null;
+  const coverPreview = allPhotos[0]?.preview;
 
   return (
     <MobileFrame shell>
-      <AppHeader back="/" closeButton title="새 코스 만들기" />
-      <Stepper steps={STEP_LABELS} current={step} optional={[1]} />
+      <AppHeader back="/" closeButton title="새 코스" />
+      <CreateDotStepper current={step} total={CREATE_STEPS} />
 
-      <form id="route-form" onSubmit={handleSave} className="no-scrollbar flex-1 overflow-y-auto px-4 pb-4">
-        {step === 1 && (
-          <>
-            <StepHeading
-              title="그날의 사진을 올려주세요"
-              desc="위치가 담긴 사진을 올리면 장소·순서·경로를 자동으로 만들어요. 사진 단계는 건너뛸 수 있어요."
+      <form id="route-form" onSubmit={handleSave} className="flex min-h-0 flex-1 flex-col">
+        <div className="no-scrollbar flex-1 overflow-y-auto">
+          {step === 1 && (
+            <PhotoIngestScreen
+              busy={bulkBusy}
+              note={
+                bulkNote ??
+                (spotsValid && !bulkBusy
+                  ? "이미 스팟이 만들어져 있어요. 사진을 다시 고르면 새로 묶어요."
+                  : null)
+              }
+              previews={ingestPreviews.length ? ingestPreviews : allPhotos.map((p) => p.preview)}
+              onPick={(files) => void buildFromPhotos(files)}
             />
-            <label className="relative block overflow-hidden rounded-[var(--radius-card)] border-2 border-dashed border-sunset/40 bg-sunset-wash/40 p-6 text-center">
-              <span className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-sunset text-white">
-                <CameraIcon />
-              </span>
-              <span className="block text-[14px] font-bold text-ink">사진 올리기</span>
-              <span className="mt-0.5 block text-[12px] text-ink-soft">여러 장을 한 번에 선택할 수 있어요</span>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                aria-label="사진 올리기"
-                className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
-                disabled={bulkBusy}
-                onChange={handleBulkPhotoInput}
-              />
-            </label>
-            {bulkBusy && <p className="mt-3 text-center text-[13px] text-sunset-ink">사진을 분석하는 중…</p>}
-            {bulkNote && !bulkBusy && (
-              <p className="mt-3 rounded-lg bg-sunset-wash px-3 py-2 text-center text-[13px] text-sunset-ink">{bulkNote}</p>
-            )}
-            {allPhotos.length > 0 && (
-              <div className="mt-4 grid grid-cols-4 gap-2">
-                {allPhotos.map((ph) => (
-                  <div key={ph.key} className="relative aspect-square overflow-hidden rounded-lg bg-line">
+          )}
+
+          {step === 2 && (
+            <div className="px-5 pb-8 pt-4">
+              <p className="text-[13px] font-semibold text-ink-faint">
+                {[region || null, bestSeason || null, spots.length ? `${spots.length}곳` : null]
+                  .filter(Boolean)
+                  .join(" · ") || "순서만 확인하면 돼요"}
+              </p>
+              <h2 className="mt-1 text-[26px] font-black leading-tight tracking-[-0.01em] text-ink">
+                이 순서로 다녔어요
+              </h2>
+              <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
+                카드를 잡아 순서를 바꿔 주세요. 글은 쓰지 않아도 돼요.
+              </p>
+
+              <div className="mt-6">
+                <DndContext
+                  id="spots-dnd-create"
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={onDragEnd}
+                >
+                  <SortableContext items={spots.map((s) => s.key)} strategy={verticalListSortingStrategy}>
+                    {spots.map((spot, idx) => (
+                      <div key={spot.key}>
+                        <SortableSpot id={spot.key}>
+                          {(handle) => (
+                            <SpotTimelineCard
+                              index={idx}
+                              title={spot.title}
+                              hero={spot.photos[0]?.preview}
+                              photoCount={spot.photos.length}
+                              timeLabel={formatPhotoClock(spot.firstTakenAt)}
+                              fromPhoto={spot.fromPhoto}
+                              handle={handle}
+                              onOpen={() => setPeekSpotKey(spot.key)}
+                            />
+                          )}
+                        </SortableSpot>
+                        {idx < spots.length - 1 && (
+                          <LegConnector
+                            mode="ghost"
+                            transport={spot.legToNext.transport}
+                            durationMin={spot.legToNext.durationMin}
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </SortableContext>
+                </DndContext>
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="px-5 pb-8 pt-4">
+              <h2 className="text-[26px] font-black leading-tight tracking-[-0.01em] text-ink">
+                사이 이동만
+                <br />
+                확인해요
+              </h2>
+              <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
+                시간과 수단은 사진에서 채웠어요. 다르면 고쳐 주세요.
+              </p>
+
+              {spots.length < 2 ? (
+                <p className="mt-16 text-center text-[14px] leading-relaxed text-ink-faint">
+                  한 곳만 있어도 코스가 돼요.
+                  <br />
+                  이동은 건너뛰어도 괜찮아요.
+                </p>
+              ) : (
+                <div className="mt-8">
+                  {spots.map((spot, idx) => (
+                    <div key={spot.key}>
+                      <SpotTimelineCard
+                        index={idx}
+                        title={spot.title}
+                        hero={spot.photos[0]?.preview}
+                        photoCount={spot.photos.length}
+                        compact
+                        onOpen={() => setPeekSpotKey(spot.key)}
+                      />
+                      {idx < spots.length - 1 && (
+                        <LegConnector
+                          mode="edit"
+                          transport={spot.legToNext.transport}
+                          durationMin={spot.legToNext.durationMin}
+                          autoFilled={!!spot.legToNext.durationMin}
+                          onTransport={(m) => updateLeg(spot.key, { transport: m })}
+                          onDuration={(v) => updateLeg(spot.key, { durationMin: v })}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="px-5 pb-8 pt-4">
+              <h2 className="text-[26px] font-black leading-tight tracking-[-0.01em] text-ink">
+                공개할까요?
+              </h2>
+              <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
+                제목과 지역은 이미 채워져 있어요.
+              </p>
+
+              <div className="mt-6 overflow-hidden rounded-[22px] bg-card shadow-[var(--shadow-card)] ring-1 ring-line/50">
+                <div className="relative aspect-[16/10] bg-muted">
+                  {coverPreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={coverPreview} alt="" className="h-full w-full object-cover" />
+                  ) : null}
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="absolute bottom-3 left-4 right-4">
+                    <p className="text-[12px] font-semibold text-white/80">
+                      {region || "지역 미정"} · {bestSeason || "날짜 미정"}
+                    </p>
+                    <p className="mt-0.5 text-[20px] font-black leading-tight text-white">
+                      {resolvedTitle}
+                    </p>
+                  </div>
+                </div>
+                <label className="block px-4 py-3">
+                  <span className="text-[11px] font-semibold text-ink-faint">제목</span>
+                  <input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder={resolvedTitle}
+                    className="mt-1 w-full bg-transparent text-[16px] font-bold text-ink outline-none placeholder:text-ink-faint"
+                  />
+                </label>
+              </div>
+
+              <div className="mt-6">
+                {visibilityBox}
+                {!visibilityChosen && (
+                  <p className="mt-3 text-center text-[13px] text-ink-faint">
+                    비공개 / 공개 중 하나를 눌러 주세요
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowMoreMeta((v) => !v)}
+                className="mt-5 flex w-full items-center justify-between rounded-2xl bg-muted px-4 py-3.5 text-left text-[13px] font-semibold text-ink-soft"
+              >
+                {showMoreMeta ? "추천·테마 접기" : "추천 대상·난이도 더 보기"}
+                <span className="text-ink-faint">{showMoreMeta ? "−" : "+"}</span>
+              </button>
+              {showMoreMeta && <div className="mt-3">{primaryMetaSelectors}{secondaryMetaSelectors}</div>}
+
+              {saveError && (
+                <p className="mt-4 rounded-lg bg-error-soft px-3 py-2 text-center text-[13px] text-error" role="alert">
+                  {saveError}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-3 border-t border-line/80 bg-paper/90 px-5 py-3 pb-[max(env(safe-area-inset-bottom),14px)] backdrop-blur">
+          {step > 1 && (
+            <button
+              type="button"
+              onClick={() => setStep((s) => s - 1)}
+              className="rounded-full border border-line bg-card px-5 py-3.5 text-[15px] font-semibold text-ink-soft"
+            >
+              이전
+            </button>
+          )}
+          {step === 1 ? (
+            <button
+              type="button"
+              onClick={() => {
+                if (!spots.length) addSpot();
+                setStep(2);
+              }}
+              disabled={bulkBusy}
+              className="flex-1 rounded-full py-3.5 text-[15px] font-semibold text-ink-soft disabled:opacity-40"
+            >
+              {spotsValid ? "이 순서로 돌아가기" : "사진 없이 다음"}
+            </button>
+          ) : step < 4 ? (
+            <button
+              type="button"
+              onClick={() => canNext && setStep((s) => s + 1)}
+              disabled={!canNext}
+              className="flex-1 rounded-full bg-sunset py-3.5 text-[15px] font-semibold text-white shadow-[var(--shadow-brand)] disabled:cursor-not-allowed disabled:border disabled:border-line disabled:bg-muted disabled:text-ink-faint disabled:shadow-none disabled:opacity-100"
+            >
+              {step === 2 ? "이 순서로 다음" : "이동 맞아요"}
+            </button>
+          ) : (
+            <button
+              form="route-form"
+              type="submit"
+              name="intent"
+              value="finish"
+              disabled={!canSave || saving || !visibilityChosen}
+              className="flex-1 rounded-full bg-sunset py-3.5 text-[15px] font-semibold text-white shadow-[var(--shadow-brand)] disabled:cursor-not-allowed disabled:border disabled:border-line disabled:bg-muted disabled:text-ink-faint disabled:shadow-none disabled:opacity-100"
+            >
+              {saving ? "저장 중…" : "완료"}
+            </button>
+          )}
+        </div>
+      </form>
+
+      <ActionBottomSheet
+        open={!!peekSpot}
+        title={peekSpot?.title.trim() || "스팟"}
+        description={peekSpot?.fromPhoto ? "사진에서 묶은 장소예요. 이름만 바꿔도 돼요." : "위치를 지정하면 동선에 들어가요."}
+        primaryLabel="확인"
+        onPrimary={() => setPeekSpotKey(null)}
+        onClose={() => setPeekSpotKey(null)}
+        ariaLabel="스팟 다듬기"
+      >
+        {peekSpot && (
+          <div className="mt-3 space-y-3">
+            {peekSpot.photos.length > 0 && (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {peekSpot.photos.map((ph) => (
+                  <div key={ph.key} className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-line">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={ph.preview} alt="" className="h-full w-full object-cover" />
-                    {ph.key === coverPhotoKey && <CoverBadge />}
                   </div>
                 ))}
               </div>
             )}
-            <p className="mt-5 text-center text-[12px] text-ink-faint">
-              사진이 없다면 다음 단계에서 직접 추가할 수 있어요.
-            </p>
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            <StepHeading
-              title={region ? `${region} 코스, 맞나요?` : "어느 지역 코스인가요?"}
-              desc={bestSeason ? `${bestSeason}의 기록을 정리하고 있어요. 장소를 확인하고 다듬어 주세요.` : "사진으로 만든 장소를 확인하고 다듬어 주세요."}
+            <Field
+              label="장소 이름"
+              value={peekSpot.title}
+              onChange={(v) => updateSpot(peekSpot.key, { title: v })}
+              placeholder="예: 세화 해변"
             />
-            <Field label="지역" value={region} onChange={setRegion} placeholder="예: 서울 종로" required />
-            {spotsBlock}
-            {addSpotButton}
-          </>
-        )}
-
-        {step === 3 && (
-          <>
-            <StepHeading title="스팟 사이, 어떻게 이동했나요?" desc="이동 수단과 소요 시간을 남기면 지도에 동선이 그려져요." />
-            {legsBlock}
-          </>
-        )}
-
-        {step === 4 && (
-          <>
-            <StepHeading title="이 코스를 한마디로" desc="추천 대상·난이도를 먼저 남기면 따라가기 쉬워져요." />
-            <Field label="제목" value={title} onChange={setTitle} placeholder="예: 제주 동쪽 바람 코스" required />
-            {primaryMetaSelectors}
-            <button
-              type="button"
-              onClick={() => setShowMoreMeta((v) => !v)}
-              className="mb-3 flex w-full items-center justify-between rounded-xl border border-line bg-card px-3 py-2.5 text-left text-[13px] font-semibold text-ink-soft"
-            >
-              {showMoreMeta ? "테마·감정 등 접기" : "테마·감정·비용 더 보기"}
-              <span className="text-ink-faint">{showMoreMeta ? "−" : "+"}</span>
-            </button>
-            {showMoreMeta && secondaryMetaSelectors}
-          </>
-        )}
-
-        {step === 5 && (
-          <>
-            <StepHeading
-              title="마지막! 공개할지 골라 주세요"
-              desc="둘 중 하나를 꼭 고른 뒤에 완료할 수 있어요."
-            />
-            <div className="mb-4 rounded-[var(--radius-card)] border border-line bg-card p-4">
-              <div className="text-[12px] text-ink-faint">{region} · {bestSeason || "날짜 미정"}</div>
-              <div className="mt-0.5 text-[17px] font-black text-ink">{title || "제목 없음"}</div>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {theme && <PreviewChip>{theme}</PreviewChip>}
-                {moodDisplay && <PreviewChip>{moodDisplay}</PreviewChip>}
-                <span className="ml-auto text-[12px] text-ink-faint">스팟 {spots.length}곳</span>
-              </div>
-            </div>
-            <FollowReadyHint
-              region={region}
-              recommendedFor={recommendedFor}
-              difficulty={difficulty}
-              spotCount={spots.length}
-              hasCover={!!coverPhotoKey || allPhotos.length > 0}
-            />
-            {visibilityBox}
-            {!visibilityChosen && (
-              <p className="mt-3 text-center text-[12px] text-ink-faint">
-                비공개 / 공개 중 하나를 눌러 주세요
-              </p>
+            {typeof peekSpot.lat !== "number" && (
+              <SpotLocationPicker
+                lat={peekSpot.lat}
+                lng={peekSpot.lng}
+                searchEnabled={placeSearchEnabled}
+                onPick={({ lat, lng, address, place }) =>
+                  updateSpot(peekSpot.key, {
+                    lat,
+                    lng,
+                    fromPhoto: false,
+                    ...(place && !peekSpot.title.trim() ? { title: place } : {}),
+                    ...(address ? { address } : {}),
+                  })
+                }
+              />
             )}
-            {saveError && (
-              <p className="mt-4 rounded-lg bg-error-soft px-3 py-2 text-center text-[13px] text-error" role="alert">{saveError}</p>
+            {spots.length > 1 && (
+              <button
+                type="button"
+                onClick={() => {
+                  removeSpot(peekSpot.key);
+                  setPeekSpotKey(null);
+                }}
+                className="w-full py-2 text-center text-[13px] font-semibold text-error"
+              >
+                이 스팟 빼기
+              </button>
             )}
-          </>
+          </div>
         )}
-      </form>
-
-      {/* footer nav */}
-      <div className="flex gap-3 border-t border-line bg-card px-4 py-3 pb-[max(env(safe-area-inset-bottom),12px)]">
-        {step > 1 && (
-          <button
-            type="button"
-            onClick={() => setStep((s) => s - 1)}
-            className="rounded-xl border border-line bg-card px-5 py-3 text-[15px] font-semibold text-ink-soft"
-          >
-            이전
-          </button>
-        )}
-        {step < 5 ? (
-          <button
-            type="button"
-            onClick={() => canNext && setStep((s) => s + 1)}
-            disabled={!canNext}
-            className={
-              step === 1 && allPhotos.length === 0
-                ? "flex-1 rounded-xl border border-line bg-card py-3 text-[15px] font-semibold text-ink disabled:cursor-not-allowed disabled:text-ink-faint"
-                : "flex-1 rounded-xl bg-sunset py-3 text-[15px] font-semibold text-white disabled:cursor-not-allowed disabled:border disabled:border-line disabled:bg-muted disabled:text-ink-faint disabled:opacity-100"
-            }
-          >
-            {step === 1 && allPhotos.length === 0 ? "사진 없이 다음" : "다음"}
-          </button>
-        ) : (
-          <button
-            form="route-form"
-            type="submit"
-            name="intent"
-            value="finish"
-            disabled={!canSave || saving || !visibilityChosen}
-            className="flex-1 rounded-xl bg-sunset py-3 text-[15px] font-semibold text-white disabled:cursor-not-allowed disabled:border disabled:border-line disabled:bg-muted disabled:text-ink-faint disabled:opacity-100"
-          >
-            {saving ? "저장 중…" : "완료"}
-          </button>
-        )}
-      </div>
+      </ActionBottomSheet>
 
       {savingOverlay}
       {sheets}
@@ -3032,33 +3176,6 @@ function buildLegInsight(spot: DraftSpot, next: DraftSpot): PlanLegInsight {
   };
 }
 
-function estimateLegMinutes(spot: DraftSpot, next: DraftSpot, mode: TransportMode) {
-  if (!hasCoords(spot) || !hasCoords(next)) return undefined;
-  const meters = haversineMeters(spot, next);
-  const speedKmh: Record<TransportMode, number> = {
-    walk: 4,
-    bike: 12,
-    car: 28,
-    taxi: 30,
-    bus: 22,
-    subway: 34,
-    train: 42,
-    other: 18,
-  };
-  const detourFactor: Record<TransportMode, number> = {
-    walk: 1.18,
-    bike: 1.22,
-    car: 1.36,
-    taxi: 1.34,
-    bus: 1.45,
-    subway: 1.55,
-    train: 1.5,
-    other: 1.3,
-  };
-  const minutes = ((meters / 1000) * detourFactor[mode]) / speedKmh[mode] * 60;
-  return Math.max(3, Math.round(minutes / 5) * 5);
-}
-
 function routeDistance(spots: DraftSpot[]) {
   let total = 0;
   for (let i = 0; i < spots.length - 1; i += 1) {
@@ -3151,90 +3268,6 @@ function PlanMapMetric({ label, value }: { label: string; value: string }) {
     <div className="rounded-xl border border-line bg-card px-3 py-2.5">
       <div className="text-[11px] font-semibold text-ink-faint">{label}</div>
       <div className="mt-0.5 text-[15px] font-black text-ink">{value}</div>
-    </div>
-  );
-}
-
-function formatVisit(ms: number) {
-  const d = new Date(ms);
-  return `${d.getFullYear()}년 ${d.getMonth() + 1}월`;
-}
-
-/** Top-level region from reverse-geocoded parts: "시도 시군구" if uniform, else 시/도. */
-/** Trim administrative suffixes so "강릉시" → "강릉", "강원특별자치도" → "강원". */
-function shortRegionName(area?: string): string {
-  if (!area) return "";
-  const trimmed = area.replace(
-    /(특별자치도|특별자치시|특별시|광역시|자치시|자치구|시|군|구|도)$/u,
-    "",
-  );
-  return trimmed || area;
-}
-
-function deriveRegion(parts: { area1?: string; area2?: string }[]): string {
-  const a1s = parts.map((p) => p.area1).filter((x): x is string => !!x);
-  const distinct = [...new Set(a1s)];
-  if (distinct.length === 0) return "";
-  if (distinct.length > 1) return distinct.join("·");
-  const a1 = distinct[0];
-  const a2s = [
-    ...new Set(
-      parts.filter((p) => p.area1 === a1).map((p) => p.area2).filter((x): x is string => !!x),
-    ),
-  ];
-  return a2s.length === 1 ? `${a1} ${a2s[0]}` : a1;
-}
-
-function distMeters(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
-  const R = 6371000;
-  const dLat = ((b.lat - a.lat) * Math.PI) / 180;
-  const dLng = ((b.lng - a.lng) * Math.PI) / 180;
-  const la = (a.lat * Math.PI) / 180;
-  const x = dLng * Math.cos(la);
-  return Math.sqrt(x * x + dLat * dLat) * R;
-}
-
-function Stepper({
-  steps,
-  current,
-  optional = [],
-}: {
-  steps: string[];
-  current: number;
-  /** 1-based step numbers that can be skipped */
-  optional?: number[];
-}) {
-  return (
-    <div className="border-b border-line bg-card px-2 py-2.5">
-      <div className="flex">
-        {steps.map((label, i) => {
-          const n = i + 1;
-          const active = n === current;
-          const done = n < current;
-          const skippable = optional.includes(n);
-          return (
-            <div key={label} className="flex flex-1 flex-col items-center gap-1">
-              <div className="flex w-full items-center">
-                <span className={`h-0.5 flex-1 ${i === 0 ? "bg-transparent" : n <= current ? "bg-ink" : "bg-line"}`} />
-                <span
-                  className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold ${
-                    active ? "bg-ink text-paper" : done ? "bg-muted text-ink" : "bg-muted text-ink-faint"
-                  }`}
-                >
-                  {done ? "✓" : n}
-                </span>
-                <span className={`h-0.5 flex-1 ${i === steps.length - 1 ? "bg-transparent" : n < current ? "bg-ink" : "bg-line"}`} />
-              </div>
-              <span className={`text-[10px] ${active ? "font-bold text-ink" : "text-ink-faint"}`}>
-                {label}
-                {skippable ? (
-                  <span className="ml-0.5 font-medium text-ink-faint">·선택</span>
-                ) : null}
-              </span>
-            </div>
-          );
-        })}
-      </div>
     </div>
   );
 }
@@ -3399,12 +3432,6 @@ function SpotDot({ n }: { n: number }) {
   );
 }
 
-function PreviewChip({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="rounded-full bg-sunset-wash px-2.5 py-1 text-[11px] font-medium text-sunset-ink">{children}</span>
-  );
-}
-
 function SortableSpot({
   id,
   children,
@@ -3489,15 +3516,6 @@ function SortablePhoto({
         ✕
       </button>
     </div>
-  );
-}
-
-function CameraIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 8a2 2 0 0 1 2-2h2l1.2-1.6a1 1 0 0 1 .8-.4h6a1 1 0 0 1 .8.4L19 6h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z" />
-      <circle cx="12" cy="12.5" r="3.2" />
-    </svg>
   );
 }
 
@@ -3600,7 +3618,7 @@ function VisibilityPicker({
     { id: "public", title: "공개", desc: "남이 따라갈 수 있어요" },
   ];
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-2 gap-3">
       {opts.map((o) => {
         const active = chosen && value === o.id;
         return (
@@ -3609,14 +3627,14 @@ function VisibilityPicker({
             type="button"
             aria-pressed={active}
             onClick={() => onChoose(o.id)}
-            className={`rounded-xl border px-3 py-3 text-left transition-colors ${
+            className={`rounded-[20px] border px-4 py-5 text-left transition-colors ${
               active
-                ? "border-sunset bg-sunset-wash text-sunset-ink"
+                ? "border-ink bg-ink text-paper"
                 : "border-line bg-card text-ink"
             }`}
           >
-            <span className="block text-[14px] font-bold">{o.title}</span>
-            <span className={`mt-0.5 block text-[11px] ${active ? "text-sunset-ink/80" : "text-ink-faint"}`}>
+            <span className="block text-[16px] font-black">{o.title}</span>
+            <span className={`mt-1 block text-[12px] leading-snug ${active ? "text-paper/70" : "text-ink-faint"}`}>
               {o.desc}
             </span>
           </button>

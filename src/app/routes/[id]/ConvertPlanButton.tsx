@@ -8,6 +8,7 @@ import { convertPlanDraftToRecord } from "./actions";
 /**
  * Owner-only header action on a plan draft: convert plan → record
  * (distinct from social "다녀왔어요" completion on the original course).
+ * WAVE-G E6: 전환 후 `/edit?photos=1`로 올리기 화면부터 (PHOTO-FIRST-CREATE.md).
  */
 export default function ConvertPlanButton({ routeId }: { routeId: string }) {
   const router = useRouter();
@@ -41,7 +42,7 @@ export default function ConvertPlanButton({ routeId }: { routeId: string }) {
       <ActionBottomSheet
         open={open}
         title="코스 기록으로 바꿀까요?"
-        description="계획 초안을 기록으로 바꾸면 사진과 팁을 채워 완성할 수 있어요. (원본 코스에 ‘다녀왔어요’ 후기를 남기는 것과는 달라요.)"
+        description="계획 초안을 기록으로 바꾸면 다녀온 사진을 올려 완성할 수 있어요. (원본 코스에 ‘다녀왔어요’ 후기를 남기는 것과는 달라요.)"
         primaryLabel="기록으로 바꾸기"
         secondaryLabel="아직이에요"
         pending={busy}

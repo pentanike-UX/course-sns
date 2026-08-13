@@ -42,6 +42,7 @@
 - [x] 공개/비공개 명시 선택 게이트 (`visibilityChosen`)
 - [x] **Wave E** — 상세 전이 위계 · 콜드/지도 패리티 · 체크리스트 진정성 · P4 구독 배달(알림+홈 레일) · error≠brand ([`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md) §6)
   - ⚠️ `0014_transfer_notifications.sql` — Supabase에 `db push` 필요 (`copy` · `course_publish`)
+- [x] **Wave G** — Photo-first 기록 작성 ([`PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md)) · G0 설계 ✅ · G1–G3 기록 생성 4화면 ✅ · G4–G6 수정/복제 랜딩 대기
 
 ---
 
@@ -49,7 +50,7 @@
 
 > **포지션:** 따라갈 수 있는 이동 코스 커뮤니티  
 > **북스타 루프:** 발견 → 따라가기 → 다녀왔어요 → 영향력(복제·완주·팔로우)  
-> **기준 코드:** course-sns MVP (`v0.3.8-mvp`, routdiary fork) · 브랜드 **coursee**  
+> **기준 코드:** course-sns MVP (`v0.4.0-mvp`, routdiary fork) · 브랜드 **coursee**  
 > **관련:** 페르소나 P1–P4 · Wave F 구현 · [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md)
 
 이 문서는 “무엇을 만들지”가 아니라 **어디에·어떤 순서로·어떤 멘탈모델로 심을지**를 고정한다.  
@@ -257,10 +258,11 @@ flowchart LR
 
 **작성 FAB 진입 카피 (`BottomNav` sheet / `RouteForm`)**
 
-- “기록하기” → **코스 만들기** / **계획 만들기**
-- Step 카피: “제목과 테마·감정을 남기면 코스다워져요”  
-  → **“누가 따라가기 쉽게, 동선·추천 대상·난이도를 먼저 채워요”**
-- 공개 기본값 유지(course-first public) — 메이커 기본 가정과 맞음.
+- “기록하기” → **코스 기록하기** / **코스 계획하기**
+- 기록 멘탈모델: **사진은 이미 코스다. 글은 선택이다.**  
+  정본 스펙: [`PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md) (Wave G — 4화면: 올리기 → 순서 → 이동 → 공개)
+- 계획 멘탈모델: 아직 안 감 → 지도 플래너 유지
+- 공개는 4번 화면에서 **명시 선택** 유지 (`visibilityChosen`)
 
 ---
 
@@ -355,7 +357,7 @@ sequenceDiagram
 | 완주 | `CompleteCourseButton.tsx`, `RouteCompletionsSection.tsx` | 카피·스캔 UI |
 | 내 코스 라벨 | `FeedExplorer.tsx`, `DiaryDrawerContent.tsx`, `feed/page.tsx` | 일기→코스 리네임 |
 | 보관함 | `LibraryTabs.tsx`, `FollowingPanel.tsx`, `library/page.tsx`, `data.ts` | 세그먼트·쿼리 |
-| 작성 | `RouteForm.tsx`, `BottomNav.tsx` FAB sheet | 카피·필드 강조 |
+| 작성 | `RouteForm.tsx`, `BottomNav.tsx` FAB sheet | **Wave G:** photo-first 4화면 ([`PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md)) |
 | 프로필 통계 | `u/[handle]`, profile stats | 지표 위계 |
 | 브랜드 | `MobileFrame.tsx`, login | 카피 |
 | persistence 키 | `routdiary:*` local/session keys | `course:*`로 이관(읽기 시 구키 폴백) |
@@ -389,7 +391,7 @@ sequenceDiagram
 ### Phase 3 — 메이커 영향력 (P3)
 
 - 책장·본인 통계를 전이 지표 중심.
-- 작성 마법사에서 동선·추천·난이도 필드 강조(필수에 가깝게).
+- 작성: 동선은 사진 묶음+레그에서 생기고, 추천·난이도는 공개 화면의 접힌 옵션(필수 스텝 아님).
 - (선택) 메이커용 “이 코스가 잘 퍼짐” 하이라이트.
 - **성공 기준:** 메이커당 public 코스 수, 코스당 copy_count.
 
@@ -429,8 +431,8 @@ sequenceDiagram
 
 ## 8. 다음 액션
 
-1. Phase 0 PR: 카피·카드/필터 위계·브랜드 문장.
-2. Phase 1: 스펙 한 줄 + sort 키 + 따라가기 next-step.
-3. Phase 2 설계 상세(쿼리·보관함 IA)는 Phase 1 지표 본 뒤 스키마 확정.
+1. Phase 0–3 · Wave A–F: 적용됨 (이 문서 상단 체크).
+2. **Wave G (P3 작성):** [`PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md) G1 엔진 추출 → G3 기록 위자드 교체.
+3. 계획 플래너는 지도 우선 유지. 기록 수정·따라가기 랜딩은 같은 4화면 셸.
 
 이 문서가 course-sns와 routdiary의 **제품 무게 차이**를 UX 레벨에서 고정하는 기준이다.
