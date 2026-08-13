@@ -22,5 +22,6 @@
  * v0.4.3 — 설정 다운로드(PWA 설치) 시트 미표시 수정
  * v0.4.4 — 아이폰 홈 화면 추가 안내(그림 단계)
  * v0.4.5 — Safari 공유 버튼 위치(콤팩트·하단·상단)
+ * v0.4.6 — 스팟 한 줄(peek 메모 개방, 카드 미리보기)
  */
-export const APP_VERSION = "v0.4.5-mvp";
+export const APP_VERSION = "v0.4.6-mvp";

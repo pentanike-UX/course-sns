@@ -14,6 +14,7 @@ export default function SpotTimelineCard({
   photoCount,
   timeLabel,
   fromPhoto,
+  note,
   handle,
   compact = false,
   onOpen,
@@ -24,11 +25,14 @@ export default function SpotTimelineCard({
   photoCount: number;
   timeLabel?: string;
   fromPhoto?: boolean;
+  /** 순서 화면 전용. 있으면 사진 아래 한두 줄. compact에는 넣지 않음. */
+  note?: string;
   handle?: DragHandle;
   compact?: boolean;
   onOpen?: () => void;
 }) {
   const name = title.trim() || `스팟 ${index + 1}`;
+  const noteLine = note?.replace(/\s+/g, " ").trim() ?? "";
 
   if (compact) {
     return (
@@ -97,6 +101,15 @@ export default function SpotTimelineCard({
           </button>
         )}
       </div>
+      {noteLine ? (
+        <button
+          type="button"
+          onClick={onOpen}
+          className="block w-full px-5 pb-5 pt-4 text-left"
+        >
+          <p className="line-clamp-2 text-[15px] leading-relaxed text-ink-soft">{noteLine}</p>
+        </button>
+      ) : null}
     </div>
   );
 }
