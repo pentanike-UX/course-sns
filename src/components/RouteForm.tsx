@@ -286,11 +286,9 @@ export default function RouteForm({
   const [ingestPreviews, setIngestPreviews] = useState<string[]>([]);
   const [peekSpotKey, setPeekSpotKey] = useState<string | null>(null);
   const [peekRelocate, setPeekRelocate] = useState(false);
-  const [peekMemoOpen, setPeekMemoOpen] = useState(false);
 
   const openPeek = (key: string) => {
     setPeekRelocate(false);
-    setPeekMemoOpen(false);
     setPeekSpotKey(key);
   };
 
@@ -1200,7 +1198,7 @@ export default function RouteForm({
                 이 순서로 다녔어요
               </h2>
               <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
-                카드를 잡아 순서를 바꿔 주세요. 글은 쓰지 않아도 돼요.
+                카드를 잡아 순서를 바꿔 주세요. 눌러 한 줄을 남겨도 되고, 비워 둬도 돼요.
               </p>
 
               <div className="mt-6">
@@ -1222,6 +1220,7 @@ export default function RouteForm({
                               photoCount={spot.photos.length}
                               timeLabel={formatPhotoClock(spot.firstTakenAt)}
                               fromPhoto={spot.fromPhoto}
+                              note={spot.body}
                               handle={handle}
                               onOpen={() => openPeek(spot.key)}
                             />
@@ -1434,9 +1433,9 @@ export default function RouteForm({
         ariaLabel="스팟 다듬기"
       >
         {peekSpot && (
-          <div className="mt-3 space-y-3">
+          <div className="mt-6 space-y-6">
             <div>
-              <p className="mb-1.5 text-[12px] font-medium text-ink-soft">
+              <p className="mb-2.5 text-[12px] font-medium text-ink-soft">
                 사진
                 {peekSpot.photos.length > 1 && (
                   <span className="font-normal text-ink-faint"> · 길게 눌러 순서 변경</span>
@@ -1511,26 +1510,23 @@ export default function RouteForm({
                 }}
               />
             )}
-            {peekMemoOpen || peekSpot.body.trim() ? (
-              <label className="block">
-                <span className="mb-1.5 block text-[12px] font-medium text-ink-soft">메모</span>
-                <textarea
-                  value={peekSpot.body}
-                  onChange={(e) => updateSpot(peekSpot.key, { body: e.target.value })}
-                  placeholder="이곳에서의 순간을 한 줄로"
-                  rows={3}
-                  className="w-full resize-none rounded-xl border border-line bg-paper px-3 py-2.5 text-[14px] leading-relaxed text-ink outline-none placeholder:text-ink-faint focus:border-sunset"
-                />
-              </label>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setPeekMemoOpen(true)}
-                className="w-full py-1 text-left text-[13px] font-semibold text-ink-faint"
-              >
-                메모 추가
-              </button>
-            )}
+            <label className="block">
+              <span className="mb-2 flex items-baseline justify-between gap-3">
+                <span className="text-[12px] font-medium text-ink-soft">이 곳에서 남긴 말</span>
+                <span className="text-[12px] text-ink-faint">안 써도 돼요</span>
+              </span>
+              <textarea
+                value={peekSpot.body}
+                onChange={(e) => updateSpot(peekSpot.key, { body: e.target.value })}
+                placeholder={
+                  peekSpot.title.trim()
+                    ? `${peekSpot.title.trim()}에서 남기고 싶은 한 줄`
+                    : "이곳에서의 순간을 한 줄로"
+                }
+                rows={4}
+                className="min-h-[7.5rem] w-full resize-none rounded-2xl border border-line bg-paper px-4 py-3.5 text-[15px] leading-relaxed text-ink outline-none placeholder:text-ink-faint focus:border-sunset"
+              />
+            </label>
             {spots.length > 1 && (
               <button
                 type="button"
@@ -1538,7 +1534,7 @@ export default function RouteForm({
                   removeSpot(peekSpot.key);
                   setPeekSpotKey(null);
                 }}
-                className="w-full py-2 text-center text-[13px] font-semibold text-error"
+                className="w-full py-3 text-center text-[13px] font-semibold text-error"
               >
                 이 스팟 빼기
               </button>

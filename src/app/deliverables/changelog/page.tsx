@@ -13,6 +13,14 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.4.6-mvp — 스팟 한 줄</H2>
+      <Ul>
+        <li>
+          등록·수정 순서 화면: 스팟 카드를 누르면 「이 곳에서 남긴 말」을 바로 적을 수 있음. 안 써도 됨.
+          쓴 글은 카드 사진 아래에 짧게만 보임. 이동 화면은 그대로
+        </li>
+      </Ul>
+
       <H2>v0.4.5-mvp — Safari 공유 버튼 위치</H2>
       <Ul>
         <li>
