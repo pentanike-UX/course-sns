@@ -13,6 +13,14 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.4.2-mvp — 작업 완료 시 프로덕션 머지</H2>
+      <Ul>
+        <li>
+          에이전트 규칙: 초안 PR로 멈추지 않고 <Code>main</Code> 머지(Vercel 프로덕션)까지 완료. 사용자가
+          머지하지 말라고 한 경우만 예외
+        </li>
+      </Ul>
+
       <H2>v0.4.1-mvp — Photo-first 기록 수정</H2>
       <Ul>
         <li>기록 수정도 작성과 같은 4화면: 올리기 → 순서 → 이동 → 공개. 섹션점프 스크롤 폼 제거</li>
