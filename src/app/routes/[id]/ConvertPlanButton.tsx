@@ -25,8 +25,7 @@ export default function ConvertPlanButton({ routeId }: { routeId: string }) {
       setBusy(false);
       return;
     }
-    // page re-renders as a record; this button unmounts
-    router.refresh();
+    router.push(`/routes/${routeId}/edit?photos=1`);
   };
 
   return (

@@ -27,7 +27,6 @@ import ActionBottomSheet from "@/components/ActionBottomSheet";
 import GlassCircle from "@/components/GlassCircle";
 import SaveNotice from "@/components/SaveNotice";
 import SpotLocationPicker from "@/components/SpotLocationPicker";
-import RouteMap, { type MapLeg, type MapSpot } from "@/components/RouteMap";
 import RoutePlanThumbnail from "@/components/RoutePlanThumbnail";
 import { createClient } from "@/lib/supabase/client";
 import { readPhotoGeo } from "@/lib/exif";
@@ -142,6 +141,8 @@ type Props = (
   followedFromExplore?: boolean;
   /** After plan 임시저장 (`?draft=1`) — show a toast and stay in the editor. */
   draftSaved?: boolean;
+  /** Land on photo ingest (`?photos=1`, e.g. plan→record). WAVE-G G4/G5. */
+  startAtPhotos?: boolean;
 };
 
 const emptyLeg = (): DraftLeg => ({ transport: "walk", durationMin: "", caution: "" });
@@ -219,25 +220,7 @@ function draftSpotsToThumbnailPoints(spots: DraftSpot[]): RouteThumbnailPoint[] 
 }
 
 const CREATE_STEPS = 4;
-// WAVE-G: 기록 생성은 4화면(올리기·순서·이동·공개). docs/PHOTO-FIRST-CREATE.md
-
-// Edit mode mirrors the wizard's section order on one scrollable page.
-// 사진(photo ingest) is create-only — in edit, photos live inside each spot
-// card, so it folds into 장소.
-const EDIT_SECTIONS = [
-  { id: "place", label: "장소" },
-  { id: "move", label: "이동" },
-  { id: "story", label: "이야기" },
-  { id: "share", label: "공개" },
-] as const;
-
-const PLAN_EDIT_SECTIONS = [
-  { id: "map", label: "지도" },
-  ...EDIT_SECTIONS,
-] as const;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type DragHandle = { attributes: any; listeners: any };
+// WAVE-G: 기록 생성·수정은 같은 4화면(올리기·순서·이동·공개). 계획 수정은 플래너.
 
 export default function RouteForm({
   mode,
@@ -249,12 +232,12 @@ export default function RouteForm({
   copyContext,
   followedFromExplore = false,
   draftSaved = false,
+  startAtPhotos = false,
 }: Props) {
   const router = useRouter();
   const isEdit = mode === "edit";
   const isPlanDraft = intent === "plan" || copyContext?.purpose === "plan";
   const isDirectPlanCreate = !isEdit && intent === "plan";
-  const editSections = isPlanDraft ? PLAN_EDIT_SECTIONS : EDIT_SECTIONS;
   const selfPath = isEdit
     ? `/routes/${routeId}/edit`
     : isDirectPlanCreate
@@ -291,42 +274,25 @@ export default function RouteForm({
   const [bulkBusy, setBulkBusy] = useState(false);
   const [bulkNote, setBulkNote] = useState<string | null>(null);
   const [sheet, setSheet] = useState<"theme" | "mood" | "recommend" | null>(null);
-  const [step, setStep] = useState(1); // wizard step (create mode)
+  const initialPhotoCount =
+    initial?.spots.reduce((n, s) => n + s.photos.length, 0) ?? 0;
+  const [step, setStep] = useState(() => {
+    if (!isEdit) return 1;
+    if (startAtPhotos) return 1;
+    if (followedFromExplore && initialPhotoCount === 0) return 1;
+    return 2;
+  });
   const [confirmExit, setConfirmExit] = useState(false); // "저장 안 하고 나가기?" sheet
   const [ingestPreviews, setIngestPreviews] = useState<string[]>([]);
   const [peekSpotKey, setPeekSpotKey] = useState<string | null>(null);
+  const [peekRelocate, setPeekRelocate] = useState(false);
+  const [peekMemoOpen, setPeekMemoOpen] = useState(false);
 
-  // edit-mode section-jump nav (single page, scrollspy). MobileFrame is
-  // min-h-dvh, so the document (viewport) scrolls — observe against it (root:null).
-  const sectionEls = useRef<Record<string, HTMLElement | null>>({});
-  const [activeSection, setActiveSection] = useState<string>(editSections[0].id);
-
-  useEffect(() => {
-    if (!isEdit) return;
-    // Active = the last section whose top has passed just under the pinned nav.
-    // A scroll scan (vs IntersectionObserver) stays correct on short pages where
-    // trailing sections can't reach the very top before the page bottoms out.
-    const onScroll = () => {
-      const line = 80; // px below the viewport top (just under the pinned nav)
-      const doc = document.documentElement;
-      if (window.innerHeight + window.scrollY >= doc.scrollHeight - 2) {
-        setActiveSection(editSections[editSections.length - 1].id);
-        return;
-      }
-      let current: string = editSections[0].id;
-      for (const s of editSections) {
-        const el = sectionEls.current[s.id];
-        if (el && el.getBoundingClientRect().top <= line) current = s.id;
-      }
-      setActiveSection(current);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [editSections, isEdit]);
-
-  const jumpToSection = (id: string) =>
-    sectionEls.current[id]?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const openPeek = (key: string) => {
+    setPeekRelocate(false);
+    setPeekMemoOpen(false);
+    setPeekSpotKey(key);
+  };
 
   const splitCsv = (s: string) => s.split(",").map((x) => x.trim()).filter(Boolean);
   const moodLevel = moodByLabel(mood);
@@ -496,7 +462,11 @@ export default function RouteForm({
     }
   };
 
-  const addSpot = () => setSpots((prev) => [...prev, emptySpot()]);
+  const addSpot = () => {
+    const spot = emptySpot();
+    setSpots((prev) => [...prev, spot]);
+    return spot.key;
+  };
   const addSpotFromPlace = (place: PlaceHit) => {
     const key = crypto.randomUUID();
     const added: DraftSpot = {
@@ -607,7 +577,6 @@ export default function RouteForm({
     });
   const canSave = spotsValid && spots.length >= 1;
   const allPhotos = spots.flatMap((s) => s.photos);
-  const draftMap = useMemo(() => buildDraftRouteMap(spots), [spots]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -761,7 +730,7 @@ export default function RouteForm({
       setConvertingRecord(false);
       return;
     }
-    router.refresh();
+    router.push(`/routes/${routeId}/edit?photos=1`);
   };
 
   // ── unsaved-changes guard (plan planner) ──────────────────────────────
@@ -883,212 +852,15 @@ export default function RouteForm({
             type="button"
             onClick={() => {
               setConfirmVisibility(false);
-              jumpToSection("share");
+              setStep(4);
             }}
             className="w-full rounded-xl border border-line bg-card px-3 py-2.5 text-[13px] font-semibold text-ink-soft"
           >
-            공개 섹션으로 가서 다시 고르기
+            공개 화면에서 다시 고르기
           </button>
         )}
       </div>
     </ActionBottomSheet>
-  );
-
-  // ── shared render pieces ──────────────────────────────────────────────
-
-  const spotCard = (spot: DraftSpot, idx: number, handle: DragHandle) => (
-    <div className="rounded-[var(--radius-card)] border border-line bg-card p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <span className="flex items-center gap-2 text-[14px] font-bold text-ink">
-          <button
-            type="button"
-            {...handle.attributes}
-            {...handle.listeners}
-            aria-label="순서 변경 (드래그)"
-            className="-ml-1 cursor-grab touch-none p-1 text-ink-faint active:cursor-grabbing"
-          >
-            <DragIcon />
-          </button>
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-sunset text-[12px] text-white">
-            {idx + 1}
-          </span>
-          스팟 {idx + 1}
-        </span>
-        {spots.length > 1 && (
-          <button type="button" onClick={() => removeSpot(spot.key)} className="text-[12px] text-ink-faint">
-            삭제
-          </button>
-        )}
-      </div>
-
-      <Field
-        label="장소 이름"
-        value={spot.title}
-        onChange={(v) => updateSpot(spot.key, { title: v })}
-        placeholder="예: 세화 해변"
-      />
-      <Field
-        label="주소"
-        value={spot.address}
-        onChange={(v) => updateSpot(spot.key, { address: v })}
-        placeholder="지도를 탭하면 자동으로 채워져요"
-      />
-
-      <label className="mb-1.5 block text-[12px] font-medium text-ink-soft">
-        위치
-        {typeof spot.lat === "number" && (
-          <span className="ml-1.5 font-normal text-success">
-            {spot.fromPhoto ? "· 사진에서 자동 지정됨" : "· 지정됨"}
-          </span>
-        )}
-      </label>
-      <SpotLocationPicker
-        lat={spot.lat}
-        lng={spot.lng}
-        searchEnabled={placeSearchEnabled}
-        onPick={({ lat, lng, address, place }) =>
-          updateSpot(spot.key, {
-            lat,
-            lng,
-            fromPhoto: false,
-            // explicit search pick: its address is authoritative; a typed-in
-            // title is still respected, map taps keep the fill-if-empty rule
-            ...(place && !spot.title.trim() ? { title: place } : {}),
-            ...(address && (place || !spot.address.trim()) ? { address } : {}),
-          })
-        }
-      />
-
-      {!isPlanDraft && (
-        <>
-          <label className="mb-1.5 mt-3 flex items-center gap-1.5 text-[12px] font-medium text-ink-soft">
-            사진
-            {spot.photos.length > 1 && (
-              <span className="font-normal text-ink-faint">· 길게 눌러 순서 변경</span>
-            )}
-          </label>
-          <DndContext
-            id={`photos-${spot.key}`}
-            sensors={photoSensors}
-            collisionDetection={closestCenter}
-            onDragEnd={(e) => onPhotoDragEnd(spot.key, e)}
-          >
-            <SortableContext items={spot.photos.map((p) => p.key)} strategy={rectSortingStrategy}>
-              <div className="flex flex-wrap gap-2">
-                {spot.photos.map((ph) => (
-                  <SortablePhoto
-                    key={ph.key}
-                    id={ph.key}
-                    preview={ph.preview}
-                    isCover={ph.key === coverPhotoKey}
-                    onRemove={() => removePhoto(spot.key, ph.key)}
-                  />
-                ))}
-                <label className="relative flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-lg border-2 border-dashed border-line text-ink-faint">
-                  <span className="text-xl leading-none">＋</span>
-                  <span className="text-[11px]">사진</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    aria-label={`스팟 ${idx + 1} 사진 추가`}
-                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                    onChange={(e) => handleSpotPhotoInput(spot.key, e)}
-                  />
-                </label>
-              </div>
-            </SortableContext>
-          </DndContext>
-        </>
-      )}
-
-      <label className="mb-1.5 mt-3 block text-[12px] font-medium text-ink-soft">
-        {isPlanDraft ? "계획 메모" : "기록"}
-      </label>
-      <textarea
-        value={spot.body}
-        onChange={(e) => updateSpot(spot.key, { body: e.target.value })}
-        placeholder={isPlanDraft ? "예약 시간, 영업시간, 꼭 확인할 것을 적어보세요." : "이곳에서의 순간을 코스 메모처럼 적어보세요."}
-        rows={3}
-        className="w-full resize-none rounded-xl border border-line bg-paper px-3 py-2.5 text-[14px] leading-relaxed text-ink outline-none placeholder:text-ink-faint focus:border-sunset"
-      />
-    </div>
-  );
-
-  const legFields = (spot: DraftSpot) => (
-    <div className="rounded-xl bg-card p-3 ring-1 ring-line">
-      <div className="mb-2 text-[12px] font-semibold text-sky">다음 스팟까지 이동</div>
-      <div className="grid grid-cols-2 gap-2">
-        <select
-          value={spot.legToNext.transport}
-          onChange={(e) => updateLeg(spot.key, { transport: e.target.value as TransportMode })}
-          className="rounded-lg border border-line bg-paper px-2.5 py-2 text-[13px] text-ink outline-none focus:border-sunset"
-        >
-          {(Object.keys(TRANSPORT_LABEL) as TransportMode[]).map((m) => (
-            <option key={m} value={m}>
-              {TRANSPORT_LABEL[m]}
-            </option>
-          ))}
-        </select>
-        <input
-          value={spot.legToNext.durationMin}
-          onChange={(e) => updateLeg(spot.key, { durationMin: e.target.value })}
-          placeholder="소요(분)"
-          inputMode="numeric"
-          className="rounded-lg border border-line bg-paper px-2.5 py-2 text-[13px] text-ink outline-none placeholder:text-ink-faint focus:border-sunset"
-        />
-      </div>
-      <input
-        value={spot.legToNext.caution}
-        onChange={(e) => updateLeg(spot.key, { caution: e.target.value })}
-        placeholder="주의사항 (예: 주차 협소)"
-        className="mt-2 w-full rounded-lg border border-line bg-paper px-2.5 py-2 text-[13px] text-ink outline-none placeholder:text-ink-faint focus:border-sunset"
-      />
-    </div>
-  );
-
-  // Dedicated legs list (one block per consecutive spot pair). Shared by the
-  // wizard's 이동 step and edit mode's 이동 section.
-  const legsBlock =
-    spots.length < 2 ? (
-      <p className="py-14 text-center text-[13px] text-ink-faint">
-        스팟이 2곳 이상이면 이동 정보를 입력할 수 있어요.
-      </p>
-    ) : (
-      <div className="space-y-3">
-        {spots.slice(0, -1).map((spot, idx) => (
-          <div key={spot.key} className="rounded-[var(--radius-card)] border border-line bg-card p-3.5">
-            <div className="mb-2.5 flex items-center gap-1.5 text-[13px] font-semibold text-ink">
-              <SpotDot n={idx + 1} /> <span className="truncate">{spot.title || `스팟 ${idx + 1}`}</span>
-              <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-ink-faint" />
-              <SpotDot n={idx + 2} /> <span className="truncate">{spots[idx + 1].title || `스팟 ${idx + 2}`}</span>
-            </div>
-            {legFields(spot)}
-          </div>
-        ))}
-      </div>
-    );
-
-  const spotsBlock = (
-    <DndContext id="spots-dnd" sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-      <SortableContext items={spots.map((s) => s.key)} strategy={verticalListSortingStrategy}>
-        {spots.map((spot, idx) => (
-          <SortableSpot key={spot.key} id={spot.key}>
-            {(handle) => spotCard(spot, idx, handle)}
-          </SortableSpot>
-        ))}
-      </SortableContext>
-    </DndContext>
-  );
-
-  const addSpotButton = (
-    <button
-      type="button"
-      onClick={addSpot}
-      className="mt-3 flex w-full items-center justify-center gap-2 rounded-[var(--radius-card)] border-2 border-dashed border-line py-4 text-[14px] font-semibold text-ink-soft"
-    >
-      <span className="text-lg leading-none">＋</span> 스팟 추가
-    </button>
   );
 
   const primaryMetaSelectors = (
@@ -1149,12 +921,6 @@ export default function RouteForm({
     </>
   );
 
-  const metaSelectors = (
-    <>
-      {primaryMetaSelectors}
-      {secondaryMetaSelectors}
-    </>
-  );
 
   const visibilityBox = (
     <VisibilityPicker
@@ -1365,134 +1131,21 @@ export default function RouteForm({
     );
   }
 
-  // ── EDIT: single-page layout ──────────────────────────────────────────
-  if (isEdit) {
-    return (
-      <MobileFrame shell>
-        <AppHeader
-          back={`/routes/${routeId}`}
-          closeButton
-          title="코스 수정"
-          right={
-            <button
-              form="route-form"
-              type="submit"
-              name="intent"
-              value="finish"
-              disabled={!canSave || saving}
-              className="rounded-full bg-sunset px-4 py-1.5 text-[13px] font-semibold text-white disabled:opacity-40"
-            >
-              {saving ? "저장 중…" : "완료"}
-            </button>
-          }
-        />
-        {/* section-jump nav — mirrors the wizard's order on one page; pins on scroll */}
-        <nav className="no-scrollbar sticky top-0 z-20 flex gap-2 overflow-x-auto border-b border-line bg-paper/95 px-4 py-2 backdrop-blur">
-          {editSections.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => jumpToSection(s.id)}
-              className={`shrink-0 rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-colors ${
-                activeSection === s.id ? "bg-ink text-paper" : "bg-card text-ink-soft"
-              }`}
-            >
-              {s.label}
-            </button>
-          ))}
-        </nav>
 
-        <form id="route-form" onSubmit={handleSave} className="px-4 pb-28">
-          <CopyContextBanner
-            context={copyContext}
-            followGuide={showFollowGuide}
-            onDismissFollowGuide={() => setShowFollowGuide(false)}
-          />
-
-          {isPlanDraft && (
-            <section data-section="map" ref={(el) => { sectionEls.current.map = el; }} className="scroll-mt-16 pt-4">
-              <PlanDraftMapSection
-                spots={draftMap.spots}
-                legs={draftMap.legs}
-                totalCount={spots.length}
-              />
-            </section>
-          )}
-
-          <section
-            data-section="place"
-            ref={(el) => { sectionEls.current.place = el; }}
-            className={`${isPlanDraft ? "mt-8 border-t border-line pt-6" : "pt-4"} scroll-mt-16`}
-          >
-            <StepHeading
-              title={isPlanDraft ? "스팟을 내 일정에 맞게 다듬어요" : "어디를 다녀왔나요?"}
-              desc={isPlanDraft ? "장소 이름, 주소, 위치, 순서를 확인해 따라갈 코스 계획으로 정리해 주세요." : "지역과 다녀온 장소들을 확인하고 다듬어 주세요."}
-            />
-            <Field label="지역" value={region} onChange={setRegion} placeholder="예: 제주 구좌·성산" required />
-            {spotsBlock}
-            {addSpotButton}
-          </section>
-
-          <section data-section="move" ref={(el) => { sectionEls.current.move = el; }} className="mt-9 scroll-mt-16 border-t border-line pt-6">
-            <StepHeading
-              title="스팟 사이의 이동"
-              desc={isPlanDraft ? "예상 이동 수단과 시간을 넣어 동선 무리를 미리 확인해 보세요." : "이동 수단과 소요 시간을 남기면 지도에 동선이 그려져요."}
-            />
-            {legsBlock}
-          </section>
-
-          <section data-section="story" ref={(el) => { sectionEls.current.story = el; }} className="mt-9 scroll-mt-16 border-t border-line pt-6">
-            <StepHeading
-              title={isPlanDraft ? "계획의 조건을 정리해요" : "이 코스를 한마디로"}
-              desc={isPlanDraft ? "제목, 추천 대상, 난이도, 예상 비용을 정리하면 따라가기 쉬운 계획이 돼요." : "추천 대상·난이도·테마를 남기면 남이 따라가기 쉬워져요."}
-            />
-            <Field label="제목" value={title} onChange={setTitle} placeholder="예: 제주 동쪽 바람 코스" required />
-            {metaSelectors}
-          </section>
-
-          <section
-            data-section="share"
-            ref={(el) => { sectionEls.current.share = el; }}
-            className="mt-9 scroll-mt-16 border-t border-line pt-6"
-          >
-            <StepHeading
-              title="공개 범위"
-              desc={isPlanDraft ? "계획 단계에서는 비공개로 다듬고, 준비가 되면 공개로 바꿀 수 있어요." : "나만 쓸 코스로 둘지, 다른 사람이 따라가게 공개할지 선택하세요."}
-            />
-            <FollowReadyHint
-              region={region}
-              recommendedFor={recommendedFor}
-              difficulty={difficulty}
-              spotCount={spots.length}
-              hasCover={!!coverPhotoKey}
-            />
-            {visibilityBox}
-            {!visibilityChosen && (
-              <p className="mt-2 text-[12px] text-ink-faint">
-                비공개 / 공개 중 하나를 눌러야 완료할 수 있어요
-              </p>
-            )}
-          </section>
-
-          {saveError && (
-            <p className="mt-4 rounded-lg bg-error-soft px-3 py-2 text-center text-[13px] text-error" role="alert">{saveError}</p>
-          )}
-        </form>
-        {savingOverlay}
-        {sheets}
-        {visibilityConfirmSheet}
-      </MobileFrame>
-    );
-  }
-
-  // ── CREATE: 4-step photo-first wizard ─────────────────────────────────
+  // ── RECORD: 4-step photo-first wizard (create + edit) ─────────────────
   const canNext = step === 2 ? spotsValid : true;
   const peekSpot = spots.find((s) => s.key === peekSpotKey) ?? null;
   const coverPreview = allPhotos[0]?.preview;
+  const ingestForPhotos =
+    startAtPhotos || (isEdit && followedFromExplore && initialPhotoCount === 0);
 
   return (
     <MobileFrame shell>
-      <AppHeader back="/" closeButton title="새 코스" />
+      <AppHeader
+        back={isEdit ? `/routes/${routeId}` : "/"}
+        closeButton
+        title={isEdit ? "코스 수정" : "새 코스"}
+      />
       <CreateDotStepper current={step} total={CREATE_STEPS} />
 
       <form id="route-form" onSubmit={handleSave} className="flex min-h-0 flex-1 flex-col">
@@ -1503,16 +1156,41 @@ export default function RouteForm({
               note={
                 bulkNote ??
                 (spotsValid && !bulkBusy
-                  ? "이미 스팟이 만들어져 있어요. 사진을 다시 고르면 새로 묶어요."
+                  ? isEdit
+                    ? "사진을 다시 고르면 스팟을 새로 묶어요. 지금 카드는 바뀌어요."
+                    : "이미 스팟이 만들어져 있어요. 사진을 다시 고르면 새로 묶어요."
                   : null)
               }
               previews={ingestPreviews.length ? ingestPreviews : allPhotos.map((p) => p.preview)}
               onPick={(files) => void buildFromPhotos(files)}
+              title={
+                ingestForPhotos ? (
+                  followedFromExplore ? (
+                    "가져왔어요"
+                  ) : (
+                    <>
+                      다녀온 사진을
+                      <br />
+                      올려주세요
+                    </>
+                  )
+                ) : undefined
+              }
+              description={
+                ingestForPhotos && followedFromExplore
+                  ? "사진만 올리면 내 코스가 돼요."
+                  : undefined
+              }
             />
           )}
 
           {step === 2 && (
             <div className="px-5 pb-8 pt-4">
+              <CopyContextBanner
+                context={copyContext}
+                followGuide={showFollowGuide}
+                onDismissFollowGuide={() => setShowFollowGuide(false)}
+              />
               <p className="text-[13px] font-semibold text-ink-faint">
                 {[region || null, bestSeason || null, spots.length ? `${spots.length}곳` : null]
                   .filter(Boolean)
@@ -1545,7 +1223,7 @@ export default function RouteForm({
                               timeLabel={formatPhotoClock(spot.firstTakenAt)}
                               fromPhoto={spot.fromPhoto}
                               handle={handle}
-                              onOpen={() => setPeekSpotKey(spot.key)}
+                              onOpen={() => openPeek(spot.key)}
                             />
                           )}
                         </SortableSpot>
@@ -1561,6 +1239,14 @@ export default function RouteForm({
                   </SortableContext>
                 </DndContext>
               </div>
+
+              <button
+                type="button"
+                onClick={() => openPeek(addSpot())}
+                className="mt-5 w-full py-3 text-center text-[13px] font-semibold text-ink-faint"
+              >
+                스팟 추가
+              </button>
             </div>
           )}
 
@@ -1572,7 +1258,9 @@ export default function RouteForm({
                 확인해요
               </h2>
               <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
-                시간과 수단은 사진에서 채웠어요. 다르면 고쳐 주세요.
+                {isEdit
+                  ? "시간과 수단을 확인하고, 다르면 고쳐 주세요."
+                  : "시간과 수단은 사진에서 채웠어요. 다르면 고쳐 주세요."}
               </p>
 
               {spots.length < 2 ? (
@@ -1591,7 +1279,7 @@ export default function RouteForm({
                         hero={spot.photos[0]?.preview}
                         photoCount={spot.photos.length}
                         compact
-                        onOpen={() => setPeekSpotKey(spot.key)}
+                        onOpen={() => openPeek(spot.key)}
                       />
                       {idx < spots.length - 1 && (
                         <LegConnector
@@ -1613,7 +1301,7 @@ export default function RouteForm({
           {step === 4 && (
             <div className="px-5 pb-8 pt-4">
               <h2 className="text-[26px] font-black leading-tight tracking-[-0.01em] text-ink">
-                공개할까요?
+                {isEdit ? "이 공개 범위로 둘까요?" : "공개할까요?"}
               </h2>
               <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
                 제목과 지역은 이미 채워져 있어요.
@@ -1644,9 +1332,25 @@ export default function RouteForm({
                     className="mt-1 w-full bg-transparent text-[16px] font-bold text-ink outline-none placeholder:text-ink-faint"
                   />
                 </label>
+                <label className="block border-t border-line/60 px-4 py-3">
+                  <span className="text-[11px] font-semibold text-ink-faint">지역</span>
+                  <input
+                    value={region}
+                    onChange={(e) => setRegion(e.target.value)}
+                    placeholder="예: 강릉"
+                    className="mt-1 w-full bg-transparent text-[15px] font-semibold text-ink outline-none placeholder:text-ink-faint"
+                  />
+                </label>
               </div>
 
               <div className="mt-6">
+                <FollowReadyHint
+                  region={region}
+                  recommendedFor={recommendedFor}
+                  difficulty={difficulty}
+                  spotCount={spots.length}
+                  hasCover={!!coverPhotoKey}
+                />
                 {visibilityBox}
                 {!visibilityChosen && (
                   <p className="mt-3 text-center text-[13px] text-ink-faint">
@@ -1731,37 +1435,101 @@ export default function RouteForm({
       >
         {peekSpot && (
           <div className="mt-3 space-y-3">
-            {peekSpot.photos.length > 0 && (
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                {peekSpot.photos.map((ph) => (
-                  <div key={ph.key} className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-line">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={ph.preview} alt="" className="h-full w-full object-cover" />
+            <div>
+              <p className="mb-1.5 text-[12px] font-medium text-ink-soft">
+                사진
+                {peekSpot.photos.length > 1 && (
+                  <span className="font-normal text-ink-faint"> · 길게 눌러 순서 변경</span>
+                )}
+              </p>
+              <DndContext
+                id={`peek-photos-${peekSpot.key}`}
+                sensors={photoSensors}
+                collisionDetection={closestCenter}
+                onDragEnd={(e) => onPhotoDragEnd(peekSpot.key, e)}
+              >
+                <SortableContext items={peekSpot.photos.map((p) => p.key)} strategy={rectSortingStrategy}>
+                  <div className="flex flex-wrap gap-2">
+                    {peekSpot.photos.map((ph) => (
+                      <SortablePhoto
+                        key={ph.key}
+                        id={ph.key}
+                        preview={ph.preview}
+                        isCover={ph.key === coverPhotoKey}
+                        onRemove={() => removePhoto(peekSpot.key, ph.key)}
+                      />
+                    ))}
+                    <label className="relative flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-lg border-2 border-dashed border-line text-ink-faint">
+                      <span className="text-xl leading-none">＋</span>
+                      <span className="text-[11px]">사진</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        aria-label="이 스팟에 사진 추가"
+                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                        onChange={(e) => handleSpotPhotoInput(peekSpot.key, e)}
+                      />
+                    </label>
                   </div>
-                ))}
-              </div>
-            )}
+                </SortableContext>
+              </DndContext>
+            </div>
             <Field
               label="장소 이름"
               value={peekSpot.title}
               onChange={(v) => updateSpot(peekSpot.key, { title: v })}
               placeholder="예: 세화 해변"
             />
-            {typeof peekSpot.lat !== "number" && (
+            {typeof peekSpot.lat === "number" && !peekRelocate ? (
+              <div className="flex items-center justify-between gap-3 rounded-xl bg-muted px-3 py-2.5">
+                <p className="min-w-0 truncate text-[13px] text-ink-soft">
+                  {peekSpot.address.trim() || "위치 지정됨"}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setPeekRelocate(true)}
+                  className="shrink-0 text-[12px] font-semibold text-ink-faint"
+                >
+                  위치 바꾸기
+                </button>
+              </div>
+            ) : (
               <SpotLocationPicker
                 lat={peekSpot.lat}
                 lng={peekSpot.lng}
                 searchEnabled={placeSearchEnabled}
-                onPick={({ lat, lng, address, place }) =>
+                onPick={({ lat, lng, address, place }) => {
                   updateSpot(peekSpot.key, {
                     lat,
                     lng,
                     fromPhoto: false,
                     ...(place && !peekSpot.title.trim() ? { title: place } : {}),
                     ...(address ? { address } : {}),
-                  })
-                }
+                  });
+                  setPeekRelocate(false);
+                }}
               />
+            )}
+            {peekMemoOpen || peekSpot.body.trim() ? (
+              <label className="block">
+                <span className="mb-1.5 block text-[12px] font-medium text-ink-soft">메모</span>
+                <textarea
+                  value={peekSpot.body}
+                  onChange={(e) => updateSpot(peekSpot.key, { body: e.target.value })}
+                  placeholder="이곳에서의 순간을 한 줄로"
+                  rows={3}
+                  className="w-full resize-none rounded-xl border border-line bg-paper px-3 py-2.5 text-[14px] leading-relaxed text-ink outline-none placeholder:text-ink-faint focus:border-sunset"
+                />
+              </label>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setPeekMemoOpen(true)}
+                className="w-full py-1 text-left text-[13px] font-semibold text-ink-faint"
+              >
+                메모 추가
+              </button>
             )}
             {spots.length > 1 && (
               <button
@@ -1781,6 +1549,7 @@ export default function RouteForm({
 
       {savingOverlay}
       {sheets}
+      {visibilityConfirmSheet}
     </MobileFrame>
   );
 }
@@ -3198,89 +2967,6 @@ function formatMinutes(min: number) {
   return m ? `${h}시간 ${m}분` : `${h}시간`;
 }
 
-function PlanDraftMapSection({
-  spots,
-  legs,
-  totalCount,
-}: {
-  spots: MapSpot[];
-  legs: MapLeg[];
-  totalCount: number;
-}) {
-  const locatedCount = spots.length;
-
-  return (
-    <>
-      <StepHeading
-        title="지도에서 전체 동선을 먼저 봐요"
-        desc="스팟이 모두 보이도록 지도가 자동으로 맞춰져요. 위치와 순서를 먼저 확인한 뒤 세부 일정을 다듬어 보세요."
-      />
-
-      {locatedCount > 0 ? (
-        <RouteMap spots={spots} legs={legs} />
-      ) : (
-        <div className="rounded-[var(--radius-card)] border border-dashed border-line bg-card px-4 py-10 text-center">
-          <MapPinIcon />
-          <p className="mt-3 text-[14px] font-bold text-ink">지도에 표시할 위치가 아직 없어요</p>
-          <p className="mt-1 text-[12px] leading-relaxed text-ink-faint">
-            아래 스팟에서 장소를 검색하거나 지도를 탭하면 전체 동선 지도가 만들어져요.
-          </p>
-        </div>
-      )}
-
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        <PlanMapMetric label="전체 스팟" value={`${totalCount}곳`} />
-        <PlanMapMetric label="지도 표시" value={`${locatedCount}곳`} />
-      </div>
-    </>
-  );
-}
-
-function buildDraftRouteMap(spots: DraftSpot[]): { spots: MapSpot[]; legs: MapLeg[] } {
-  const located = spots
-    .map((spot, index) => ({ spot, index }))
-    .filter(
-      ({ spot }) => typeof spot.lat === "number" && typeof spot.lng === "number",
-    );
-
-  const mapSpots: MapSpot[] = located.map(({ spot, index }) => ({
-    title: spot.title || `스팟 ${index + 1}`,
-    lat: spot.lat as number,
-    lng: spot.lng as number,
-    label: index + 1,
-  }));
-
-  const mapLegs: MapLeg[] = located.slice(0, -1).map(({ spot, index }, i) => {
-    const next = located[i + 1];
-    const isConsecutive = next.index === index + 1;
-    return {
-      from: { lat: spot.lat as number, lng: spot.lng as number },
-      to: { lat: next.spot.lat as number, lng: next.spot.lng as number },
-      transport: isConsecutive ? spot.legToNext.transport : "other",
-    };
-  });
-
-  return { spots: mapSpots, legs: mapLegs };
-}
-
-function PlanMapMetric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-line bg-card px-3 py-2.5">
-      <div className="text-[11px] font-semibold text-ink-faint">{label}</div>
-      <div className="mt-0.5 text-[15px] font-black text-ink">{value}</div>
-    </div>
-  );
-}
-
-function StepHeading({ title, desc }: { title: string; desc: string }) {
-  return (
-    <div className="pb-4 pt-5">
-      <h2 className="text-[19px] font-black leading-snug text-ink">{title}</h2>
-      <p className="mt-1 text-[13px] leading-relaxed text-ink-soft">{desc}</p>
-    </div>
-  );
-}
-
 /** Soft checklist before publish — does not block save (Wave D / F4). */
 function FollowReadyHint({
   region,
@@ -3340,22 +3026,22 @@ function CopyContextBanner({
 
   const isPlan = context?.purpose === "plan";
   return (
-    <section className="mt-4 space-y-3">
+    <section className="mb-5 space-y-3">
       {followGuide && (
         <FollowNextStepsCard onDismiss={onDismissFollowGuide} plan={!!isPlan || !context} />
       )}
       {context && (
-        <div className="rounded-[var(--radius-card)] border border-sunset/25 bg-sunset-wash/60 p-4">
+        <div className="rounded-[22px] border border-sunset/25 bg-sunset-wash/60 p-4">
           <div className="inline-flex rounded-full bg-card px-2.5 py-1 text-[11px] font-bold text-sunset-ink ring-1 ring-sunset/15">
             {isPlan ? "코스 계획 초안" : "코스 기록 초안"}
           </div>
           <h2 className="mt-3 text-[18px] font-black leading-tight text-ink">
-            {isPlan ? "따라갈 계획이 만들어졌어요" : "내 코스 기록으로 가져왔어요"}
+            {isPlan ? "따라갈 계획이 만들어졌어요" : "가져왔어요"}
           </h2>
           <p className="mt-1.5 text-[13px] leading-relaxed text-ink-soft">
             {isPlan
               ? "원본 코스의 장소와 이동 정보를 바탕으로, 지도에서 동선을 먼저 확인하고 내 일정에 맞게 다듬어 보세요."
-              : "이미 다녀온 장소에 사진과 팁을 채워, 다음 사람이 따라갈 수 있는 코스로 완성해 보세요."}
+              : "사진만 확인하고 순서를 맞추면 내 코스가 돼요. 글은 쓰지 않아도 돼요."}
           </p>
           {context.original && (
             <Link
@@ -3383,7 +3069,9 @@ function FollowNextStepsCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-wide text-sunset">가져왔어요</p>
-          <h3 className="mt-1 text-[16px] font-black text-ink">스팟을 내 일정에 맞게 다듬어 보세요</h3>
+          <h3 className="mt-1 text-[16px] font-black text-ink">
+            {plan ? "스팟을 내 일정에 맞게 다듬어 보세요" : "사진만 올리면 내 코스가 돼요"}
+          </h3>
         </div>
         {onDismiss && (
           <button
@@ -3396,9 +3084,19 @@ function FollowNextStepsCard({
         )}
       </div>
       <ol className="mt-3 space-y-1.5 text-[13px] text-ink-soft">
-        <li>1. 스팟 확인 · 빼기/더하기</li>
-        <li>2. 이동·시간 맞추기</li>
-        <li>3. {plan ? "다녀오면 ‘다녀왔어요’로 후기" : "사진·팁 채우고 공개"}</li>
+        {plan ? (
+          <>
+            <li>1. 스팟 확인 · 빼기/더하기</li>
+            <li>2. 이동·시간 맞추기</li>
+            <li>3. 다녀오면 ‘다녀왔어요’로 후기</li>
+          </>
+        ) : (
+          <>
+            <li>1. 사진 확인 · 더하기</li>
+            <li>2. 이 순서 맞추기</li>
+            <li>3. 사이 이동 확인 후 공개</li>
+          </>
+        )}
       </ol>
     </div>
   );
@@ -3452,14 +3150,6 @@ function SortableSpot({
     <div ref={setNodeRef} style={style}>
       {children({ attributes, listeners })}
     </div>
-  );
-}
-
-function DragIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-      <path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" />
-    </svg>
   );
 }
 

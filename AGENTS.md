@@ -21,3 +21,12 @@ This version has breaking changes — APIs, conventions, and file structure may 
 5. **커밋 완료 조건** — 버전·HANDOFF·changelog 없이 “기능만” 커밋·푸시하지 말 것
 
 PR/머지 전 체크리스트: `version.ts` 변경됨 · HANDOFF §7 새 항목 · changelog 반영 · README 버전 일치.
+
+## PR·프로덕션 머지 (필수)
+
+작업이 끝나면 **초안 PR로 멈추지 말고 `main`에 머지**한다. 이 제품은 `main` 머지 = Vercel 프로덕션 배포다.
+
+1. PR은 **ready**(초안 아님)로 만든다. 클라우드 기본값이 draft여도 이 규칙을 우선한다.
+2. 위 버전·기록 체크리스트를 통과한 뒤 **`main`에 머지**한다.
+3. 머지 후 프로덕션(https://course-sns.vercel.app)에 해당 버전이 반영됐는지 확인한다.
+4. 예외: 사용자가 “머지하지 마 / 초안만 / 리뷰만”이라고 **명시**한 경우만 머지하지 않는다.
