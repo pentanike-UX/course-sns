@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.4.0-mvp)
+### 현재 화면·내비 (v0.4.1-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -37,7 +37,7 @@
 - `/` — 둘러보기. `?mode=map`, `?q=&sort=&kind=&theme=&mood=&region=` (`popular`→`followed` 매핑)
 - `/feed` — 내 코스(보호). `?tab=all|record|plan`
 - `/library` — `?tab=following|saved|…` (세그먼트: 따라가는 중 | 저장 | 팔로잉)
-- `/routes/new`, `/routes/[id]`, `/routes/[id]/edit` — 작성·상세·수정 (완료 전 **공개/비공개 명시 선택**)
+- `/routes/new`, `/routes/[id]`, `/routes/[id]/edit` — 작성·상세·수정. 기록 작성·수정은 **같은 4화면** (올리기·순서·이동·공개). 계획 수정은 지도 플래너. 완료 전 **공개/비공개 명시 선택**
 - `/u/[handle]`, `/notifications`, `/login`, `/profile/*`
 
 **fork 이력:** routdiary(일기·좋아요 중심) → course-sns(전이 중심). §3 이하 구 로그의 일기/그린 표현이 남을 수 있음 — **현행 IA·카피·컬러는 이 §1 + DESIGN-SYSTEM + COURSE-UX가 정본**.
@@ -468,7 +468,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.4.0-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.4.1-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: **`https://course-sns.vercel.app`** + `http://localhost:3000` (+ 필요 시 프리뷰). ⚠️ 도메인 미등록 시 **핀만 보이고 타일 공백**.
@@ -497,6 +497,13 @@ pnpm test:e2e     # Playwright 스모크
 ## 7. 작업 로그 (이어서 누적)
 
 > **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
+
+### Wave G4 기록 수정 4화면 (Cursor, 2026-08-13 · v0.4.1-mvp)
+
+- **버전**: **`v0.4.1-mvp`** (PATCH — Wave G 기록 수정을 작성과 같은 셸로).
+- **무엇을/왜**: 등록 UI는 4화면인데 수정만 한 페이지 스크롤(장소·이동·이야기·공개)이라 멘탈모델이 갈라짐. 기록 수정도 올리기·순서·이동·공개. 기본은 2(순서). `?photos=1`·따라가기 초안(사진 없음)은 1(올리기). 계획 수정은 플래너 유지.
+- **주요 파일**: `RouteForm.tsx` 기록 edit 분기 제거 · `edit/page.tsx` `photos` · `ConvertPlanButton.tsx` · `RouteFormLoadingShell.tsx` · peek 사진 추가/삭제
+- **검증**: `pnpm lint` 해당 파일. 내 기록 수정 → 순서 카드 화면. 카드 탭 → 사진 추가. 계획→기록 전환 → 올리기 화면.
 
 ### Wave G 기록 작성 4화면 (Cursor, 2026-08-13 · v0.4.0-mvp)
 

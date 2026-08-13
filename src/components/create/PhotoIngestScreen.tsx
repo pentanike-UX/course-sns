@@ -1,17 +1,21 @@
 "use client";
 
-import { type ChangeEvent } from "react";
+import { type ChangeEvent, type ReactNode } from "react";
 
 export default function PhotoIngestScreen({
   busy,
   note,
   previews,
   onPick,
+  title,
+  description,
 }: {
   busy: boolean;
   note: string | null;
   previews: string[];
   onPick: (files: FileList | null) => void;
+  title?: ReactNode;
+  description?: ReactNode;
 }) {
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     onPick(e.currentTarget.files);
@@ -52,14 +56,22 @@ export default function PhotoIngestScreen({
           <CameraGlyph />
         </span>
         <h2 className="mt-8 text-center text-[26px] font-black leading-tight tracking-[-0.01em] text-ink">
-          그날의 사진을
-          <br />
-          올려주세요
+          {title ?? (
+            <>
+              그날의 사진을
+              <br />
+              올려주세요
+            </>
+          )}
         </h2>
         <p className="mt-3 max-w-[240px] text-center text-[14px] leading-relaxed text-ink-soft">
-          같은 위치는 한 곳으로 묶어요.
-          <br />
-          글은 나중에 안 써도 돼요.
+          {description ?? (
+            <>
+              같은 위치는 한 곳으로 묶어요.
+              <br />
+              글은 나중에 안 써도 돼요.
+            </>
+          )}
         </p>
         <span className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-sunset px-8 text-[15px] font-bold text-white shadow-[var(--shadow-brand)]">
           사진 선택하기

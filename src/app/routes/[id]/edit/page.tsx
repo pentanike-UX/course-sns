@@ -9,7 +9,7 @@ export default async function EditRoutePage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ followed?: string; draft?: string }>;
+  searchParams: Promise<{ followed?: string; draft?: string; photos?: string }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
@@ -68,6 +68,7 @@ export default async function EditRoutePage({
       placeSearchEnabled={isPlaceSearchEnabled()}
       followedFromExplore={sp.followed === "1"}
       draftSaved={sp.draft === "1"}
+      startAtPhotos={sp.photos === "1"}
     />
   );
 }

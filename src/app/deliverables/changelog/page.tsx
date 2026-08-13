@@ -13,6 +13,15 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.4.1-mvp — Photo-first 기록 수정</H2>
+      <Ul>
+        <li>기록 수정도 작성과 같은 4화면: 올리기 → 순서 → 이동 → 공개. 섹션점프 스크롤 폼 제거</li>
+        <li>
+          기본 진입은 순서 화면. 계획→기록(<Code>?photos=1</Code>)·사진 없는 따라가기 초안은 올리기부터
+        </li>
+        <li>스팟 카드 탭에서 사진 추가·삭제·위치. 계획 수정은 지도 플래너 유지</li>
+      </Ul>
+
       <H2>v0.4.0-mvp — Photo-first 기록 작성</H2>
       <Ul>
         <li>기록 생성 4화면: 올리기 → 순서(스팟 카드) → 이동 → 공개. 제목·본문 없이 등록 가능</li>

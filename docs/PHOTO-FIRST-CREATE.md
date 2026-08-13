@@ -1,6 +1,6 @@
 # Photo-first 코스 등록 — UX·구현 설계 (Wave G)
 
-> **상태:** G0 설계 ✅ · G1–G3 기록 생성 4화면 구현 (`v0.4.0-mvp`)  
+> **상태:** G0 설계 ✅ · G1–G4 기록 작성·수정 4화면 (`v0.4.1-mvp`)  
 > **주인공:** P3 메이커 — “사진은 이미 코스다. 글은 선택이다.”  
 > **관련:** [`COURSE-UX-DESIGN.md`](COURSE-UX-DESIGN.md) §2.6 · [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md) P3-E · [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md)  
 > **범위:** 기록(record) 작성·수정·계획→기록 전환. 계획(plan) 지도 플래너는 **유지**하되 같은 카드/레그 언어로 맞춤.
@@ -97,7 +97,7 @@
 |------|------|----------|------------|
 | 기록 생성 `/routes/new` | 5스텝 위자드 | 사진 → 코스 | **전면 재배치** |
 | 계획 생성 `?type=plan` | `PlanRoutePlanner` 지도 우선 | 아직 안 감, 핀을 꽂음 | 플래너 유지. 카드/레그 카피만 정렬 |
-| 기록 수정 `/edit` | 한 페이지 스크롤 (장소·이동·이야기·공개) | 다듬기 | **같은 4화면 위자드**로 맞춤 (섹션점프 폐기) |
+| 기록 수정 `/edit` | 4화면 위자드 (기본 2 순서) | 다듬기 | **구현됨 (G4)** |
 | 계획 수정 (copy purpose=plan) | 지도 플래너 | 동선 다듬기 | 플래너 유지 |
 | 따라가기 랜딩 `?followed=1` | 위 수정 분기 | 가져온 초안 | 기록 복제 → 2 순서 화면부터. 계획 복제 → 플래너 |
 | 계획→기록 `ConvertPlanButton` | 상세에 남음 | 이제 다녀옴 | 전환 후 `/edit?photos=1`로 **올리기**부터 |
@@ -392,9 +392,9 @@ EXIF 간격이 음수이거나 12시간을 넘으면 쓰레기값으로 보고 �
 | **G0** | 설계 정본 | 이 문서 + COURSE-UX 연결 | 진입점 표가 리뷰됨 |
 | **G1** | 엔진 추출 + 자동 제목/레그 | `lib/photo-cluster.ts`, `lib/legs.ts`, `lib/course-title.ts` | 유닛 없이라도 순수 함수로 분리. RouteForm이 import만 |
 | **G2** | SpotTimelineCard + LegConnector | `components/create/` | 스토리 없이 위자드 2·3에 장착 가능 |
-| **G3** | 기록 생성 4화면 위자드 | `RouteForm` create 분기 교체, LoadingShell, BottomNav 카피 | 글 0회로 저장 가능. 공개 게이트 유지 |
-| **G4** | 기록 수정 = 같은 4화면 | edit 스크롤/섹션점프 제거 | E1–E5가 동일 셸 |
-| **G5** | 따라가기·계획전환 랜딩 | Copy 카피, ConvertPlan `?photos=1`, followed 가이드 | 복제 후 “사진만”이 첫 과제 |
+| **G3** | 기록 생성 4화면 위자드 | `RouteForm` create 분기 교체, LoadingShell, BottomNav 카피 | ✅ 글 0회로 저장 가능. 공개 게이트 유지 |
+| **G4** | 기록 수정 = 같은 4화면 | edit 스크롤/섹션점프 제거 | ✅ E1–E5 동일 셸 (`v0.4.1`) |
+| **G5** | 따라가기·계획전환 랜딩 | Copy 카피, ConvertPlan `?photos=1`, followed 가이드 | ✅ 복제 후 사진/순서가 첫 과제 |
 | **G6** | 계획 플래너 카피 패리티 | PlanRoutePlanner 레그 UI를 LegConnector에 가깝게 | 기록/계획 언어 일치. 지도 우선은 유지 |
 
 G3가 사용자에게 보이는 핵심. G1 없이 G3 하지 말 것 (로직이 또 폼에 갇힘).
