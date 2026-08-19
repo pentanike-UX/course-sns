@@ -13,6 +13,14 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.4.9-mvp — 경로 다음 구현 필수 · 해외 구글</H2>
+      <Ul>
+        <li>
+          개발 가이드 「가능한 방향」을 필수 읽기로 강조. 국내는 네이버+TMAP/ODsay(A–E), 해외는
+          구글 지도로 스팟 사이 모든 이동 경로(도보·자전거·자동차·버스·지하철·기차)
+        </li>
+      </Ul>
+
       <H2>v0.4.8-mvp — 스팟 이동 경로 조사</H2>
       <Ul>
         <li>

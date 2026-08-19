@@ -21,7 +21,8 @@ export default function ApiPage() {
       />
       <Note>
         게스트 UI는 서버 컴포넌트·data.ts로 공개 피드를 읽고, API는 주로 로그인 세션용입니다. 도보
-        선이 차도로 보이는 이유·대안은 <Code>docs/MAP-ROUTING.md</Code>.
+        선이 차도로 보이는 이유·다음 구현(국내 A–E, 해외 구글 전 수단)은{" "}
+        <Code>docs/MAP-ROUTING.md</Code> §0 필수.
       </Note>
 
       <H2>Server Actions</H2>

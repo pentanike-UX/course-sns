@@ -115,7 +115,7 @@ export default function PlanningPage() {
           ["쓰기·전이", "따라가기·완주·작성·팔로우는 로그인 필수 (AuthGate)"],
           ["따라가기 복제", "장소·동선 중심 — 사진·본문 복사는 제한될 수 있음"],
           ["좋아요", "유지하되 북스타 대용 금지 — 위계만 하향"],
-          ["언어·지도", "한국어 UI, 네이버 지도 기준"],
+          ["언어·지도", "UI는 한국어 기본. 국내는 네이버 지도, 해외는 구글 지도로 스팟 사이 전 수단 경로. 개발 가이드 필수"],
         ]}
       />
 
@@ -137,6 +137,7 @@ export default function PlanningPage() {
         <li>
           UX 정본 → 저장소 <Code>docs/COURSE-UX-DESIGN.md</Code> ·{" "}
           <Code>docs/PHOTO-FIRST-CREATE.md</Code> ·{" "}
+          <Code>docs/MAP-ROUTING.md</Code>(경로 필수) ·{" "}
           <Code>docs/UX-PERSONA-PAINPOINTS.md</Code>
         </li>
         <li>
