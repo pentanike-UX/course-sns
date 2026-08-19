@@ -14,7 +14,7 @@ export default function ArchitecturePage() {
         rows={[
           ["앱", "Next.js 16 (App Router) · React 19 · TypeScript · Tailwind 4 · pnpm"],
           ["백엔드", "Supabase (Postgres · Auth · Storage · RLS)"],
-          ["지도", "네이버 Maps JS v3 타일 · Directions는 자동차만 · (선택) TMAP 보행"],
+          ["지도", "국내: 네이버 타일+경로 API. 해외: 구글 타일+전 수단 경로. MAP-ROUTING.md 필수"],
           ["배포", "Vercel Production — course-sns.vercel.app"],
           ["품질", "ESLint · Playwright 스모크 (읽기 전용)"],
         ]}
@@ -68,8 +68,8 @@ export default function ArchitecturePage() {
 
       <Note>
         함정: PostgREST FK 힌트 필수(spots/legs 임베드), <Code>useSearchParams</Code>는 Suspense,
-        build는 lint를 돌리지 않음 → 검증 시 <Code>pnpm lint</Code> 별도. 도보 지도 선은{" "}
-        <Code>docs/MAP-ROUTING.md</Code> — 네이버 Directions는 자동차만, TMAP 키 없으면 차도 폴백.
+        build는 lint를 돌리지 않음 → 검증 시 <Code>pnpm lint</Code> 별도. 지도 경로는{" "}
+        <Code>docs/MAP-ROUTING.md</Code> §0 필수 — 국내 네이버, 해외 구글 전 수단.
       </Note>
     </>
   );

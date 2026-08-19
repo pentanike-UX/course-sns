@@ -5,7 +5,7 @@
 ## 1. 제품 개요
 
 **coursee (course-sns)** — 따라갈 수 있는 **이동 코스**를 발견·복제·완주·구독하는 커뮤니티. 브랜드 마크: `public/icons/`(심볼) · `logo-full`(워드마크).  
-정본 UX: [`COURSE-UX-DESIGN.md`](COURSE-UX-DESIGN.md) · 작성: [`PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md) · 지도 경로: [`MAP-ROUTING.md`](MAP-ROUTING.md) · 토큰: [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) · 페인포인트: [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md).  
+        정본 UX: [`COURSE-UX-DESIGN.md`](COURSE-UX-DESIGN.md) · 작성: [`PHOTO-FIRST-CREATE.md`](PHOTO-FIRST-CREATE.md) · 지도 경로 **§0 필수**: [`MAP-ROUTING.md`](MAP-ROUTING.md) (국내 네이버 · 해외 구글) · 토큰: [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) · 페인포인트: [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md).
 **공식 가이드(웹):** [`/deliverables`](https://course-sns.vercel.app/deliverables) — 기획·브랜드(BI·BX)·화면·아키텍처·DB·API·개발·현황·이력. 브랜드 정본 [`docs/BRAND.md`](BRAND.md).
 
 - 한 **Route**(코드/DB명 유지) = 순서 있는 **Spot** + 스팟 간 **Leg**(수단/시간/주의)
@@ -14,7 +14,7 @@
 - 모바일 우선(~430px). 데스크톱은 `MobileFrame` 2단 셸(좌 브랜드 레일 + 우 폰 UI)
 - **게스트 열람:** `/`·`/routes/[id]`·`/u/[handle]`. 쓰기·따라가기·완주·팔로우 등은 `AuthGate` 시트(전이 가치 카피)
 
-### 현재 화면·내비 (v0.4.8-mvp)
+### 현재 화면·내비 (v0.4.9-mvp)
 
 **하단 탭 3개 + 중앙 FAB** (`BottomNav.tsx`):
 
@@ -468,7 +468,7 @@
 
 ### 배포 (완료)
 - **프로덕션**: https://course-sns.vercel.app (Vercel `pentanike-uxs-projects/course-sns`)
-- **현재 버전**: v0.4.8-mvp (`src/lib/version.ts`)
+- **현재 버전**: v0.4.9-mvp (`src/lib/version.ts`)
 - Vercel Production env (**필수 5**): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_NAVER_MAP_KEY`, `NAVER_MAP_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
 - **권장 추가**: `NAVER_SEARCH_CLIENT_ID/SECRET`(장소 검색), `TMAP_APP_KEY`(보행 실도로 — 없으면 도보=차도, [`MAP-ROUTING.md`](MAP-ROUTING.md)), `NEXT_PUBLIC_SITE_URL`(OG)
 - 네이버 Maps Application Web URL: **`https://course-sns.vercel.app`** + `http://localhost:3000` (+ 필요 시 프리뷰). ⚠️ 도메인 미등록 시 **핀만 보이고 타일 공백**.
@@ -492,17 +492,24 @@ pnpm test:e2e     # Playwright 스모크
 - **PostgREST 임베드 모호성**: `routes`에서 `profiles` 임베드 시 `likes/bookmarks` 정션 때문에 다대다 경로가 추론돼 HTTP 300(PGRST201). → FK 힌트 필수: `author:profiles!routes_author_id_fkey(...)`. `spots`도 legs 정션 영향으로 `spots!spots_route_id_fkey` 사용 중.
 - **Next 16**: `middleware.ts` deprecated → `proxy.ts`(export `proxy`). `useSearchParams`는 `<Suspense>`로 감쌀 것. `next build`는 lint를 실행하지 않으므로 검증 시 `pnpm lint`를 별도로 돌릴 것.
 - **이미지 호스트**: `next.config.ts` `images.remotePatterns`에 **현재** Supabase 프로젝트 호스트(`pbyxnvtgsrwmsvxnynif…`) + `**.supabase.co`가 있어야 함. 포크 원본만 있으면 업로드 사진은 엑박.
-- **도보 지도 = 자동차 도로**: 네이버 Directions는 자동차만. `TMAP_APP_KEY`가 없으면 `getLegPath`가 driving으로 폴백. 조사·다음 안은 [`MAP-ROUTING.md`](MAP-ROUTING.md). 구현하지 않음.
+- **도보 지도 = 자동차 도로**: 네이버 Directions는 자동차만. `TMAP_APP_KEY`가 없으면 driving 폴백. **다음 구현은 [`MAP-ROUTING.md`](MAP-ROUTING.md) §0 필수** — 국내 A–E, 해외는 구글 지도로 모든 스팟 사이 경로(도보·자전거·자동차·대중교통). 구현하지 않음.
 - **기록 패턴 (필수)**: 정본 규칙 = [`AGENTS.md`](../AGENTS.md) 「버전·작업 기록」. **사소한 수정이라도** ① `APP_VERSION` PATCH/MINOR 상승 ② 이 파일 §7에 작업 내용 기록 ③ `/deliverables/changelog` 반영 ④ README 등 버전 표기 동기화. 예외 없음. UI·디자인 규칙은 [`docs/DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md). `.bkit/`는 untracked — 임의 삭제/커밋 금지.
 
 ## 7. 작업 로그 (이어서 누적)
 
 > **필수**: 매 수정마다 버전 상승 + 아래 항목 추가. 규칙 → `AGENTS.md`.
 
-### 2026-08-19 작업 묶음 (v0.4.7 · v0.4.8)
+### 경로 다음 구현 필수 · 해외 구글 (Cursor, 2026-08-19 · v0.4.9-mvp)
+
+- **버전**: **`v0.4.9-mvp`** (PATCH — 문서).
+- **무엇을/왜**: 「가능한 방향」을 필수 읽기로 강조. 제품은 국내 전용이 아님. 국내는 네이버+A–E, **해외는 구글 지도로 모든 스팟 사이 이동 경로**(도보·자전거·자동차·버스·지하철·기차)를 잇는다. 구현 없음.
+- **주요 파일**: `docs/MAP-ROUTING.md` §0 · `/deliverables/development#routing-next` · 시작하기 읽는 순서 · 기획 정책
+- **검증**: `/deliverables/development` 상단 검정 필수 상자. `pnpm lint`.
+
+### 2026-08-19 작업 묶음 (v0.4.7 · v0.4.8 · v0.4.9)
 
 - **시나리오 QA (프로덕션)**: 홈↔상세·지도 탭은 지연·뒤로가기 이상 없음. 등록 위자드 2번에서 헤더 X가 홈으로 나감 → **v0.4.7**에서 수정·머지.
-- **지도 경로 조사 (구현 없음)**: 도보 선이 차도인 이유(네이버 driving만 + TMAP 키 없음)와 수단별 대안 → **v0.4.8** 개발 가이드·`MAP-ROUTING.md`.
+- **지도 경로 조사 (구현 없음)**: 도보=차도 이유 → **v0.4.8**. 다음 구현 필수(국내 A–E · **해외 구글 전 수단**) → **v0.4.9**.
 
 ### 스팟 이동 경로 조사 문서 (Cursor, 2026-08-19 · v0.4.8-mvp)
 

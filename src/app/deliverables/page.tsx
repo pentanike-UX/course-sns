@@ -58,8 +58,8 @@ export default function DeliverablesHomePage() {
           ],
           [
             "프론트·풀스택",
-            "시작하기 → 기획 → 브랜드 → 화면 → 아키텍처 → 개발",
-            "로컬 실행, 화면·기능 수정, 배포 전 검증",
+            "시작하기 → 기획 → 브랜드 → 화면 → 아키텍처 → 개발(경로 필수)",
+            "로컬 실행, 화면·기능 수정. 지도·레그는 개발「가능한 방향」필수",
           ],
           ["백엔드·DB", "DB → API → 개발", "스키마·권한, API 연동, 마이그레이션"],
           [
@@ -140,12 +140,22 @@ export default function DeliverablesHomePage() {
           </Link>
           의 빠른 시작으로 로컬 실행
         </li>
+        <li>
+          지도·스팟 이동 경로를 만지기 전에{" "}
+          <Link
+            href="/deliverables/development#routing-next"
+            className="font-semibold text-sunset-ink hover:underline"
+          >
+            개발 「가능한 방향」(필수)
+          </Link>
+          — 국내 네이버, 해외 구글, 모든 스팟 사이 경로
+        </li>
         <li>기획 + 화면으로 맥락·IA 파악</li>
         <li>아키텍처 + DB + API로 수정 위치 확인</li>
         <li>
           저장소 정본: <Code>docs/HANDOFF.md</Code>, <Code>docs/BRAND.md</Code>,{" "}
           <Code>docs/DESIGN-SYSTEM.md</Code>, <Code>docs/COURSE-UX-DESIGN.md</Code>,{" "}
-          <Code>docs/PHOTO-FIRST-CREATE.md</Code>
+          <Code>docs/PHOTO-FIRST-CREATE.md</Code>, <Code>docs/MAP-ROUTING.md</Code>
         </li>
         <li>
           변경 후 <Code>pnpm lint</Code> → <Code>pnpm build</Code> → <Code>pnpm test:e2e</Code>
@@ -157,7 +167,7 @@ export default function DeliverablesHomePage() {
         headers={["구분", "내용"]}
         rows={[
           ["서비스 형태", "모바일 우선 웹앱 (~430px). PC는 폰 UI + 좌측 브랜드 레일"],
-          ["언어", "한국어 UI"],
+          ["언어", "한국어 UI 기본. 국내는 네이버, 해외는 구글 지도"],
           ["로그인", "이메일·비밀번호, Google OAuth"],
           ["비로그인", "공개 코스·상세·프로필 열람 가능 (쓰기는 AuthGate)"],
           ["핵심 콘텐츠", "코스 = 스팟 순서 + 이동(Leg) + 사진·추천·난이도"],

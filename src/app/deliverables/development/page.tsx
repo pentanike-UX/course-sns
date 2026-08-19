@@ -76,20 +76,94 @@ pnpm dev                     # http://localhost:3000
 
       <H2>스팟 이동 경로 (지도)</H2>
       <P>
-        조사일 2026-08-19. <strong className="font-semibold text-ink">구현하지 않음.</strong>{" "}
-        정본 마크다운: <Code>docs/MAP-ROUTING.md</Code>.
+        조사·정책 2026-08-19. <strong className="font-semibold text-ink">구현하지 않음.</strong>{" "}
+        정본: <Code>docs/MAP-ROUTING.md</Code>.
       </P>
+
+      <div
+        id="routing-next"
+        className="mt-6 scroll-mt-24 rounded-2xl bg-ink px-5 py-5 text-paper ring-2 ring-ink"
+      >
+        <p className="text-[11px] font-bold tracking-wide text-sunset">필수 · 다음 구현 전 읽을 것</p>
+        <h3 className="mt-1.5 text-[18px] font-black tracking-tight text-paper">
+          가능한 방향 (다음 구현 시)
+        </h3>
+        <p className="mt-2 text-[13px] leading-relaxed text-paper/80">
+          지도·레그·Directions를 만지기 전에 이 상자를 읽는다. 제품은 국내 전용이 아니다. 국내와
+          해외의 지도·경로 공급자를 나누고, 해외는 구글 지도로 스팟 사이 모든 이동 경로를 잇는다.
+        </p>
+        <div className="mt-4 overflow-x-auto rounded-xl bg-paper/5 ring-1 ring-white/15">
+          <table className="w-full min-w-[480px] border-collapse text-left text-[13px]">
+            <thead>
+              <tr className="text-[11px] font-bold text-paper/55">
+                <th className="px-3 py-2">지역</th>
+                <th className="px-3 py-2">타일</th>
+                <th className="px-3 py-2">스팟 사이 경로</th>
+              </tr>
+            </thead>
+            <tbody className="text-paper/90">
+              <tr className="border-t border-white/10">
+                <td className="px-3 py-2.5 font-semibold">국내</td>
+                <td className="px-3 py-2.5">네이버 Maps JS</td>
+                <td className="px-3 py-2.5">아래 A–E (TMAP / ODsay). 타일을 구글로 바꾸지 않음</td>
+              </tr>
+              <tr className="border-t border-white/10">
+                <td className="px-3 py-2.5 font-semibold">해외</td>
+                <td className="px-3 py-2.5">구글 지도</td>
+                <td className="px-3 py-2.5">
+                  구글 Directions/Routes. 도보·자전거·자동차·버스·지하철·기차.{" "}
+                  <strong className="text-paper">모든 연속 스팟 쌍</strong>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-4 text-[12px] font-bold text-sunset">국내 우선</p>
+        <ul className="mt-1.5 list-disc space-y-1.5 pl-5 text-[13px] leading-relaxed text-paper/85">
+          <li>
+            <strong className="text-paper">A</strong> — TMAP 키만. 도보=차도 위장을 없애는 최소.
+            코드(<Code>getWalkingPath</Code>)는 이미 있음
+          </li>
+          <li>
+            <strong className="text-paper">B</strong> — TMAP 보행 + Transit. 버스·지하철·기차까지
+            공급자 하나
+          </li>
+          <li>
+            <strong className="text-paper">C</strong> — TMAP 보행 + ODsay 노선 그래픽. 지하철·버스
+            실제 모양
+          </li>
+          <li>
+            <strong className="text-paper">D</strong> — 카카오 모빌리티 제휴 (자전거 전용 도로)
+          </li>
+          <li>
+            <strong className="text-paper">E</strong> — 키 없이 지하철·기차를 점선으로. 기차 driving은
+            더 어색함
+          </li>
+        </ul>
+        <p className="mt-4 text-[12px] font-bold text-sunset">해외 필수</p>
+        <p className="mt-1.5 text-[13px] leading-relaxed text-paper/85">
+          구글 타일 + Directions/Routes(<Code>WALK</Code> · <Code>BICYCLE</Code> ·{" "}
+          <Code>DRIVE</Code> · <Code>TRANSIT</Code>). 스팟 사이를 커넥터만으로 남기지 않는다. 키는
+          네이버/TMAP과 분리. 국내에서 구글 타일로 갈아타지 않는다.
+        </p>
+        <p className="mt-3 text-[12px] leading-relaxed text-paper/55">
+          하지 않음: 국내 타일 카카오/구글 교체 · 해외를 네이버만으로 그리기 · 네이버 도보 API를
+          기다리기. 상세 표는 정본 마크다운.
+        </p>
+      </div>
+
+      <H3>배경 — 왜 도보인데 자동차 도로인가</H3>
       <P>
-        타일은 네이버 Maps JS v3를 유지한다. 레그에서 도보를 골라도 지도 선이 자동차 도로를 따르는
-        이유는, 네이버 Directions가 <strong className="font-semibold text-ink">자동차 길찾기만</strong>{" "}
-        주기 때문이다. 도보·자전거·지하철 API는 없다.
+        레그에서 도보를 골라도 지도 선이 자동차 도로를 따르는 이유는, 네이버 Directions가{" "}
+        <strong className="font-semibold text-ink">자동차 길찾기만</strong> 주기 때문이다.
+        도보·자전거·지하철 API는 없다.
       </P>
       <Warn>
         코드는 도보·자전거를 TMAP 보행 API로 받도록 이미 분기돼 있다 (
         <Code>getWalkingPath</Code>). 키가 없으면 네이버 driving으로 폴백한다. 운영{" "}
         <Code>TMAP_APP_KEY</Code>는 아직 비어 있어, 도보를 눌러도 차도가 그려진다.
       </Warn>
-      <H3>지금 코드가 그리는 선</H3>
+      <H3>지금 코드가 그리는 선 (국내)</H3>
       <DocTable
         headers={["수단", "지금 동작"]}
         rows={[
@@ -101,53 +175,22 @@ pnpm dev                     # http://localhost:3000
       />
       <H3>수단별 길을 이을 수 있는지</H3>
       <P>
-        타일=네이버, 선만 다른 API 좌표(WGS84)를 올리는 방식은 가능하다. 이미{" "}
-        <Code>RouteMap</Code>이 그 구조다.
+        국내: 타일=네이버, 선만 다른 API 좌표(WGS84). 이미 <Code>RouteMap</Code>이 그 구조다.
+        해외: 타일+선 모두 구글. 위 필수 상자.
       </P>
       <DocTable
-        headers={["수단", "네이버", "TMAP 공개", "그 외"]}
+        headers={["수단", "네이버", "TMAP 공개", "구글(해외)"]}
         rows={[
-          ["도보", "불가", "가능. 코드 있음", "카카오 도보 API는 제휴"],
-          ["자전거", "불가", "전용 라우터 없음. 보행 근사", "카카오 자전거는 제휴"],
-          ["자가용·택시", "가능 (현재)", "가능", "바꿀 이득 적음"],
-          ["버스·지하철·기차", "불가", "Transit API", "ODsay 길찾기+노선 그래픽. 카카오는 제휴"],
+          ["도보", "불가", "가능. 코드 있음", "WALK"],
+          ["자전거", "불가", "전용 라우터 없음. 보행 근사", "BICYCLE"],
+          ["자가용·택시", "가능 (현재)", "가능", "DRIVE"],
+          ["버스·지하철·기차", "불가", "Transit API", "TRANSIT"],
         ]}
       />
       <P>
-        대중교통은 점과 점을 한 줄로 잇는 게 아니라 걸어가기 → 탑승 → 환승 → 걷기다.
+        대중교통은 점과 점을 한 줄로 잇는 게 아니라 걸어가기 → 탑승 → 환승 → 걷기다. 구글 Transit도
+        구간을 나눠 준다.
       </P>
-      <H3>가능한 방향 (다음 구현 시)</H3>
-      <DocTable
-        headers={["안", "내용", "맞추는 증상"]}
-        rows={[
-          [
-            "A",
-            "Vercel에 TMAP_APP_KEY만 넣기. getWalkingPath가 이미 있음",
-            "도보=차도. 최소",
-          ],
-          [
-            "B",
-            "TMAP 보행 + TMAP Transit. 공급자 하나. 자전거는 보행 근사",
-            "도보 + 버스·지하철·기차",
-          ],
-          [
-            "C",
-            "TMAP 보행 + ODsay(searchPubTransPathT · loadLane). 네이버 위에 노선 그리기 예시가 공식 가이드에 있음",
-            "지하철·버스 실제 노선 모양",
-          ],
-          ["D", "카카오 모빌리티 제휴 (도보·자전거·대중교통 세트)", "자전거 전용 도로까지"],
-          [
-            "E",
-            "키를 안 넣을 거면 지하철·기차는 점선 커넥터가 정직. 기차 driving이 더 어색함",
-            "가짜 차도 제거",
-          ],
-        ]}
-      />
-      <Note>
-        하지 않는 편: 지도 엔진을 카카오로 교체, 구글 길찾기, 네이버에 도보 API가 생기길 기다리기.
-        우선순위는 지금 증상 → <strong className="font-semibold text-ink">A</strong>,
-        노선까지 → <strong className="font-semibold text-ink">B 또는 C</strong>.
-      </Note>
 
       <H2>검증</H2>
       <pre className="mt-4 overflow-x-auto rounded-xl bg-ink px-4 py-4 text-[12px] leading-relaxed text-paper">
@@ -233,7 +276,7 @@ pnpm test:e2e      # 스모크 — 읽기 전용`}
           <Code>docs/PHOTO-FIRST-CREATE.md</Code> — 기록 작성 photo-first 4화면 (Wave G)
         </li>
         <li>
-          <Code>docs/MAP-ROUTING.md</Code> — 스팟 이동 경로(도보·대중교통) 조사
+          <Code>docs/MAP-ROUTING.md</Code> — 스팟 이동 경로 §0 필수 (국내 A–E · 해외 구글)
         </li>
       </Ul>
     </>
