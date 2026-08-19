@@ -16,10 +16,13 @@ export default function ApiPage() {
           ["GET", "/api/places?q=", "필요", "장소 키워드 검색"],
           ["GET", "/api/map-points", "필요", "지도 핀 뷰포트 조회"],
           ["GET", "/api/people?q=", "필요", "회원 검색 (보관함)"],
-          ["POST", "/api/directions", "필요", "경로(차량/보행)"],
+          ["POST", "/api/directions", "필요", "레그 경로. 도보는 TMAP, 없으면 자동차 도로"],
         ]}
       />
-      <Note>게스트 UI는 서버 컴포넌트·data.ts로 공개 피드를 읽고, API는 주로 로그인 세션용입니다.</Note>
+      <Note>
+        게스트 UI는 서버 컴포넌트·data.ts로 공개 피드를 읽고, API는 주로 로그인 세션용입니다. 도보
+        선이 차도로 보이는 이유·대안은 <Code>docs/MAP-ROUTING.md</Code>.
+      </Note>
 
       <H2>Server Actions</H2>
       <DocTable
