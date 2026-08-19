@@ -51,7 +51,7 @@ export const GUIDE_NAV: GuideNavItem[] = [
   {
     href: "/deliverables/development",
     label: "개발",
-    blurb: "실행·배포·테스트",
+    blurb: "실행·배포·지도 경로·테스트",
     group: "dev",
   },
   {

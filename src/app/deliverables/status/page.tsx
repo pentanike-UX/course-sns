@@ -17,6 +17,7 @@ export default function StatusPage() {
       <div className="mt-4 flex flex-wrap gap-2">
         <StatusPill tone="ok">핵심 루프 제공 중</StatusPill>
         <StatusPill tone="warn">0014 DB 적용 확인</StatusPill>
+        <StatusPill tone="warn">도보 지도 = TMAP 키</StatusPill>
       </div>
 
       <H2>사용자가 지금 할 수 있는 것</H2>
@@ -26,6 +27,7 @@ export default function StatusPage() {
         rows={[
           ["공개 코스 피드", "✅ 완료", "전이 정렬·필터"],
           ["지도 탐색", "✅ 완료", "스펙+전이 peek"],
+          ["레그 지도 선", "⚠️ 부분", "도보도 차도로 그림. TMAP 키 없음 · MAP-ROUTING.md"],
           ["게스트 열람", "✅ 완료", "AuthGate 쓰기"],
           ["팔로잉 홈 레일", "✅ 완료", "데이터 있을 때만"],
         ]}
@@ -44,7 +46,7 @@ export default function StatusPage() {
       <DocTable
         headers={["기능", "상태", "메모"]}
         rows={[
-          ["기록·계획 작성", "⚠️ 진행", "기록 작성·수정 4화면(v0.4.1). 계획은 플래너"],
+          ["기록·계획 작성", "⚠️ 진행", "기록 4화면. 헤더 2–4는 이전 스텝(v0.4.7). 계획은 플래너"],
           ["따라가기 준비도", "✅ 완료", "soft hint"],
           ["전이 통계", "✅ 완료", "코스 통계"],
           ["장소 검색", "⚠️ 부분", "키 미설정 시 UI 숨김"],
@@ -70,6 +72,10 @@ export default function StatusPage() {
         </li>
         <li>데모 계정으로 따라가기 → 다녀왔어요 → 알림 end-to-end</li>
         <li>NCP Maps URL에 course-sns.vercel.app 등록</li>
+        <li>
+          도보 레그를 보행 경로로 보려면 Vercel <code className="rounded bg-muted px-1 text-[12px]">TMAP_APP_KEY</code>{" "}
+          (<code className="rounded bg-muted px-1 text-[12px]">docs/MAP-ROUTING.md</code> 안 A)
+        </li>
         <li>Google OAuth 콜백이 course-sns Supabase를 가리키는지</li>
         <li>
           <code className="rounded bg-muted px-1 text-[12px]">/deliverables</code> 가이드 링크

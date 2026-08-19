@@ -8,7 +8,7 @@ export default function DevelopmentPage() {
     <>
       <PageHeader
         title="개발"
-        description="로컬 실행, 환경변수, 배포, 테스트, 디자인 시스템 참조를 정리합니다."
+        description="로컬 실행, 환경변수, 배포, 테스트, 지도 경로(도보·대중교통), 디자인 시스템 참조를 정리합니다."
       />
 
       <H2>빠른 시작</H2>
@@ -29,7 +29,7 @@ pnpm dev                     # http://localhost:3000
           ["NEXT_PUBLIC_NAVER_MAP_KEY", "✅", "Maps JS ncpKeyId"],
           ["NAVER_MAP_CLIENT_SECRET", "✅", "Directions driving"],
           ["NAVER_SEARCH_CLIENT_ID/SECRET", "⬜", "장소 검색 (없으면 UI 숨김)"],
-          ["TMAP_APP_KEY", "⬜", "보행 실도로"],
+          ["TMAP_APP_KEY", "⬜", "보행 실도로. 없으면 도보 선이 자동차 도로로 폴백"],
           ["NEXT_PUBLIC_SITE_URL", "⬜", "OG 절대 URL"],
           ["E2E_DEMO_EMAIL/PASSWORD", "⬜", "Playwright (기본 데모)"],
         ]}
@@ -68,7 +68,86 @@ pnpm dev                     # http://localhost:3000
         <li>
           NCP Maps Web URL: <Code>localhost:3000</Code> + {PROD_URL}
         </li>
+        <li>
+          도보 지도 선: <Code>TMAP_APP_KEY</Code>가 없으면 자동차 도로로 그려짐 — 아래 「스팟
+          이동 경로」
+        </li>
       </Ul>
+
+      <H2>스팟 이동 경로 (지도)</H2>
+      <P>
+        조사일 2026-08-19. <strong className="font-semibold text-ink">구현하지 않음.</strong>{" "}
+        정본 마크다운: <Code>docs/MAP-ROUTING.md</Code>.
+      </P>
+      <P>
+        타일은 네이버 Maps JS v3를 유지한다. 레그에서 도보를 골라도 지도 선이 자동차 도로를 따르는
+        이유는, 네이버 Directions가 <strong className="font-semibold text-ink">자동차 길찾기만</strong>{" "}
+        주기 때문이다. 도보·자전거·지하철 API는 없다.
+      </P>
+      <Warn>
+        코드는 도보·자전거를 TMAP 보행 API로 받도록 이미 분기돼 있다 (
+        <Code>getWalkingPath</Code>). 키가 없으면 네이버 driving으로 폴백한다. 운영{" "}
+        <Code>TMAP_APP_KEY</Code>는 아직 비어 있어, 도보를 눌러도 차도가 그려진다.
+      </Warn>
+      <H3>지금 코드가 그리는 선</H3>
+      <DocTable
+        headers={["수단", "지금 동작"]}
+        rows={[
+          ["자가용·택시", "네이버 Directions driving"],
+          ["버스·기차", "마찬가지로 driving (도로). 노선이 아님"],
+          ["도보·자전거", "TMAP 보행 → 키 없으면 driving 폴백"],
+          ["지하철", "경로 API 없음. 점선 커넥터"],
+        ]}
+      />
+      <H3>수단별 길을 이을 수 있는지</H3>
+      <P>
+        타일=네이버, 선만 다른 API 좌표(WGS84)를 올리는 방식은 가능하다. 이미{" "}
+        <Code>RouteMap</Code>이 그 구조다.
+      </P>
+      <DocTable
+        headers={["수단", "네이버", "TMAP 공개", "그 외"]}
+        rows={[
+          ["도보", "불가", "가능. 코드 있음", "카카오 도보 API는 제휴"],
+          ["자전거", "불가", "전용 라우터 없음. 보행 근사", "카카오 자전거는 제휴"],
+          ["자가용·택시", "가능 (현재)", "가능", "바꿀 이득 적음"],
+          ["버스·지하철·기차", "불가", "Transit API", "ODsay 길찾기+노선 그래픽. 카카오는 제휴"],
+        ]}
+      />
+      <P>
+        대중교통은 점과 점을 한 줄로 잇는 게 아니라 걸어가기 → 탑승 → 환승 → 걷기다.
+      </P>
+      <H3>가능한 방향 (다음 구현 시)</H3>
+      <DocTable
+        headers={["안", "내용", "맞추는 증상"]}
+        rows={[
+          [
+            "A",
+            "Vercel에 TMAP_APP_KEY만 넣기. getWalkingPath가 이미 있음",
+            "도보=차도. 최소",
+          ],
+          [
+            "B",
+            "TMAP 보행 + TMAP Transit. 공급자 하나. 자전거는 보행 근사",
+            "도보 + 버스·지하철·기차",
+          ],
+          [
+            "C",
+            "TMAP 보행 + ODsay(searchPubTransPathT · loadLane). 네이버 위에 노선 그리기 예시가 공식 가이드에 있음",
+            "지하철·버스 실제 노선 모양",
+          ],
+          ["D", "카카오 모빌리티 제휴 (도보·자전거·대중교통 세트)", "자전거 전용 도로까지"],
+          [
+            "E",
+            "키를 안 넣을 거면 지하철·기차는 점선 커넥터가 정직. 기차 driving이 더 어색함",
+            "가짜 차도 제거",
+          ],
+        ]}
+      />
+      <Note>
+        하지 않는 편: 지도 엔진을 카카오로 교체, 구글 길찾기, 네이버에 도보 API가 생기길 기다리기.
+        우선순위는 지금 증상 → <strong className="font-semibold text-ink">A</strong>,
+        노선까지 → <strong className="font-semibold text-ink">B 또는 C</strong>.
+      </Note>
 
       <H2>검증</H2>
       <pre className="mt-4 overflow-x-auto rounded-xl bg-ink px-4 py-4 text-[12px] leading-relaxed text-paper">
@@ -122,6 +201,10 @@ pnpm test:e2e      # 스모크 — 읽기 전용`}
 
       <H2>알려진 함정</H2>
       <Ul>
+        <li>
+          <Code>TMAP_APP_KEY</Code> 없으면 도보 레그가 자동차 도로로 그려짐 (
+          <Code>docs/MAP-ROUTING.md</Code>)
+        </li>
         <li>PostgREST 임베드 FK 힌트 누락 → 쿼리 실패</li>
         <li>드로어 slide 스택 리라이트 금지</li>
         <li>좋아요를 북스타 KPI로 쓰지 말 것</li>
@@ -148,6 +231,9 @@ pnpm test:e2e      # 스모크 — 읽기 전용`}
         </li>
         <li>
           <Code>docs/PHOTO-FIRST-CREATE.md</Code> — 기록 작성 photo-first 4화면 (Wave G)
+        </li>
+        <li>
+          <Code>docs/MAP-ROUTING.md</Code> — 스팟 이동 경로(도보·대중교통) 조사
         </li>
       </Ul>
     </>
