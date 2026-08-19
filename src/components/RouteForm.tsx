@@ -1137,12 +1137,64 @@ export default function RouteForm({
   const ingestForPhotos =
     startAtPhotos || (isEdit && followedFromExplore && initialPhotoCount === 0);
 
+  const recordBackHref = isEdit ? `/routes/${routeId}` : "/";
+  const leaveRecordWizard = () => {
+    setConfirmExit(false);
+    if (hasInAppHistory()) router.back();
+    else router.replace(recordBackHref);
+  };
+  const goWizardPrev = () => {
+    if (peekSpotKey) {
+      setPeekSpotKey(null);
+      return;
+    }
+    setStep((s) => Math.max(1, s - 1));
+  };
+  const requestRecordHeaderNav = () => {
+    if (peekSpotKey) {
+      setPeekSpotKey(null);
+      return;
+    }
+    if (step > 1) {
+      goWizardPrev();
+      return;
+    }
+    if (isDirty) setConfirmExit(true);
+    else leaveRecordWizard();
+  };
+  const recordExitConfirmSheet = (
+    <ActionBottomSheet
+      open={confirmExit}
+      title="저장하지 않고 나가시겠습니까?"
+      description={
+        isEdit
+          ? "수정한 내용이 저장되지 않아요."
+          : "올린 사진과 순서는 저장되지 않아요."
+      }
+      primaryLabel="나가기"
+      primaryTone="danger"
+      onPrimary={leaveRecordWizard}
+      secondaryLabel={isEdit ? "계속 수정" : "계속 만들기"}
+      onClose={() => setConfirmExit(false)}
+      ariaLabel="저장하지 않고 나가기 확인"
+    />
+  );
+
   return (
     <MobileFrame shell>
       <AppHeader
-        back={isEdit ? `/routes/${routeId}` : "/"}
-        closeButton
+        back={recordBackHref}
         title={isEdit ? "코스 수정" : "새 코스"}
+        left={
+          <button
+            type="button"
+            onClick={requestRecordHeaderNav}
+            aria-label={step > 1 ? "이전" : "닫기"}
+            className="flex h-11 w-11 items-center justify-center"
+          >
+            <GlassCircle>{step > 1 ? <BackIcon /> : <CloseIcon />}</GlassCircle>
+          </button>
+        }
       />
       <CreateDotStepper current={step} total={CREATE_STEPS} />
 
@@ -1381,7 +1433,7 @@ export default function RouteForm({
           {step > 1 && (
             <button
               type="button"
-              onClick={() => setStep((s) => s - 1)}
+              onClick={goWizardPrev}
               className="rounded-full border border-line bg-card px-5 py-3.5 text-[15px] font-semibold text-ink-soft"
             >
               이전
@@ -1545,6 +1597,7 @@ export default function RouteForm({
 
       {savingOverlay}
       {sheets}
+      {recordExitConfirmSheet}
       {visibilityConfirmSheet}
     </MobileFrame>
   );
@@ -3225,6 +3278,20 @@ function CloseIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path d="M6 6 18 18M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function BackIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="m15 5-7 7 7 7"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
