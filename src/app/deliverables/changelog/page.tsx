@@ -13,6 +13,14 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.4.7-mvp — 기록 위자드 뒤로가기</H2>
+      <Ul>
+        <li>
+          등록·수정 4화면: 헤더가 2–4번에서 닫기(X) 대신 이전 화면으로 돌아감. 1번에서 닫을 때만
+          나가기 확인. 실수로 순서·이동 작업이 사라지지 않음
+        </li>
+      </Ul>
+
       <H2>v0.4.6-mvp — 스팟 한 줄</H2>
       <Ul>
         <li>

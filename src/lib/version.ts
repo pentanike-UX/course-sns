@@ -23,5 +23,6 @@
  * v0.4.4 — 아이폰 홈 화면 추가 안내(그림 단계)
  * v0.4.5 — Safari 공유 버튼 위치(콤팩트·하단·상단)
  * v0.4.6 — 스팟 한 줄(peek 메모 개방, 카드 미리보기)
+ * v0.4.7 — 기록 위자드 헤더 뒤로: 2–4는 이전 스텝, 1은 나가기 확인
  */
-export const APP_VERSION = "v0.4.6-mvp";
+export const APP_VERSION = "v0.4.7-mvp";

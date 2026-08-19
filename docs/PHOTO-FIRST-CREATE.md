@@ -1,6 +1,6 @@
 # Photo-first 코스 등록 — UX·구현 설계 (Wave G)
 
-> **상태:** G0 설계 ✅ · G1–G4 기록 작성·수정 4화면 · 스팟 한 줄 peek (`v0.4.6-mvp`)  
+> **상태:** G0 설계 ✅ · G1–G4 기록 작성·수정 4화면 · 스팟 한 줄 peek · 위자드 헤더 뒤로 (`v0.4.7-mvp`)  
 > **주인공:** P3 메이커 — “사진은 이미 코스다. 글은 선택이다.”  
 > **관련:** [`COURSE-UX-DESIGN.md`](COURSE-UX-DESIGN.md) §2.6 · [`UX-PERSONA-PAINPOINTS.md`](UX-PERSONA-PAINPOINTS.md) P3-E · [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md)  
 > **범위:** 기록(record) 작성·수정·계획→기록 전환. 계획(plan) 지도 플래너는 **유지**하되 같은 카드/레그 언어로 맞춤.
@@ -209,7 +209,7 @@ sequenceDiagram
 
 ## 5. 화면별 UI 스펙 (10점)
 
-공통 크롬: `MobileFrame shell` · `AppHeader closeButton` · 하단 1 CTA (`bg-sunset` rounded-xl, 플래너 레드 예산 준수) · 스텝퍼는 **점 4개** (라벨은 현재 스텝 제목에만). 숫자 뱃지는 `bg-ink` (sunset 점 P2-E 잔여 제거).
+공통 크롬: `MobileFrame shell` · 헤더 1번은 닫기(X), 2–4는 뒤로(스텝만 감소) · 하단 1 CTA (`bg-sunset` rounded-xl, 플래너 레드 예산 준수) · 스텝퍼는 **점 4개** (라벨은 현재 스텝 제목에만). 숫자 뱃지는 `bg-ink` (sunset 점 P2-E 잔여 제거).
 
 ### 5.1 Screen 1 — 올리기
 
