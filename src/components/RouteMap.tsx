@@ -7,6 +7,7 @@ import JellyButton from "@/components/JellyButton";
 import SpotDetailSheet from "@/components/SpotDetailSheet";
 import { CarIcon, TaxiIcon, BicycleIcon, TrainIcon, BusIcon, FootIcon } from "@/app/routes/[id]/LegIcons";
 import { loadNaverMaps, NAVER_MAP_KEY } from "@/lib/naver";
+// 타일: 지금은 네이버만. 해외는 tileProviderForSpots + loadGoogleMaps — docs/routing/FILEMAP.md
 import { TRANSPORT_LABEL, TRANSPORT_COLOR, type TransportMode } from "@/lib/types";
 
 export type MapSpot = {

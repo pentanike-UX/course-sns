@@ -6,7 +6,7 @@
 - **GitHub**: [pentanike-UX/course-sns](https://github.com/pentanike-UX/course-sns)
 - **프로덕션**: https://course-sns.vercel.app
 - **Supabase**: `pbyxnvtgsrwmsvxnynif` (routdiary와 분리)
-- **현재 버전**: `v0.4.9-mvp` (`src/lib/version.ts`) — 수정 시 버전·HANDOFF 기록 규칙: `AGENTS.md`
+- **현재 버전**: `v0.4.10-mvp` (`src/lib/version.ts`) — 수정 시 버전·HANDOFF 기록 규칙: `AGENTS.md`
 - **개발·운영 가이드**: https://course-sns.vercel.app/deliverables (로컬 `/deliverables`)
 - **배포·인프라 체크리스트**: [`docs/MVP-SETUP.md`](docs/MVP-SETUP.md)
 - **상세 인수인계·IA·함정**: [`docs/HANDOFF.md`](docs/HANDOFF.md)
@@ -43,6 +43,7 @@ pnpm test:e2e    # Playwright 스모크 (데모 계정, 읽기 전용)
 | [`docs/COURSE-UX-DESIGN.md`](docs/COURSE-UX-DESIGN.md) | 코스 포지션·페르소나 UX 적용 설계 (Phase 0–3) |
 | [`docs/PHOTO-FIRST-CREATE.md`](docs/PHOTO-FIRST-CREATE.md) | 기록 작성 photo-first 4화면 설계 (Wave G) |
 | [`docs/MAP-ROUTING.md`](docs/MAP-ROUTING.md) | 스팟 이동 경로 — **§0 필수**. 국내 네이버, 해외 구글 전 수단 |
+| [`docs/routing/README.md`](docs/routing/README.md) | **경로 구현 키트** — 채울 파일·계약·인수 (`src/lib/routing/`) |
 | [`docs/UX-PERSONA-PAINPOINTS.md`](docs/UX-PERSONA-PAINPOINTS.md) | 페르소나 재채점·잔여 페인포인트·Wave E |
 | [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md) | UI 스타일 가이드 |
 | [`.env.example`](.env.example) | 환경변수 템플릿 |

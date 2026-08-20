@@ -30,6 +30,9 @@ pnpm dev                     # http://localhost:3000
           ["NAVER_MAP_CLIENT_SECRET", "✅", "Directions driving"],
           ["NAVER_SEARCH_CLIENT_ID/SECRET", "⬜", "장소 검색 (없으면 UI 숨김)"],
           ["TMAP_APP_KEY", "⬜", "보행 실도로. 없으면 도보 선이 자동차 도로로 폴백"],
+          ["ODSAY_API_KEY", "⬜", "국내 대중교통 노선 (C). 경로 키트"],
+          ["GOOGLE_MAPS_API_KEY", "⬜", "해외 서버 Routes. NEXT_PUBLIC 금지"],
+          ["NEXT_PUBLIC_GOOGLE_MAPS_KEY", "⬜", "해외 브라우저 타일"],
           ["NEXT_PUBLIC_SITE_URL", "⬜", "OG 절대 URL"],
           ["E2E_DEMO_EMAIL/PASSWORD", "⬜", "Playwright (기본 데모)"],
         ]}
@@ -76,8 +79,12 @@ pnpm dev                     # http://localhost:3000
 
       <H2>스팟 이동 경로 (지도)</H2>
       <P>
-        조사·정책 2026-08-19. <strong className="font-semibold text-ink">구현하지 않음.</strong>{" "}
-        정본: <Code>docs/MAP-ROUTING.md</Code>.
+        조사·정책 + 구현 파일 묶음. 외부 Transit/구글 Routes 호출은 아직 없음. 정본:{" "}
+        <Code>docs/MAP-ROUTING.md</Code> §0 · 코딩:{" "}
+        <Link href="/deliverables/routing" className="font-semibold text-sunset-ink hover:underline">
+          경로 키트
+        </Link>
+        .
       </P>
 
       <div
@@ -149,6 +156,13 @@ pnpm dev                     # http://localhost:3000
         <p className="mt-3 text-[12px] leading-relaxed text-paper/55">
           하지 않음: 국내 타일 카카오/구글 교체 · 해외를 네이버만으로 그리기 · 네이버 도보 API를
           기다리기. 상세 표는 정본 마크다운.
+        </p>
+        <p className="mt-4 text-[13px] leading-relaxed text-paper">
+          코딩은{" "}
+          <Link href="/deliverables/routing" className="font-semibold text-sunset underline-offset-2 hover:underline">
+            경로 구현 키트
+          </Link>
+          와 저장소 <Code>docs/routing/</Code> · <Code>src/lib/routing/</Code> 에서 시작한다.
         </p>
       </div>
 
@@ -277,6 +291,13 @@ pnpm test:e2e      # 스모크 — 읽기 전용`}
         </li>
         <li>
           <Code>docs/MAP-ROUTING.md</Code> — 스팟 이동 경로 §0 필수 (국내 A–E · 해외 구글)
+        </li>
+        <li>
+          <Code>docs/routing/README.md</Code> — 구현 파일 묶음 (
+          <Link href="/deliverables/routing" className="font-semibold text-sunset-ink hover:underline">
+            웹 키트
+          </Link>
+          )
         </li>
       </Ul>
     </>

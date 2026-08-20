@@ -106,6 +106,9 @@ export default function DeliverablesHomePage() {
         <DocCard href="/deliverables/development" title="개발" badge="개발">
           로컬 실행, env, 배포, 테스트, 디자인 시스템
         </DocCard>
+        <DocCard href="/deliverables/routing" title="경로 키트" badge="개발">
+          스팟 이동 경로 — 구현할 파일 묶음 (국내 TMAP · 해외 구글)
+        </DocCard>
       </div>
 
       <H2>이어받은 뒤 — 이렇게 시작하세요</H2>
@@ -148,14 +151,19 @@ export default function DeliverablesHomePage() {
           >
             개발 「가능한 방향」(필수)
           </Link>
-          — 국내 네이버, 해외 구글, 모든 스팟 사이 경로
+          후{" "}
+          <Link href="/deliverables/routing" className="font-semibold text-sunset-ink hover:underline">
+            경로 키트
+          </Link>
+          에서 파일을 채움 — 국내 네이버, 해외 구글, 모든 스팟 사이 경로
         </li>
         <li>기획 + 화면으로 맥락·IA 파악</li>
         <li>아키텍처 + DB + API로 수정 위치 확인</li>
         <li>
           저장소 정본: <Code>docs/HANDOFF.md</Code>, <Code>docs/BRAND.md</Code>,{" "}
           <Code>docs/DESIGN-SYSTEM.md</Code>, <Code>docs/COURSE-UX-DESIGN.md</Code>,{" "}
-          <Code>docs/PHOTO-FIRST-CREATE.md</Code>, <Code>docs/MAP-ROUTING.md</Code>
+          <Code>docs/PHOTO-FIRST-CREATE.md</Code>, <Code>docs/MAP-ROUTING.md</Code>,{" "}
+          <Code>docs/routing/README.md</Code>
         </li>
         <li>
           변경 후 <Code>pnpm lint</Code> → <Code>pnpm build</Code> → <Code>pnpm test:e2e</Code>

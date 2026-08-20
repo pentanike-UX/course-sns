@@ -55,6 +55,12 @@ export const GUIDE_NAV: GuideNavItem[] = [
     group: "dev",
   },
   {
+    href: "/deliverables/routing",
+    label: "경로 키트",
+    blurb: "스팟 이동 경로 구현 파일",
+    group: "dev",
+  },
+  {
     href: "/deliverables/status",
     label: "현황",
     blurb: "완료·잔여·체크리스트",
