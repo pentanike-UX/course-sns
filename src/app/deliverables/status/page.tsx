@@ -27,7 +27,7 @@ export default function StatusPage() {
         rows={[
           ["공개 코스 피드", "✅ 완료", "전이 정렬·필터"],
           ["지도 탐색", "✅ 완료", "스펙+전이 peek"],
-          ["레그 지도 선", "⚠️ 부분", "국내 도보=차도(TMAP 키). 해외 구글은 미구현. MAP-ROUTING §0 필수"],
+          ["레그 지도 선", "⚠️ 부분", "국내 도보=TMAP 키. 해외 구글 fetch 미완. 경로 키트에서 구현"],
           ["게스트 열람", "✅ 완료", "AuthGate 쓰기"],
           ["팔로잉 홈 레일", "✅ 완료", "데이터 있을 때만"],
         ]}
@@ -74,7 +74,11 @@ export default function StatusPage() {
         <li>NCP Maps URL에 course-sns.vercel.app 등록</li>
         <li>
           도보 레그를 보행 경로로 보려면 Vercel <code className="rounded bg-muted px-1 text-[12px]">TMAP_APP_KEY</code>{" "}
-          (<code className="rounded bg-muted px-1 text-[12px]">docs/MAP-ROUTING.md</code> 안 A)
+          (<code className="rounded bg-muted px-1 text-[12px]">docs/routing/KR.md</code> A)
+        </li>
+        <li>
+          해외 경로·타일은 <code className="rounded bg-muted px-1 text-[12px]">docs/routing/README.md</code> 키트에서
+          구현
         </li>
         <li>Google OAuth 콜백이 course-sns Supabase를 가리키는지</li>
         <li>

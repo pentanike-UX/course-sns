@@ -13,6 +13,16 @@ export default function ChangelogPage() {
         현재 버전: <Code>{APP_VERSION}</Code>
       </P>
 
+      <H2>v0.4.10-mvp — 경로 구현 키트</H2>
+      <Ul>
+        <li>
+          개발자가 스팟 이동 경로를 바로 붙일 수 있도록 파일 묶음:{" "}
+          <Code>docs/routing/</Code> · <Code>src/lib/routing/</Code> ·{" "}
+          <Code>src/lib/maps/</Code>. 국내는 TMAP 보행(키만), 해외는 구글 Routes/타일 스텁. Transit·구글
+          fetch는 다음 작업
+        </li>
+      </Ul>
+
       <H2>v0.4.9-mvp — 경로 다음 구현 필수 · 해외 구글</H2>
       <Ul>
         <li>

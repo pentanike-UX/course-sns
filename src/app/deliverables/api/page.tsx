@@ -16,13 +16,13 @@ export default function ApiPage() {
           ["GET", "/api/places?q=", "필요", "장소 키워드 검색"],
           ["GET", "/api/map-points", "필요", "지도 핀 뷰포트 조회"],
           ["GET", "/api/people?q=", "필요", "회원 검색 (보관함)"],
-          ["POST", "/api/directions", "필요", "레그 경로. 도보는 TMAP, 없으면 자동차 도로"],
+          ["POST", "/api/directions", "필요", "레그 경로. getLegPath(국내 TMAP/네이버 · 해외 구글 스텁)"],
         ]}
       />
       <Note>
         게스트 UI는 서버 컴포넌트·data.ts로 공개 피드를 읽고, API는 주로 로그인 세션용입니다. 도보
-        선이 차도로 보이는 이유·다음 구현(국내 A–E, 해외 구글 전 수단)은{" "}
-        <Code>docs/MAP-ROUTING.md</Code> §0 필수.
+        선이 차도로 보이는 이유·다음 구현은 <Code>docs/MAP-ROUTING.md</Code> §0 · 코딩{" "}
+        <Code>docs/routing/README.md</Code>.
       </Note>
 
       <H2>Server Actions</H2>

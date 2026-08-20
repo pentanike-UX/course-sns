@@ -26,5 +26,6 @@
  * v0.4.7 — 기록 위자드 헤더 뒤로: 2–4는 이전 스텝, 1은 나가기 확인
  * v0.4.8 — 스팟 이동 경로 조사 문서 (개발 가이드, 구현 없음)
  * v0.4.9 — 경로 다음 구현 필수(국내 A–E · 해외 구글 전 수단)
+ * v0.4.10 — 경로 구현 키트 (`docs/routing` + `src/lib/routing`)
  */
-export const APP_VERSION = "v0.4.9-mvp";
+export const APP_VERSION = "v0.4.10-mvp";

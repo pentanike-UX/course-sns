@@ -138,6 +138,7 @@ export default function PlanningPage() {
           UX 정본 → 저장소 <Code>docs/COURSE-UX-DESIGN.md</Code> ·{" "}
           <Code>docs/PHOTO-FIRST-CREATE.md</Code> ·{" "}
           <Code>docs/MAP-ROUTING.md</Code>(경로 필수) ·{" "}
+          <Code>docs/routing/README.md</Code>(구현 키트) ·{" "}
           <Code>docs/UX-PERSONA-PAINPOINTS.md</Code>
         </li>
         <li>

@@ -32,7 +32,10 @@ cp .env.example .env.local
 | `NEXT_PUBLIC_NAVER_MAP_KEY` | ✅ | NCP Maps Client ID |
 | `NAVER_MAP_CLIENT_SECRET` | ✅ | NCP Maps Client Secret |
 | `NAVER_SEARCH_CLIENT_ID/SECRET` | ⬜ | 네이버 검색 OpenAPI (없으면 장소 검색 UI 숨김) |
-| `TMAP_APP_KEY` | ⬜ | 보행 경로. 없으면 도보 선이 **자동차 도로**로 폴백. 조사 `docs/MAP-ROUTING.md` |
+| `TMAP_APP_KEY` | ⬜ | 보행 경로. 없으면 도보 선이 **자동차 도로**로 폴백. `docs/routing/KR.md` |
+| `ODSAY_API_KEY` | ⬜ | 국내 대중교통 노선 (C) |
+| `GOOGLE_MAPS_API_KEY` | ⬜ | 해외 서버 Routes |
+| `NEXT_PUBLIC_GOOGLE_MAPS_KEY` | ⬜ | 해외 브라우저 타일 |
 | `NEXT_PUBLIC_SITE_URL` | ⬜ | 프로덕션 OG URL (Vercel 도메인) |
 | `E2E_DEMO_EMAIL/PASSWORD` | ⬜ | E2E 데모 계정 (기본값 `.env.example` 참고) |
 
@@ -69,7 +72,7 @@ pnpm test:e2e   # .env.local + 데모 계정·공개 루트 시드 필요
 
 - Vercel 프로젝트 → **Deployments** → Production URL
 - 또는 `vercel ls` / GitHub Actions 배포 상태
-- 앱 스플래시·로그인·파비콘·OG에 **coursee 심볼/로고**, 버전 `v0.4.9-mvp` 표시 확인
+- 앱 스플래시·로그인·파비콘·OG에 **coursee 심볼/로고**, 버전 `v0.4.10-mvp` 표시 확인
 - 네이버 Maps Web URL에 `https://course-sns.vercel.app` 등록 · Supabase `0015` 데모 시드 push
 - 개발 가이드: `https://course-sns.vercel.app/deliverables`
 

@@ -1,9 +1,9 @@
 # 스팟 이동 경로 — 지도에 길을 잇는 방법
 
-> **상태:** 조사·정책 (2026-08-19 · `v0.4.9-mvp`). **구현하지 않음.**  
-> **필수:** 아래 **§0 가능한 방향**을 먼저 읽는다. 지도·경로 작업은 이 절을 따르지 않으면 착수하지 않는다.  
+> **상태:** 정책 고정 · 구현 키트 준비 (`v0.4.10-mvp`). 외부 Transit/구글 Routes **호출은 아직 없음.**  
+> **필수:** 아래 **§0**을 읽은 뒤, 실제 코딩은 **[`docs/routing/README.md`](routing/README.md)** + `src/lib/routing/` 묶음에서 한다.  
 > **증상:** 레그에서 도보를 골라도 지도 선이 자동차 도로를 따른다.  
-> **관련:** [`src/lib/directions.ts`](../src/lib/directions.ts) · [`/api/directions`](../src/app/api/directions/route.ts) · [`RouteMap.tsx`](../src/components/RouteMap.tsx) · 웹 가이드 [`/deliverables/development#routing-next`](https://course-sns.vercel.app/deliverables/development#routing-next)
+> **관련:** [`src/lib/routing/`](../src/lib/routing/) · [`/api/directions`](../src/app/api/directions/route.ts) · [`RouteMap.tsx`](../src/components/RouteMap.tsx) · 웹 [`/deliverables/routing`](https://course-sns.vercel.app/deliverables/routing)
 
 타일은 지역에 따라 가른다. **국내는 네이버**, **해외는 구글**. 문제는 타일만이 아니라 **스팟과 스팟 사이 선(폴리라인) 좌표를 어디서 받느냐**다.
 
@@ -109,9 +109,11 @@
 
 ## 4. 다음에 손댈 때
 
+코딩은 [`docs/routing/`](routing/README.md) 키트와 `src/lib/routing/`·`src/lib/maps/` 에서만.
+
 1. **먼저 §0을 다시 읽는다.** 국내/해외를 한 공급자로 합치지 않는다.
-2. 국내 도보 차도 위장 → **A** (Vercel `TMAP_APP_KEY`).
-3. 국내 지하철·버스·기차 노선 → **B 또는 C**.
+2. 국내 도보 차도 위장 → **A** (Vercel `TMAP_APP_KEY`). `tmap-walk.ts` 완료.
+3. 국내 지하철·버스·기차 노선 → **B 또는 C** (`tmap-transit.ts` / `odsay.ts` fetch TODO).
 4. 국내 자전거 전용 도로 → **D** 또는 보행 근사 유지.
-5. 해외 → 구글 타일 + 전 수단 경로. 모든 스팟 쌍. 키는 네이버/TMAP과 분리.
-6. 국내 구현 시 타일은 네이버, 선만 다른 API. `directions.ts`에 지역 분기를 둔다.
+5. 해외 → `providers/google.ts` + `loadGoogleMaps`. 모든 스팟 쌍. 키는 네이버/TMAP과 분리.
+6. 분기는 이미 `getLegPath` → `inferLegRegion`. 새 파일을 `directions.ts`에 쌓지 말 것.
